@@ -264,7 +264,7 @@ final headerAgentsProvider = Provider.autoDispose.family<HeaderAgents, String>((
   // Teammates are the Lead's direct children: a teammate's panel is the
   // Lead's.
   final leadId = parent?.address.parentSessionId ?? sessionId;
-  final team = sessions[leadId]?.projections.agentTeam;
+  final team = resolveTeam(sessions[leadId]?.projections.agentTeam, leadId, sessions);
   return HeaderAgents(
     parent: parent,
     children: children.length,
@@ -276,6 +276,21 @@ final headerAgentsProvider = Provider.autoDispose.family<HeaderAgents, String>((
 
 // -----------------------------------------------------------------------------
 // Agent team
+
+/// [team] as the app shows it: null while team mode is off, and with the
+/// roster filled from the Lead's subagent children when the host does not
+/// project one (dsh 0.2.2+ carries members only in `subagentCatalog`).
+TeamSnapshot? resolveTeam(TeamSnapshot? team, String leadId, Map<String, SessionSummary> sessions) {
+  if (team == null || !team.enabled) return null;
+  if (team.members.isNotEmpty) return team;
+  final names = {for (final e in sessions[leadId]?.projections.subagentCatalog ?? const []) e.id: e.name};
+  return team.withMembers([
+    TeamMember(id: leadId, name: 'lead', lead: true, phase: 'active'),
+    for (final child in buildLineage(leadId, sessions))
+      if (child.openable)
+        TeamMember(id: child.id, name: names[child.id] ?? child.label, lead: false, phase: 'active', mode: child.mode),
+  ]);
+}
 
 /// Live `agentTeam` of one Lead: the list hint at once, then
 /// `session/projections`, then `session/control` frames. Null data means the
@@ -366,6 +381,12 @@ final teamProvider = NotifierProvider.autoDispose.family<TeamController, AsyncVa
   TeamController.new,
 );
 
+/// [teamProvider] through [resolveTeam]: what the team page shows.
+final resolvedTeamProvider = Provider.autoDispose.family<AsyncValue<TeamSnapshot?>, String>((ref, leadId) {
+  final sessions = ref.watch(hostSessionsProvider);
+  return ref.watch(teamProvider(leadId)).whenData((team) => resolveTeam(team, leadId, sessions));
+});
+
 /// A roster row with its live activity.
 class TeamMemberView {
   const TeamMemberView({required this.member, required this.running, this.model, this.mode = SubagentMode.continuable});
@@ -450,7 +471,7 @@ class TeamMessagesSnapshot {
 /// conversation between members). Re-read when activity changes.
 final teamMessagesProvider = FutureProvider.autoDispose.family<TeamMessagesSnapshot, String>((ref, leadId) async {
   final conn = ref.watch(activeConnectionProvider).value;
-  final team = ref.watch(teamProvider(leadId)).value;
+  final team = ref.watch(resolvedTeamProvider(leadId)).value;
   // A new turn anywhere in the team may have carried a message.
   ref.watch(
     hostSessionsProvider.select(

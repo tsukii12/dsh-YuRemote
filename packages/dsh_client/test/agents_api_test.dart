@@ -151,6 +151,20 @@ void main() {
       expect(const SessionProjections(1, {}).agentTeam, isNull);
     });
 
+    test('agentTeam from dsh 0.2.2: enabled and tasks, roster in subagentCatalog', () {
+      final on = SessionProjections(1, {
+        'agentTeam': {'enabled': true, 'tasks': []},
+        'subagentCatalog': [
+          {'id': _child, 'mode': 'continuable', 'label': 'Review the diff', 'name': 'reviewer', 'createdAt': 1},
+        ],
+      });
+      expect(on.agentTeam!.enabled, isTrue);
+      expect(on.agentTeam!.members, isEmpty);
+      expect(on.subagentCatalog!.single.name, 'reviewer');
+      expect(TeamSnapshot.fromJson({'enabled': false, 'tasks': []})!.enabled, isFalse);
+      expect(TeamSnapshot.fromJson({'members': []})!.enabled, isTrue);
+    });
+
     test('team messages: relay source with the Team prefix, not plain agent messages', () {
       SessionLogEvent message(Map<String, Object?> source, List<String> texts) => SessionLogEvent.fromJson({
         'seq': 7,

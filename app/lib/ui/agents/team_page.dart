@@ -54,10 +54,7 @@ class _TeamPageState extends ConsumerState<TeamPage> {
     if (member.lead) {
       selectConversation(ref, member.id);
     } else {
-      selectSubagent(
-        ref,
-        SubagentAddress(parentSessionId: leadId, childSessionId: member.id, mode: SubagentMode.continuable),
-      );
+      selectSubagent(ref, SubagentAddress(parentSessionId: leadId, childSessionId: member.id, mode: member.mode));
     }
     Navigator.of(context).popUntil((route) => route.isFirst);
   }
@@ -79,7 +76,7 @@ class _TeamPageState extends ConsumerState<TeamPage> {
       );
     }
     final leadId = ref.watch(subagentParentProvider(sessionId))?.address.parentSessionId ?? sessionId;
-    final async = ref.watch(teamProvider(leadId));
+    final async = ref.watch(resolvedTeamProvider(leadId));
     final team = async.value;
     if (team == null) {
       return AppPage.list(
