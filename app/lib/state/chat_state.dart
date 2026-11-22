@@ -27,7 +27,7 @@ enum SendMode {
   /// Waits for the running turn to finish (DSH `queue`).
   queue,
 
-  /// Stops the running turn, then starts a new one with this message.
+  /// Hands the interruption to the Host's atomic steer operation.
   interrupt,
 }
 
@@ -1340,7 +1340,9 @@ class ChatController extends Notifier<ChatState> {
     }
 
     final running = state.running;
-    final effective = running ? (mode == SendMode.now ? SendMode.steer : mode) : SendMode.now;
+    final effective = running
+        ? (mode == SendMode.now || mode == SendMode.interrupt ? SendMode.steer : mode)
+        : SendMode.now;
     _pending = List.unmodifiable([
       ..._pending,
       PendingPrompt(
@@ -1374,25 +1376,9 @@ class ChatController extends Notifier<ChatState> {
       }
       final receipts = await _stageFiles(operation, attachments);
       if (!_currentOperation(operation)) return retire();
-      var promptMode = effective == SendMode.steer ? PromptMode.steer : PromptMode.queue;
-      String? stopFailed;
-      // Interrupt stops first, then sends: DSH keeps the inbox across a stop
-      // but only starts the next turn for a prompt that arrives after it (one
-      // queued before the stop would wait for whatever is sent next).
-      if (effective == SendMode.interrupt) {
-        final stopped = await _stop(operation);
-        // Retirement is not a failed cancel: it must never fall back to steer.
-        if (!_currentOperation(operation)) return retire();
-        if (!stopped) {
-          // The turn goes on: the message joins it instead.
-          promptMode = PromptMode.steer;
-          stopFailed = appL10n.stateChatStopSteered;
-          _pending = List.unmodifiable([
-            for (final p in _pending) p.requestId == requestId ? p.withMode(SendMode.steer) : p,
-          ]);
-          state = state.copyWith(pending: _placePending());
-        }
-      }
+      // Cancel only acknowledges an abort request; steer admits the input
+      // atomically without racing a still-draining turn.
+      final promptMode = effective == SendMode.steer ? PromptMode.steer : PromptMode.queue;
       final notice = await _deliver(
         operation,
         body,
@@ -1405,7 +1391,7 @@ class ChatController extends Notifier<ChatState> {
 
       // Delivered: sent, even if the watch moved on meanwhile (its echo comes on the new one).
       if (!_currentOperation(operation)) return true;
-      state = state.copyWith(error: stopFailed, notice: notice);
+      state = state.copyWith(notice: notice);
       return true;
     } catch (e) {
       // The echo or durable inbox/claim/end feedback proves acceptance (also when a preparation
@@ -1688,16 +1674,17 @@ class ChatController extends Notifier<ChatState> {
     return _putBack(operation, [last]);
   }
 
-  /// 「立即发送」: stops the running turn so [prompt] goes right away, in its
-  /// place among what else waits (「发送」 does the same for a prompt left
-  /// waiting with no turn running). It is taken out of the inbox first: gone
-  /// already means the agent has read it, and nothing is stopped. After the
-  /// stop it goes back, which starts the next turn, and prompts queued
-  /// behind it go back after it, or they would overtake it. Resolves to what
-  /// could not be put back (the screen returns it to the composer).
+  /// 「立即发送」 steers the existing inbox occurrence while a turn runs.
+  /// Removing and resubmitting its request id would be deduplicated by DSH.
+  /// When idle, requeues the selected prompt and those behind it in order.
+  /// Resolves to what could not be put back (returned to the composer).
   Future<List<PendingPrompt>> sendNow(PendingPrompt prompt) async {
     final client = _client;
     if (client == null || !_canControl || prompt.isAutomatic || prompt.inboxId == null || !prompt.resendable) {
+      return const [];
+    }
+    if (state.running) {
+      await steerQueued(prompt);
       return const [];
     }
     final operation = _ChatOperation(ref, client, _syncScope);
