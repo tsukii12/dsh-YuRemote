@@ -9,6 +9,11 @@ versions are the plugin's own, not dsh's.
   the chat header. dsh 0.2.2 no longer sends the roster in `agentTeam` (the
   members are the Lead's subagents), so the app read an empty team and hid the
   subagents too; with team mode off the header shows the subagents again.
+- Remote access settings now match the YuRemote app's light mist-blue style,
+  with rounded cards, capsule tabs and buttons, clearer connection guidance,
+  and a live status in the header. All settings remain available on desktop
+  and phones; tabs support arrow keys, Home and End, and the first-run password
+  shortcut now works from every tab.
 - YuRemote (鱼鱼远程): rebranded the plugin and relay. The installers migrate
   existing state and keep the old relay installation available for rollback.
   Native app login, pairing, tunnel URLs and the wire protocol are unchanged.
@@ -1206,8 +1211,6 @@ real sockets.
 Initial version: authenticated gateway (HTTP + WebSocket reverse proxy), password
 / one-time QR pairing / device registry / lockout, dsh browser-cookie minting,
 login wall, Settings panel, mobile presentation layer, install script, 51 tests.
-
-
 
 
 
