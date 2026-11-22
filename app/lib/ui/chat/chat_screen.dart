@@ -1122,14 +1122,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> with WidgetsBindingObse
     ref.read(remoteConnectionProvider(host).notifier).retry();
   }
 
-  void _onSuggestion(ChatSuggestion suggestion) {
-    _input.value = TextEditingValue(
-      text: suggestion.prompt,
-      selection: TextSelection.collapsed(offset: suggestion.prompt.length),
-    );
-    _focus.requestFocus();
-  }
-
   Future<void> _showModelSheet() {
     final sessionId = ref.read(currentSessionProvider);
     final selection = sessionId == null ? ref.read(pendingModelProvider) : ref.read(chatProvider(sessionId)).model;
@@ -1359,9 +1351,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> with WidgetsBindingObse
                               children: [
                                 ChatEmptyState(
                                   connected: connected,
-                                  suggestions: ref.watch(settingsProvider.select((s) => s.chatSuggestions))
-                                      ? defaultSuggestions
-                                      : const [],
                                   connecting: connAsync.isLoading,
                                   starting: starting,
                                   tidying: tidying,
@@ -1369,7 +1358,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> with WidgetsBindingObse
                                   onReconnect: connAsync.hasError && !connAsync.isLoading && !failureCard
                                       ? _reconnect
                                       : null,
-                                  onSuggestion: _onSuggestion,
                                   options: NewChatOptions(
                                     folderLabel: !hasFolders
                                         ? null
@@ -1864,7 +1852,7 @@ class _HeaderAside extends StatelessWidget {
   }
 }
 
-enum _Slot { body, pluginOverlay, veil, header, palette, composer }
+enum _Slot { body, veil, header, palette, composer }
 
 /// 整页布局:先排输入条区域,挂在它上沿的东西(列表的下沿、底色遮罩、
 /// 斜杠面板)在同一次布局里跟上。
@@ -1900,11 +1888,8 @@ class _ChatLayout extends MultiChildLayoutDelegate {
     positionChild(_Slot.body, Offset.zero);
     layoutChild(_Slot.veil, BoxConstraints.tight(size));
     positionChild(_Slot.veil, Offset.zero);
-    final header = layoutChild(_Slot.header, along);
+    layoutChild(_Slot.header, along);
     positionChild(_Slot.header, Offset.zero);
-    // Web content cannot paint or receive touches on native navigation/input.
-    layoutChild(_Slot.pluginOverlay, BoxConstraints.tight(Size(width, math.max(0, top - header.height))));
-    positionChild(_Slot.pluginOverlay, Offset(0, header.height));
 
     final paletteWidth = math.max(0.0, width - 2 * _side);
     final palette = layoutChild(_Slot.palette, BoxConstraints(minWidth: paletteWidth, maxWidth: paletteWidth));

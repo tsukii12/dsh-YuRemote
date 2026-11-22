@@ -72,6 +72,15 @@ window.__ModuleLoader__.load({
         subtitle: "从其他设备访问此 dsh。需要访问密码或一次性配对码。",
         navLabel: "远程访问",
         navTitle: "打开远程访问设置",
+        pageSubtitle: "让 dsh 随你而行，安全连接你的每一台设备。",
+        basicIntro: "连接准备",
+        basicNote: "开启服务、设置密码，让其他设备安全访问这台电脑。",
+        lanIntro: "同一网络，轻松连接",
+        lanNote: "让手机与电脑连接同一 Wi-Fi，再扫码配对或复制地址。",
+        publicIntro: "不在身边，也能连接",
+        publicNote: "连接中继服务器，在外也能访问这台电脑。",
+        devicesIntro: "管理你的连接",
+        devicesNote: "查看已授权的设备，随时撤销不再使用的访问权限。",
         close: "关闭",
         pillRunning: "运行中",
         pillStopped: "已停止",
@@ -215,6 +224,15 @@ window.__ModuleLoader__.load({
         subtitle: "Open this same dsh Web GUI from a phone or another computer. The portal listens on the LAN and requires a password or a scanned pairing code.",
         navLabel: "Remote access",
         navTitle: "Open remote access settings",
+        pageSubtitle: "Take dsh with you. Connect your devices securely.",
+        basicIntro: "Ready to connect",
+        basicNote: "Enable the service and set a password for secure access to this computer.",
+        lanIntro: "Same network. Simple connection.",
+        lanNote: "Connect your phone to the same Wi-Fi, then scan to pair or copy the address.",
+        publicIntro: "Stay connected, wherever you are",
+        publicNote: "Connect a relay server to reach this computer when you are away.",
+        devicesIntro: "Your connected devices",
+        devicesNote: "Review authorized devices and revoke access whenever you need to.",
         close: "Close",
         pillRunning: "Running",
         pillStopped: "Stopped",
@@ -409,7 +427,10 @@ window.__ModuleLoader__.load({
       alert: ["M12 8.2v5.1", "M12 16.6h.01", "M10.4 3.9 2.7 17.3a1.9 1.9 0 0 0 1.6 2.9h15.4a1.9 1.9 0 0 0 1.6-2.9L13.6 3.9a1.9 1.9 0 0 0-3.2 0Z"],
       refresh: ["M20 12a8 8 0 1 1-2.3-5.7", "M20 4.2v5.4h-5.4"],
       close: ["M6.5 6.5 17.5 17.5", "M17.5 6.5 6.5 17.5"],
-      portal: ["M12 10.6a1.4 1.4 0 1 1 0 2.8 1.4 1.4 0 0 1 0-2.8Z", "M8.9 15.6a4.9 4.9 0 0 1 0-7.2", "M15.1 8.4a4.9 4.9 0 0 1 0 7.2", "M6.2 18.2a9 9 0 0 1 0-12.4", "M17.8 5.8a9 9 0 0 1 0 12.4"]
+      portal: ["M12 10.6a1.4 1.4 0 1 1 0 2.8 1.4 1.4 0 0 1 0-2.8Z", "M8.9 15.6a4.9 4.9 0 0 1 0-7.2", "M15.1 8.4a4.9 4.9 0 0 1 0 7.2", "M6.2 18.2a9 9 0 0 1 0-12.4", "M17.8 5.8a9 9 0 0 1 0 12.4"],
+      settings: ["M4 7h16", "M4 17h16", "M8 4v6", "M16 14v6"],
+      globe: ["M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z", "M3 12h18", "M12 3a18 18 0 0 1 0 18 18 18 0 0 1 0-18Z"],
+      devices: ["M4 4h13v10H4z", "M7 18h5", "M9.5 14v4", "M16 10h5v10h-5z"]
     };
 
     function Icon(props) {
@@ -699,45 +720,55 @@ window.__ModuleLoader__.load({
   ".yuremote-form .yuremote-check{flex:1 1 100%}",
   "@media (max-width:720px){.yuremote-form-grid{grid-template-columns:minmax(0,1fr)}}",
   "@media (max-width:560px){.yuremote-form-row .yuremote-field,.yuremote-form-row .yuremote-field-sm{flex:1 1 100%}.yuremote-form-row .yuremote-btn-inline{width:100%}}",
-  ".yuremote-page{height:100%;overflow-y:auto;overscroll-behavior:contain;padding:0 48px 48px}",
-      ".yuremote-page .yuremote-tabbar{margin:0 0 6px;border-bottom:0.5px solid var(--yuremote-line)}",
-  ".yuremote-page .yuremote-tab{padding:14px 0 12px;margin-right:32px;font-size:14px;letter-spacing:0.01em}",
-  ".yuremote-page .yuremote-stack{gap:0}",
-  ".yuremote-page .yuremote-qr-note{flex:0 0 auto;text-align:left;margin:0}",
-  ".yuremote-page .yuremote-qr-actions{max-width:none;margin:0;justify-content:flex-start}",
-  ".yuremote-page .yuremote-lan{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 44px;align-items:start}",
-  "@media (max-width:1080px){.yuremote-page .yuremote-lan{grid-template-columns:minmax(0,1fr);gap:0}}",
-  "@media (max-width:560px){.yuremote-page .yuremote-tabbar{margin:0}.yuremote-page .yuremote-tab{padding:12px 8px;margin-right:0;font-size:13.5px;flex:1 0 auto;justify-content:center}}",
-  ".yuremote-page-inner{width:100%;max-width:960px;margin:0}",
-      /* The host page header: 20px/500 title, 16px supporting line. */
-      ".yuremote-page-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:28px 0 20px}",
-      ".yuremote-page-title{margin:0;font-size:20px;font-weight:500;line-height:28px;letter-spacing:0}",
-      ".yuremote-page-sub{margin:6px 0 0;font-size:16px;line-height:24px;color:var(--yuremote-fg2)}",
-      /* Groups, not cards: the host uses a divider and a group label. */
-      ".yuremote-page .yuremote-card{background:transparent;border:0;border-top:0.5px solid var(--yuremote-line);border-radius:0;padding:20px 0}",
-      ".yuremote-page .yuremote-card:first-of-type{border-top:0}",
-  ".yuremote-page .yuremote-lan > .yuremote-card{border-top:0}",
-      ".yuremote-page .yuremote-card-head{margin:0 0 14px}",
-      ".yuremote-page .yuremote-card-title{font-size:15px;font-weight:600;line-height:22px;letter-spacing:0}",
-      ".yuremote-page .yuremote-label{font-size:13.5px;color:var(--yuremote-fg2);font-weight:400}",
-      ".yuremote-page .yuremote-hint{font-size:13px;line-height:20px;color:var(--yuremote-fg3)}",
-      ".yuremote-page .yuremote-input{height:36px;font-size:14px;border-radius:7px}",
-      ".yuremote-page .yuremote-btn{height:36px;font-size:13.5px;border-radius:7px;padding:0 16px}",
-      ".yuremote-page .yuremote-btn-sm{height:28px;font-size:12.5px}",
-      ".yuremote-page .yuremote-url-box{height:36px;font-size:13px;border-radius:7px}",
-      ".yuremote-page .yuremote-card-head{margin:0 0 12px;align-items:center}",
-      ".yuremote-page .yuremote-card{padding:24px 0}",
-  ".yuremote-page .yuremote-toggle-row{margin:14px 0 18px}",
-  ".yuremote-page .yuremote-card-note{margin:0 0 14px}",
-      ".yuremote-page .yuremote-chip{height:22px;font-size:11.5px;padding:0 8px}",
-      ".yuremote-page .yuremote-sub{font-size:15px;line-height:23px;color:var(--yuremote-fg2);max-width:none}",
-      /* Two columns when the page is wide enough, one when it is not — the same
-         behaviour the host's own pages have. */
-      ".yuremote-page .yuremote-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 44px;align-items:start}",
+      // App light palette: mistTop → mistBottom, 20px cards and capsule actions.
+      // Deliberately local to this page: dsh's theme and the picker stay untouched.
+      ".yuremote-page{height:100%;overflow-y:auto;overscroll-behavior:contain;padding:40px 40px 56px;background:radial-gradient(ellipse at 95% 0,rgba(128,166,255,.13),transparent 55%),linear-gradient(180deg,#ebf1fe,#f6f7fc);color-scheme:light}",
+      ".yuremote-page .yuremote-root{--yuremote-fg:#202632;--yuremote-fg2:#4f5562;--yuremote-fg3:#646974;--yuremote-line:#dce0e8;--yuremote-card:rgba(255,255,255,.88);--yuremote-soft:#f6f9fe;--yuremote-link:#4263db;--yuremote-accent:#4d6bfe;--yuremote-btn:#4d6bfe;--yuremote-btn-fg:#fff;--yuremote-ok:#18744c;--yuremote-err:#ba2636;gap:24px;max-width:none;color:var(--yuremote-fg);font-size:14px}",
+      ".yuremote-page-inner{width:100%;max-width:1000px;margin:0 auto}",
+      ".yuremote-page-head{display:flex;align-items:center;gap:16px;flex-wrap:wrap}",
+      ".yuremote-page-brand{width:56px;height:56px;display:grid;place-items:center;background:rgba(255,255,255,.8);border:1px solid #fff;border-radius:20px;box-shadow:0 4px 18px rgba(11,21,45,.05);flex:none}",
+      ".yuremote-page-heading{flex:1 1 200px;min-width:0}",
+      ".yuremote-page-title{margin:0;font-size:26px;font-weight:650;line-height:1.3;letter-spacing:-.03em}",
+      ".yuremote-page-eyebrow{color:var(--yuremote-fg2);font-size:12px;letter-spacing:.08em;margin-bottom:3px}",
+      ".yuremote-page .yuremote-page-sub{margin:8px 0 0;color:var(--yuremote-fg2);font-size:14px;line-height:1.6}",
+      ".yuremote-page .yuremote-head{gap:16px}",
+      ".yuremote-page .yuremote-pill{height:30px;background:rgba(255,255,255,.75);padding:0 12px}",
+      ".yuremote-page .yuremote-tabbar{align-items:stretch;gap:4px;padding:5px;margin:0;border:1px solid rgba(255,255,255,.9);border-radius:999px;background:rgba(255,255,255,.52)}",
+      ".yuremote-page .yuremote-tab{flex:1 0 auto;justify-content:center;gap:8px;margin:0;padding:11px 16px;border:0;border-radius:999px;font-size:14px;color:var(--yuremote-fg2)}",
+      ".yuremote-page .yuremote-tab:hover{background:rgba(255,255,255,.7);color:var(--yuremote-fg)}",
+      ".yuremote-page .yuremote-tab-on{background:#fff;color:var(--yuremote-link);font-weight:600;box-shadow:0 2px 8px rgba(11,21,45,.06)}",
+      ".yuremote-pane-intro{margin:0 4px 20px}",
+      ".yuremote-page .yuremote-pane-title{font-size:18px;font-weight:600;margin:0 0 5px;letter-spacing:-.02em}",
+      ".yuremote-page .yuremote-pane-note{font-size:13px;color:var(--yuremote-fg2);line-height:1.6}",
+      ".yuremote-page .yuremote-stack,.yuremote-page .yuremote-lan{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:20px;align-items:start}",
+      ".yuremote-page .yuremote-card{background:var(--yuremote-card);border:1px solid rgba(255,255,255,.95);border-radius:20px;padding:24px;box-shadow:0 5px 24px rgba(11,21,45,.035)}",
+      ".yuremote-page .yuremote-card-head{margin:0 0 18px;align-items:center}",
+      ".yuremote-page .yuremote-card-title{font-size:15px;font-weight:600;line-height:22px}",
+      ".yuremote-page .yuremote-label{font-size:13px;color:var(--yuremote-fg2);font-weight:500}",
+      ".yuremote-page .yuremote-card-note{font-size:13px;line-height:1.65;margin:0 0 16px;color:var(--yuremote-fg2)}",
+      ".yuremote-page .yuremote-hint{font-size:12px;line-height:1.7;margin-top:12px}",
+      ".yuremote-page .yuremote-input{height:44px;font-size:14px;border-radius:14px;background:var(--yuremote-soft);border-color:#a2a8b4;padding:0 12px}",
+      ".yuremote-page .yuremote-btn{height:44px;font-size:13px;border-radius:999px;padding:0 18px}",
+      ".yuremote-page .yuremote-btn-ghost{background:#fff;border-color:var(--yuremote-line);color:var(--yuremote-fg2)}",
+      ".yuremote-page .yuremote-btn-sm{height:36px;font-size:12px;padding:0 14px}",
+      ".yuremote-page .yuremote-pw-eye{top:5px;right:5px;height:34px;border-radius:10px;color:var(--yuremote-fg2)}",
+      ".yuremote-page .yuremote-url-box{height:44px;font-size:13px;border-radius:14px;background:var(--yuremote-soft)}",
+      ".yuremote-page .yuremote-toggle-row{margin:0 0 22px;padding:0 0 20px;border-bottom:1px solid var(--yuremote-line)}",
+      ".yuremote-page .yuremote-switch-knob{background:#fff}",
+      ".yuremote-page .yuremote-chip{height:26px;font-size:11.5px;padding:0 10px;background:var(--yuremote-soft)}",
+      ".yuremote-page .yuremote-sub{font-size:13px;line-height:1.6;max-width:none}",
+      ".yuremote-page .yuremote-form-row{gap:12px}",
+      ".yuremote-page .yuremote-form-row .yuremote-field{flex-basis:160px}",
+      ".yuremote-page .yuremote-form-row .yuremote-field-sm{flex-basis:88px}",
+      ".yuremote-page .yuremote-qr{gap:18px}",
+      ".yuremote-page .yuremote-qr-note{font-size:13px;line-height:1.65;flex:0 0 auto;min-width:0;max-width:none;margin:0}",
+      ".yuremote-page .yuremote-qr-actions{max-width:none;margin:18px 0 0}",
+      ".yuremote-page .yuremote-empty{padding:24px 0;line-height:1.7}",
+      ".yuremote-page .yuremote-dev{padding:16px 0}",
       ".yuremote-span-2{grid-column:1/-1}",
-      "@media (max-width:1080px){.yuremote-page .yuremote-grid{grid-template-columns:minmax(0,1fr);gap:0}}",
-      ".yuremote-page .yuremote-head{padding:0 0 8px}",
-      ".yuremote-page .yuremote-head-top{justify-content:flex-end}",
+      "@container (max-width:760px){.yuremote-page .yuremote-stack,.yuremote-page .yuremote-lan{grid-template-columns:minmax(0,1fr)}}",
+      "@media (max-width:1080px){.yuremote-page .yuremote-stack,.yuremote-page .yuremote-lan{grid-template-columns:minmax(0,1fr)}}",
+      "@media (max-width:560px){.yuremote-page .yuremote-root{gap:20px}.yuremote-page .yuremote-card{padding:20px}.yuremote-page .yuremote-tab{padding:12px 6px;font-size:12.5px;gap:6px}.yuremote-page .yuremote-tab .yuremote-ico{display:none}.yuremote-page-title{font-size:23px}.yuremote-page-brand{width:48px;height:48px;border-radius:16px}.yuremote-page .yuremote-input{font-size:16px}}",
       /* Connection row: address left, pairing right, equal height. A flex column
          per card lets the buttons sit on the baseline instead of leaving a gap. */
       /* Two strips, not two columns: the address on its own line, then the pairing
@@ -753,7 +784,7 @@ window.__ModuleLoader__.load({
       ".yuremote-connect .yuremote-qr-actions{flex:0 0 auto;flex-direction:row;gap:8px;margin:0;max-width:none}",
       ".yuremote-connect .yuremote-qr-actions .yuremote-btn{height:32px;padding:0 12px;font-size:12.5px;flex:0 0 auto;white-space:nowrap}",
       "@media (max-width:760px){.yuremote-connect .yuremote-qr-note{flex:1 1 100%}}",
-      "@media (max-width:900px){.yuremote-page{padding:0 20px 32px}.yuremote-page-head{padding:18px 0 14px}}",
+      "@media (max-width:900px){.yuremote-page{padding:24px 16px 40px}}",
       /* directory picker */
       ".yuremote-picker-body{display:flex;flex-direction:column;min-height:0;overflow:hidden}",
       ".yuremote-picker{flex:1 1 auto;min-height:0;width:100%;max-width:880px;margin:0 auto;display:flex;flex-direction:column;gap:10px}",
@@ -1989,10 +2020,10 @@ window.__ModuleLoader__.load({
       // thing people came for (the address, or the relay state) was somewhere in
       // the middle of a long page.
       var tabItems = [
-        { id: "basic", label: t("tabBasic") },
-        { id: "lan", label: t("tabLan") },
-        { id: "public", label: t("tabPublic") },
-        { id: "devices", label: t("tabDevices") }
+        { id: "basic", label: t("tabBasic"), icon: "settings" },
+        { id: "lan", label: t("tabLan"), icon: "portal" },
+        { id: "public", label: t("tabPublic"), icon: "globe" },
+        { id: "devices", label: t("tabDevices"), icon: "devices" }
       ];
       var activeTab = st.tab || "basic";
       var tabBar = h("div", { className: "yuremote-tabbar", role: "tablist", "aria-label": t("section") },
@@ -2006,14 +2037,26 @@ window.__ModuleLoader__.load({
             className: "yuremote-tab" + (on ? " yuremote-tab-on" : ""),
             "aria-selected": on ? "true" : "false",
             "aria-controls": "yuremote-pane-" + item.id,
+            tabIndex: on ? 0 : -1,
+            onKeyDown: function (e) {
+              var keys = ["ArrowLeft", "ArrowRight", "Home", "End"];
+              if (keys.indexOf(e.key) < 0) return;
+              e.preventDefault();
+              var index = tabItems.indexOf(item);
+              var next = e.key === "Home" ? 0 : e.key === "End" ? tabItems.length - 1
+                : (index + (e.key === "ArrowRight" ? 1 : -1) + tabItems.length) % tabItems.length;
+              var button = e.currentTarget.parentNode.querySelectorAll('[role="tab"]')[next];
+              button.focus();
+              button.click();
+            },
             onClick: function (e) {
               patch({ tab: item.id });
               // With large text the bar scrolls sideways; keep the chosen tab in view.
               try { e.currentTarget.scrollIntoView({ block: "nearest", inline: "nearest" }); } catch (e1) { /* ignore */ }
             }
           },
-            h("span", null, item.label),
-            null);
+            h(Icon, { name: item.icon, size: 17 }),
+            h("span", null, item.label));
         }));
 
       var pane =
@@ -2037,7 +2080,14 @@ window.__ModuleLoader__.load({
         // the sidebar entry unstyled whenever the panel was closed — the entry
         // lives outside this subtree, so it saw no rules at all until a panel
         // happened to mount (which is exactly what shipped in the first build).
-        h("div", { className: "yuremote-head" },
+        isPage ? h("header", { className: "yuremote-head" },
+          h("div", { className: "yuremote-page-head" },
+            h("div", { className: "yuremote-page-brand" }, h(BrandIcon, { size: 36 })),
+            h("div", { className: "yuremote-page-heading" },
+              h("div", { className: "yuremote-page-eyebrow" }, "YuRemote"),
+              h("h1", { className: "yuremote-page-title" }, t("navLabel"))),
+            h(StatusPill, { tone: tone })),
+          h("p", { className: "yuremote-page-sub" }, t("pageSubtitle"))) : h("div", { className: "yuremote-head" },
           // Title and status share a row (status right-aligned); the subtitle
           // owns the full width underneath, so a long sentence never pushes the
           // pill onto a line of its own on a phone.
@@ -2067,18 +2117,25 @@ window.__ModuleLoader__.load({
                 type: "button",
                 className: "yuremote-btn",
                 onClick: function () {
-                  try {
-                    var el = document.getElementById("yuremote-pw-input");
-                    if (!el) return;
-                    el.scrollIntoView({ block: "center", behavior: "smooth" });
-                    el.focus({ preventScroll: true });
-                  } catch (e) { /* ignore */ }
+                  patch({ tab: "basic" });
+                  // The password field may be unmounted on another tab.
+                  setTimeout(function () {
+                    try {
+                      var el = document.getElementById("yuremote-pw-input");
+                      if (!el) return;
+                      el.scrollIntoView({ block: "center", behavior: "smooth" });
+                      el.focus({ preventScroll: true });
+                    } catch (e) { /* ignore */ }
+                  }, 0);
                 }
               }, t("firstRunCta")))
           : null,
 
         tabBar,
-        h("div", { className: "yuremote-pane", role: "tabpanel", id: "yuremote-pane-" + activeTab, "aria-labelledby": "yuremote-tab-" + activeTab },
+        h("div", { className: "yuremote-pane", role: "tabpanel", tabIndex: 0, id: "yuremote-pane-" + activeTab, "aria-labelledby": "yuremote-tab-" + activeTab },
+          isPage ? h("div", { className: "yuremote-pane-intro" },
+            h("h2", { className: "yuremote-pane-title" }, t(activeTab + "Intro")),
+            h("p", { className: "yuremote-pane-note" }, t(activeTab + "Note"))) : null,
           pane));
     }
 
@@ -2549,8 +2606,6 @@ window.__ModuleLoader__.load({
             return ctx.slots.register({ name: "main", key: PANEL_ID }, function PanelPage() {
               return h("div", { className: "yuremote-ui yuremote-page" },
                 h("div", { className: "yuremote-page-inner" },
-                  h("header", { className: "yuremote-page-head" },
-                    h("h1", { className: "yuremote-page-title" }, t("navLabel"))),
                   h(RemotePortalSection, { page: true })));
             });
           });
@@ -2595,10 +2650,6 @@ window.__ModuleLoader__.load({
     return { inject: ["slots"], apply: apply };
   }
 });
-
-
-
-
 
 
 

@@ -26,16 +26,10 @@ Future<void> copyMessage(BuildContext context, String text, {bool toast = true})
   }
 }
 
-/// Quiet icons under the last reply of a turn: copy, share ([onShare], the
-/// share panel), 「朗读」 ([onReadAloud]), branch ([onBranch]), 「重新回答」 ([onRegenerate], the
-/// conversation's last reply only) and ⋯ ([onMore]), which opens the same
-/// menu as a long-press (select, quote…). [trailing] (the turn footnote)
-/// sits at the row's right end.
 class ReplyActionRow extends StatefulWidget {
   const ReplyActionRow({
     super.key,
     required this.text,
-    this.onShare,
 
     this.onBranch,
     this.branching = false,
@@ -47,9 +41,6 @@ class ReplyActionRow extends StatefulWidget {
 
   /// What 「复制」 copies, worked out when it is tapped.
   final String Function() text;
-
-  /// 「分享」: the share panel for this reply.
-  final VoidCallback? onShare;
 
   final VoidCallback? onBranch;
 
@@ -125,7 +116,6 @@ class _ReplyActionRowState extends State<ReplyActionRow> {
             : Icon(action.icon, key: ValueKey(action.name)),
       ),
     );
-    final onShare = widget.onShare;
     final onBranch = widget.onBranch;
 
     final onRegenerate = widget.onRegenerate;
@@ -143,17 +133,6 @@ class _ReplyActionRowState extends State<ReplyActionRow> {
                 : Icon(_copied ? AppIcons.done : AppIcons.copy, key: ValueKey(_copied)),
           ),
         ),
-        if (onShare != null)
-          IconButton(
-            key: const ValueKey('reply-share'),
-            tooltip: l10n.commonShare,
-            onPressed: () {
-              HapticFeedback.lightImpact();
-              onShare();
-            },
-            style: style,
-            icon: const Icon(AppIcons.share),
-          ),
 
         if (onBranch != null) busyKey(MessageAction.branch, onBranch, widget.branching),
         if (onRegenerate != null) busyKey(MessageAction.regenerate, onRegenerate, widget.regenerating),

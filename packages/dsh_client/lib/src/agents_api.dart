@@ -52,7 +52,7 @@ enum SubagentMode {
 
 /// One direct child in a parent's `subagentCatalog` projection.
 class SubagentCatalogEntry {
-  const SubagentCatalogEntry({required this.id, required this.mode, this.label, this.createdAt});
+  const SubagentCatalogEntry({required this.id, required this.mode, this.label, this.name, this.createdAt});
 
   static SubagentCatalogEntry? fromJson(Object? json) {
     final map = asMap(json);
@@ -63,6 +63,7 @@ class SubagentCatalogEntry {
       id: id,
       mode: SubagentMode.parse(map['mode']),
       label: label == null || label.isEmpty ? null : label,
+      name: asString(map['name']),
       createdAt: asEpochMs(map['createdAt']),
     );
   }
@@ -78,6 +79,9 @@ class SubagentCatalogEntry {
 
   /// Durable creation label (the `description` the parent gave the task).
   final String? label;
+
+  /// The child's permanent agent name (`reviewer`), for named children.
+  final String? name;
   final DateTime? createdAt;
 }
 
@@ -329,7 +333,14 @@ extension SubagentsApi on DshClient {
 
 /// One roster row of the `agentTeam` projection.
 class TeamMember {
-  const TeamMember({required this.id, required this.name, required this.lead, required this.phase, this.error});
+  const TeamMember({
+    required this.id,
+    required this.name,
+    required this.lead,
+    required this.phase,
+    this.error,
+    this.mode = SubagentMode.continuable,
+  });
 
   static TeamMember? fromJson(Object? json) {
     final map = asMap(json);
@@ -355,6 +366,9 @@ class TeamMember {
   /// comes from the member Session's status.
   final String phase;
   final String? error;
+
+  /// How a teammate's conversation is routed under the Lead.
+  final SubagentMode mode;
 }
 
 /// One shared task (`TeamTaskView`).
@@ -413,12 +427,13 @@ class TeamTask {
 
 /// The `agentTeam` projection of a Lead Session.
 class TeamSnapshot {
-  const TeamSnapshot({this.members = const [], this.tasks = const [], this.failure});
+  const TeamSnapshot({this.members = const [], this.tasks = const [], this.failure, this.enabled = true});
 
   static TeamSnapshot? fromJson(Object? json) {
     final map = asMap(json);
     if (map == null) return null;
     return TeamSnapshot(
+      enabled: map['enabled'] != false,
       members: [for (final m in asListOrEmpty(map['members'])) ?TeamMember.fromJson(m)],
       tasks: [for (final t in asListOrEmpty(map['tasks'])) ?TeamTask.fromJson(t)],
       failure: asString(map['failure']),
@@ -427,8 +442,17 @@ class TeamSnapshot {
 
   static const empty = TeamSnapshot();
 
+  /// Team mode is on for the Lead. dsh 0.2.2+ projects the Agent Teams
+  /// bundle as `{enabled, tasks}` even while the mode is off.
+  final bool enabled;
+
+  /// The roster. dsh 0.2.2+ no longer projects it (members are the Lead's
+  /// `subagentCatalog` children); older hosts sent `members`.
   final List<TeamMember> members;
   final List<TeamTask> tasks;
+
+  TeamSnapshot withMembers(List<TeamMember> members) =>
+      TeamSnapshot(members: members, tasks: tasks, failure: failure, enabled: enabled);
 
   /// The first rejected persisted Team record; members and tasks then stay at
   /// the last valid state.
