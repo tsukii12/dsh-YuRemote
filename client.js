@@ -761,14 +761,14 @@ window.__ModuleLoader__.load({
       ".yuremote-page .yuremote-form-row .yuremote-field{flex-basis:160px}",
       ".yuremote-page .yuremote-form-row .yuremote-field-sm{flex-basis:88px}",
       ".yuremote-page .yuremote-qr{gap:18px}",
-      ".yuremote-page .yuremote-qr-note{font-size:13px;line-height:1.65;flex:1 1 160px;min-width:0}",
+      ".yuremote-page .yuremote-qr-note{font-size:13px;line-height:1.65;flex:0 0 auto;min-width:0;max-width:none;margin:0}",
       ".yuremote-page .yuremote-qr-actions{max-width:none;margin:18px 0 0}",
       ".yuremote-page .yuremote-empty{padding:24px 0;line-height:1.7}",
       ".yuremote-page .yuremote-dev{padding:16px 0}",
       ".yuremote-span-2{grid-column:1/-1}",
       "@container (max-width:760px){.yuremote-page .yuremote-stack,.yuremote-page .yuremote-lan{grid-template-columns:minmax(0,1fr)}}",
       "@media (max-width:1080px){.yuremote-page .yuremote-stack,.yuremote-page .yuremote-lan{grid-template-columns:minmax(0,1fr)}}",
-      "@media (max-width:560px){.yuremote-page .yuremote-root{gap:20px}.yuremote-page .yuremote-card{padding:20px}.yuremote-page .yuremote-tab{padding:10px 12px;font-size:13px;gap:6px}.yuremote-page .yuremote-tab .yuremote-ico{display:none}.yuremote-page-title{font-size:23px}.yuremote-page-brand{width:48px;height:48px;border-radius:16px}.yuremote-page .yuremote-input{font-size:16px}}",
+      "@media (max-width:560px){.yuremote-page .yuremote-root{gap:20px}.yuremote-page .yuremote-card{padding:20px}.yuremote-page .yuremote-tab{padding:12px 6px;font-size:12.5px;gap:6px}.yuremote-page .yuremote-tab .yuremote-ico{display:none}.yuremote-page-title{font-size:23px}.yuremote-page-brand{width:48px;height:48px;border-radius:16px}.yuremote-page .yuremote-input{font-size:16px}}",
       /* Connection row: address left, pairing right, equal height. A flex column
          per card lets the buttons sit on the baseline instead of leaving a gap. */
       /* Two strips, not two columns: the address on its own line, then the pairing
@@ -2650,7 +2650,6 @@ window.__ModuleLoader__.load({
     return { inject: ["slots"], apply: apply };
   }
 });
-
 
 
 
