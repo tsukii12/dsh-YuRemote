@@ -5,6 +5,10 @@ versions are the plugin's own, not dsh's.
 
 ## Unreleased
 
+- App agent team: teammates created on the host now show in the team page and
+  the chat header. dsh 0.2.2 no longer sends the roster in `agentTeam` (the
+  members are the Lead's subagents), so the app read an empty team and hid the
+  subagents too; with team mode off the header shows the subagents again.
 - YuRemote (鱼鱼远程): rebranded the plugin and relay. The installers migrate
   existing state and keep the old relay installation available for rollback.
   Native app login, pairing, tunnel URLs and the wire protocol are unchanged.
