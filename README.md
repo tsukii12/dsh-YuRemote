@@ -20,4 +20,4 @@
 
 [文档目录](docs/README.md#简体中文) · [公网访问](docs/DEPLOY-SERVER.zh-CN.md) · [下载](https://github.com/tsukii12/dsh-YuRemote/releases) · [更新日志](CHANGELOG.md) · [安全政策](SECURITY.md)
 
-网页插件和中转服务采用 [MIT](LICENSE) 许可。[Flutter 应用](app/) 基于 dsh-Go v1.2.0，采用 [AGPL-3.0](app/LICENSE) 许可。鱼鱼远程不是 DeepSeek 官方产品。
+**服务端/插件/中继：[MIT](LICENSE)；移动 App（`app/` 与 `packages/` 中源自 dsh-Go 的代码）：[AGPL-3.0](app/LICENSE)。** 独立的 `dsh_portal` 适配器也采用 AGPL-3.0，见[软件包声明](packages/NOTICE)。网页远程端和安装脚本采用 MIT。鱼鱼远程不是 DeepSeek 官方产品。

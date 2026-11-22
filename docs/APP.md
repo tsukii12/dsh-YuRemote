@@ -4,9 +4,9 @@
 
 YuRemote is a remote-only Flutter port of dsh-Go v1.2.0. The app works with the YuRemote gateway, not with SSH or a plain dsh Web URL. It does not run dsh locally or embed its website. Open and continue chats, stream responses, handle approvals and questions, and browse workspaces or attach files when the host supports those operations.
 
-<img src="screenshots/app-home-chat.png" alt="iOS chat view with private conversation content masked" width="220"> <img src="screenshots/app-sidebar.png" alt="iOS sidebar with conversation search and filters" width="220"> <img src="screenshots/app-folder-picker.png" alt="iOS remote folder picker with private paths and names masked" width="220">
+<img src="screenshots/app-home-chat.png" alt="iOS chat on the Studio Mac demo host" width="220"> <img src="screenshots/app-sidebar.png" alt="iOS sidebar with demo conversations, search and filters" width="220"> <img src="screenshots/app-folder-picker.png" alt="iOS remote folder picker in the demo workspace" width="220">
 
-<img src="screenshots/app-agent-team.png" alt="Agent team members, tasks and messages in the iOS app" width="220"> <img src="screenshots/app-settings-about.png" alt="The iOS app's About page with license and upstream credits" width="220">
+<img src="screenshots/app-settings-about.png" alt="The iOS app's About page with license and upstream credits" width="220">
 
 ## Install
 
@@ -23,6 +23,8 @@ From the [v0.7.0 release](https://github.com/tsukii12/dsh-YuRemote/releases/tag/
 
 Denying camera permission does not prevent password login. If the app connects but an action is unavailable, check the host version and whether that host provides the RPC or file capability in question.
 
+When agent-team mode is enabled for the conversation on the host, open **Agent team** to see members, tasks and messages. Tap an available member to open its conversation. On dsh 0.2.2, the app can show the team lead’s available subagents even when the host does not send a separate member list.
+
 ## Build from source
 
 From an [installed checkout](GETTING-STARTED.md#install-on-the-host), use Flutter 3.47.7 (the CI version) and the Android SDK or Xcode. The package requires Dart ^3.13.4. On macOS, install the iOS toolchain for iOS builds.
@@ -37,4 +39,8 @@ flutter build ipa --release --no-codesign
 
 For a development install on a connected device, use `flutter run` after selecting the target and configuring any required signing. See [development and testing](TESTING.md) for the active app checks.
 
-The app is [AGPL-3.0](../app/LICENSE), based on [dsh-Go v1.2.0](https://github.com/ccch1mneyyy/dsh-Go/releases/tag/v1.2.0). See the [third-party notices](../app/THIRD_PARTY_NOTICES.md) and **About → Licenses** in the app.
+## License and credits
+
+The server, plugin, relay, installers and web remote remain [MIT](../LICENSE). The app and its accompanying Dart packages are [AGPL-3.0](../app/LICENSE), except where the notices indicate separate terms. The app is based on [ccch1mneyyy/dsh-Go v1.2.0, commit `c1a84e3f`](https://github.com/ccch1mneyyy/dsh-Go/commit/c1a84e3f833ad59ff07a5027994dae3935907a2d). The app and package source stays public. Keep the [app notice](../app/NOTICE), [package notices](../packages/NOTICE) and [third-party notices](../app/THIRD_PARTY_NOTICES.md) when redistributing.
+
+The app uses YuRemote branding and Tsuki’s illustration, not dsh-Go’s excluded name, logo or mascots. See [branding and artwork](../app/ASSETS.md).

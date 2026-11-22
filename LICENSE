@@ -1,5 +1,11 @@
 MIT License
 
+Scope: the server/portal gateway, dsh plugin, relay, installers, and web remote.
+The Flutter app (app/) and Dart packages (packages/) are not covered by the
+MIT grant below. They are licensed under AGPL-3.0, with third-party exceptions
+as noted in their license and notice files. See app/LICENSE, app/NOTICE,
+app/THIRD_PARTY_NOTICES.md and packages/NOTICE.
+
 Copyright (c) 2026 dsh-remote-portal contributors
 
 Permission is hereby granted, free of charge, to any person obtaining a copy

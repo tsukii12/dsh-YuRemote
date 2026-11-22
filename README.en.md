@@ -20,4 +20,4 @@ Use DeepSeek Harness on another device without moving your work off the host. Op
 
 [Documentation](docs/README.md#english) · [Public access](docs/DEPLOY-SERVER.md) · [Releases](https://github.com/tsukii12/dsh-YuRemote/releases) · [Changelog](CHANGELOG.md) · [Security policy](SECURITY.md)
 
-The web plugin and relay are [MIT](LICENSE). The [Flutter app](app/) is [AGPL-3.0](app/LICENSE), based on dsh-Go v1.2.0. YuRemote is not an official DeepSeek product.
+**Server, plugin and relay: [MIT](LICENSE). Mobile app (`app/` and the dsh-Go-derived `packages/`): [AGPL-3.0](app/LICENSE).** The separate `dsh_portal` adapter also uses AGPL-3.0; see [package notices](packages/NOTICE). The web remote and installers are covered by MIT. YuRemote is not an official DeepSeek product.
