@@ -1122,14 +1122,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> with WidgetsBindingObse
     ref.read(remoteConnectionProvider(host).notifier).retry();
   }
 
-  void _onSuggestion(ChatSuggestion suggestion) {
-    _input.value = TextEditingValue(
-      text: suggestion.prompt,
-      selection: TextSelection.collapsed(offset: suggestion.prompt.length),
-    );
-    _focus.requestFocus();
-  }
-
   Future<void> _showModelSheet() {
     final sessionId = ref.read(currentSessionProvider);
     final selection = sessionId == null ? ref.read(pendingModelProvider) : ref.read(chatProvider(sessionId)).model;
@@ -1359,9 +1351,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> with WidgetsBindingObse
                               children: [
                                 ChatEmptyState(
                                   connected: connected,
-                                  suggestions: ref.watch(settingsProvider.select((s) => s.chatSuggestions))
-                                      ? defaultSuggestions
-                                      : const [],
                                   connecting: connAsync.isLoading,
                                   starting: starting,
                                   tidying: tidying,
@@ -1369,7 +1358,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> with WidgetsBindingObse
                                   onReconnect: connAsync.hasError && !connAsync.isLoading && !failureCard
                                       ? _reconnect
                                       : null,
-                                  onSuggestion: _onSuggestion,
                                   options: NewChatOptions(
                                     folderLabel: !hasFolders
                                         ? null

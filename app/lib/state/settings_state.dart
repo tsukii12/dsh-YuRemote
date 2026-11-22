@@ -9,14 +9,12 @@ import '../l10n/l10n.dart';
 class AppSettings {
   const AppSettings({
     this.themeMode = ThemeMode.system,
-    this.chatSuggestions = true,
     this.hardwareEnterSends = false,
     this.chatTextScale = 1,
     this.foldCompletedTurns = true,
     this.loaded = false,
   });
   final ThemeMode themeMode;
-  final bool chatSuggestions;
   final bool hardwareEnterSends;
   final double chatTextScale;
   final bool foldCompletedTurns;
@@ -24,14 +22,12 @@ class AppSettings {
 
   AppSettings copyWith({
     ThemeMode? themeMode,
-    bool? chatSuggestions,
     bool? hardwareEnterSends,
     double? chatTextScale,
     bool? foldCompletedTurns,
     bool? loaded,
   }) => AppSettings(
     themeMode: themeMode ?? this.themeMode,
-    chatSuggestions: chatSuggestions ?? this.chatSuggestions,
     hardwareEnterSends: hardwareEnterSends ?? this.hardwareEnterSends,
     chatTextScale: chatTextScale ?? this.chatTextScale,
     foldCompletedTurns: foldCompletedTurns ?? this.foldCompletedTurns,
@@ -61,7 +57,6 @@ class SettingsController extends Notifier<AppSettings> {
       final scale = prefs.getDouble('chat_text_scale');
       state = AppSettings(
         themeMode: ThemeMode.values.asNameMap()[prefs.getString('theme_mode')] ?? ThemeMode.system,
-        chatSuggestions: prefs.getBool('chat_suggestions') ?? true,
         hardwareEnterSends: prefs.getBool('hardware_enter_sends') ?? false,
         chatTextScale: chatTextScales.any((item) => item.$1 == scale) ? scale! : 1,
         foldCompletedTurns: prefs.getBool('fold_completed_turns') ?? true,
@@ -96,8 +91,6 @@ class SettingsController extends Notifier<AppSettings> {
       _save('fold_completed_turns', value, (s) => s.copyWith(foldCompletedTurns: value));
   Future<void> setHardwareEnterSends(bool value) =>
       _save('hardware_enter_sends', value, (s) => s.copyWith(hardwareEnterSends: value));
-  Future<void> setChatSuggestions(bool value) =>
-      _save('chat_suggestions', value, (s) => s.copyWith(chatSuggestions: value));
 }
 
 final settingsProvider = NotifierProvider<SettingsController, AppSettings>(SettingsController.new);
