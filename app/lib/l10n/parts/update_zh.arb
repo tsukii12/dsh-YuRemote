@@ -1,0 +1,10 @@
+{
+  "updateCheck": "检查更新",
+  "updateCurrent": "已是最新版本",
+  "updateFailed": "检查更新失败，请稍后重试。",
+  "updateAvailable": "发现新版本",
+  "updateNoNotes": "此版本暂无更新说明。",
+  "updateSkip": "跳过此版本",
+  "updateLater": "以后",
+  "updateDownload": "下载"
+}

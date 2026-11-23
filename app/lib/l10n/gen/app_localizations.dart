@@ -11924,6 +11924,54 @@ abstract class L10n {
   /// **'没有执行。'**
   String get systemActionsResultNotRun;
 
+  /// No description provided for @updateCheck.
+  ///
+  /// In zh, this message translates to:
+  /// **'检查更新'**
+  String get updateCheck;
+
+  /// No description provided for @updateCurrent.
+  ///
+  /// In zh, this message translates to:
+  /// **'已是最新版本'**
+  String get updateCurrent;
+
+  /// No description provided for @updateFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'检查更新失败，请稍后重试。'**
+  String get updateFailed;
+
+  /// No description provided for @updateAvailable.
+  ///
+  /// In zh, this message translates to:
+  /// **'发现新版本'**
+  String get updateAvailable;
+
+  /// No description provided for @updateNoNotes.
+  ///
+  /// In zh, this message translates to:
+  /// **'此版本暂无更新说明。'**
+  String get updateNoNotes;
+
+  /// No description provided for @updateSkip.
+  ///
+  /// In zh, this message translates to:
+  /// **'跳过此版本'**
+  String get updateSkip;
+
+  /// No description provided for @updateLater.
+  ///
+  /// In zh, this message translates to:
+  /// **'以后'**
+  String get updateLater;
+
+  /// No description provided for @updateDownload.
+  ///
+  /// In zh, this message translates to:
+  /// **'下载'**
+  String get updateDownload;
+
   /// No description provided for @viewArtifactSaved.
   ///
   /// In zh, this message translates to:

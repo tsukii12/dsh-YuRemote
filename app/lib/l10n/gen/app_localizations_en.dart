@@ -7013,6 +7013,30 @@ class L10nEn extends L10n {
   String get systemActionsResultNotRun => 'Nothing ran.';
 
   @override
+  String get updateCheck => 'Check for updates';
+
+  @override
+  String get updateCurrent => 'You\'re up to date';
+
+  @override
+  String get updateFailed => 'Couldn\'t check for updates. Please try again.';
+
+  @override
+  String get updateAvailable => 'Update available';
+
+  @override
+  String get updateNoNotes => 'No release notes provided.';
+
+  @override
+  String get updateSkip => 'Skip this version';
+
+  @override
+  String get updateLater => 'Later';
+
+  @override
+  String get updateDownload => 'Download';
+
+  @override
   String viewArtifactSaved(String value) {
     return 'Saved to $value';
   }

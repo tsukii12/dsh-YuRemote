@@ -6531,6 +6531,30 @@ class L10nZh extends L10n {
   String get systemActionsResultNotRun => '没有执行。';
 
   @override
+  String get updateCheck => '检查更新';
+
+  @override
+  String get updateCurrent => '已是最新版本';
+
+  @override
+  String get updateFailed => '检查更新失败，请稍后重试。';
+
+  @override
+  String get updateAvailable => '发现新版本';
+
+  @override
+  String get updateNoNotes => '此版本暂无更新说明。';
+
+  @override
+  String get updateSkip => '跳过此版本';
+
+  @override
+  String get updateLater => '以后';
+
+  @override
+  String get updateDownload => '下载';
+
+  @override
   String viewArtifactSaved(String value) {
     return '已存到 $value';
   }

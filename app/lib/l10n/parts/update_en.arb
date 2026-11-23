@@ -1,0 +1,10 @@
+{
+  "updateCheck": "Check for updates",
+  "updateCurrent": "You're up to date",
+  "updateFailed": "Couldn't check for updates. Please try again.",
+  "updateAvailable": "Update available",
+  "updateNoNotes": "No release notes provided.",
+  "updateSkip": "Skip this version",
+  "updateLater": "Later",
+  "updateDownload": "Download"
+}
