@@ -47,15 +47,23 @@ class DirectoryShortcut {
   final String? subtitle;
 }
 
-/// Where to start: the home folder and the engine's default folder; on the
-/// phone also its shared storage (when the engine can see it).
-List<DirectoryShortcut> directoryShortcuts({required bool local, String? workingDir}) {
+/// Where to start: the home folder, the host's roots and the engine's default folder.
+List<DirectoryShortcut> directoryShortcuts({List<DirectoryEntry> roots = const [], String? workingDir}) {
   return [
     DirectoryShortcut(AppIcons.home, appL10n.remoteDirectoryHome, null, subtitle: '~'),
+    for (final root in roots) DirectoryShortcut(AppIcons.folder, root.name, root.path),
     if (workingDir != null && workingDir.isNotEmpty)
       DirectoryShortcut(AppIcons.defaultFolder, appL10n.remoteDirectoryDefault, workingDir, subtitle: workingDir),
   ];
 }
+
+final _directoryRootsProvider = FutureProvider.autoDispose<List<DirectoryEntry>>((ref) async {
+  final carrier = ref.watch(activeConnectionProvider).value?.client.carrier;
+  if (carrier is! DshHttpCarrier) return const [];
+  final listing = await PortalFileSystem(carrier.connection).browse();
+  // The portal lists home first; the sheet already has a row for it.
+  return listing.roots.skip(1).toList();
+}, retry: (_, _) => null);
 
 /// The picker's first step (a sheet): places to start, recent places,
 /// 「输入路径」.
@@ -71,8 +79,9 @@ class DirectoryLocationsSheet extends ConsumerWidget {
     final conn = ref.watch(activeConnectionProvider).value;
     const local = false;
     final recent = ref.watch(workspacePrefsProvider.select((p) => p.recent));
-    final shortcuts = directoryShortcuts(local: local, workingDir: conn?.workingDirectory);
     final canBrowse = conn?.client.carrier is DshHttpCarrier;
+    final roots = canBrowse ? ref.watch(_directoryRootsProvider).asData?.value : null;
+    final shortcuts = directoryShortcuts(roots: roots ?? const [], workingDir: conn?.workingDirectory);
     final known = {for (final s in shortcuts) ?s.path};
     final places = [
       for (final p in recent)
@@ -233,9 +242,6 @@ class _DirectoryBrowserPageState extends ConsumerState<DirectoryBrowserPage> {
   bool _busy = false;
   bool _showHidden = false;
 
-  /// Folders walked through, for 「返回」 one level at a time.
-  final List<String> _history = [];
-
   PortalFileSystem? _files;
 
   @override
@@ -243,13 +249,13 @@ class _DirectoryBrowserPageState extends ConsumerState<DirectoryBrowserPage> {
     super.initState();
     final carrier = ref.read(activeConnectionProvider).value?.client.carrier;
     if (carrier is DshHttpCarrier) _files = PortalFileSystem(carrier.connection);
-    unawaited(_open(widget.start, record: false));
+    unawaited(_open(widget.start));
   }
 
   void _toast(String text) => ScaffoldMessenger.maybeOf(context)?.showSnackBar(SnackBar(content: Text(text)));
 
   /// Lists [path]; keeps the current level on screen until it arrives.
-  Future<void> _open(String? path, {bool record = true}) async {
+  Future<void> _open(String? path) async {
     final client = _files;
     if (client == null) return setState(() => _error = const DshTransportException('not connected'));
     if (_busy) return;
@@ -258,7 +264,6 @@ class _DirectoryBrowserPageState extends ConsumerState<DirectoryBrowserPage> {
       final level = await client.browse(path);
       if (!mounted) return;
       setState(() {
-        if (record && _level != null && _level!.path != level.path) _history.add(_level!.path);
         _level = level;
         _error = null;
         _showHidden = false;
@@ -273,12 +278,6 @@ class _DirectoryBrowserPageState extends ConsumerState<DirectoryBrowserPage> {
     } finally {
       if (mounted) setState(() => _busy = false);
     }
-  }
-
-  Future<void> _back() async {
-    if (_busy || _history.isEmpty) return;
-    final previous = _history.removeLast();
-    await _open(previous, record: false);
   }
 
   Future<void> _newFolder() async {
@@ -317,7 +316,7 @@ class _DirectoryBrowserPageState extends ConsumerState<DirectoryBrowserPage> {
       body = FeatureMessage(
         icon: AppIcons.noFolder,
         title: workspaceErrorText(_error!),
-        action: unavailable ? null : (l10n.commonRetry, () => _open(widget.start, record: false)),
+        action: unavailable ? null : (l10n.commonRetry, () => _open(widget.start)),
       );
     } else if (level == null) {
       body = const QuietSpinner();
@@ -372,31 +371,25 @@ class _DirectoryBrowserPageState extends ConsumerState<DirectoryBrowserPage> {
       ],
     );
 
-    return PopScope(
-      canPop: _history.isEmpty,
-      onPopInvokedWithResult: (didPop, _) {
-        if (!didPop) unawaited(_back());
-      },
-      child: Stack(
-        children: [
-          page,
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: FormBottomBar(
-              child: FilledButton(
-                onPressed: level == null || _busy ? null : () => Navigator.of(context).pop(level.path),
-                child: Text(
-                  level == null ? confirmLabel : l10n.remoteDirectoryConfirmFolder(confirmLabel, title),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
+    return Stack(
+      children: [
+        page,
+        Positioned(
+          left: 0,
+          right: 0,
+          bottom: 0,
+          child: FormBottomBar(
+            child: FilledButton(
+              onPressed: level == null || _busy ? null : () => Navigator.of(context).pop(level.path),
+              child: Text(
+                level == null ? confirmLabel : l10n.remoteDirectoryConfirmFolder(confirmLabel, title),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

@@ -9,10 +9,19 @@ versions are the plugin's own, not dsh's.
   delete saved hosts from the remote host list or by long-pressing a host in
   the sidebar switcher.
 
+- YuRemote's Add Workspace sheet shows the remote host's drives or other roots
+  under Home. The folder browser's back arrow returns to the sheet from any
+  depth; Parent folder still moves up one level.
+
 - Relay home, offline and error pages now share the Web sign-in page's rounded
   mist-blue design, with a retry action and DSH naming. Web sign-in recommends
   the YuRemote app without blocking browser access. Both follow the system theme
   by default and remember an explicit theme choice locally on the same origin.
+- `yuremote status` now suggests running with sudo instead of showing default settings when it cannot read the relay config.
+- Android release builds use the configured YuRemote release key so published
+  APK updates can install over earlier releases signed with the same key.
+
+## 0.8.0 — 2026-11-23
 
 - Web sign-in now matches the settings page's mist-blue canvas, rounded cards
   and capsule buttons on desktop and phones. Plugin copy uses DSH / DeepSeek
@@ -29,10 +38,12 @@ versions are the plugin's own, not dsh's.
   and a live status in the header. All settings remain available on desktop
   and phones; tabs support arrow keys, Home and End, and the first-run password
   shortcut now works from every tab.
+
+## 0.7.0 — 2026-11-20
+
 - YuRemote (鱼鱼远程): rebranded the plugin and relay. The installers migrate
   existing state and keep the old relay installation available for rollback.
   Native app login, pairing, tunnel URLs and the wire protocol are unchanged.
-- `yuremote status` now suggests running with sudo instead of showing default settings when it cannot read the relay config.
 - Remote access password: changing it from the panel now signs out every
   device and cancels unused pairing links, as the note under the field always
   said. Before, signed-in phones stayed signed in. A phone that makes the change
@@ -1227,7 +1238,6 @@ real sockets.
 Initial version: authenticated gateway (HTTP + WebSocket reverse proxy), password
 / one-time QR pairing / device registry / lockout, dsh browser-cookie minting,
 login wall, Settings panel, mobile presentation layer, install script, 51 tests.
-
 
 
 
