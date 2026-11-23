@@ -20,7 +20,7 @@ set -euo pipefail
 if [ ! -x "$0" ] && [ -f "$0" ]; then chmod +x "$0" 2>/dev/null || true; fi
 
 SELF_VERSION="0.6.2"
-INSTALLER_REVISION=4
+INSTALLER_REVISION=5
 
 RELAY_DIR=/opt/yuremote-relay
 STATE_DIR=/var/lib/yuremote-relay
@@ -360,6 +360,10 @@ uptime_line() {
 
 case "${1:-status}" in
   status)
+    if [ ! -r "$CONF" ]; then
+      printf '%s\n' "Cannot read $CONF. If it exists, run sudo yuremote status." >&2
+      exit 1
+    fi
     load
     printf 'service     %s\n' "$(service_state)"
     up=$(uptime_line); [ -n "${up:-}" ] && printf 'uptime      %s\n' "$up"
@@ -421,7 +425,7 @@ case "${1:-status}" in
     else
       printf 'public      %s\n' "$(cyan "$(url_base)/__t/$(tunnel_id)/")"
     fi
-    if [ "${AGENT_TLS:-1}" = 1 ]; then
+    if [ "$AGENT_TLS" = 1 ] && [ "$CERT_SOURCE" = self ]; then
       printf 'note        self-signed certificate: tick "trust" in the dsh panel\n'
     fi
     if [ "${SCHEME:-http}" = http ]; then
