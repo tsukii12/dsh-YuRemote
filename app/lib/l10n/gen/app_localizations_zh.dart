@@ -4953,6 +4953,20 @@ class L10nZh extends L10n {
   String get portalName => '服务器名称';
 
   @override
+  String get portalNameRequired => '请输入服务器名称。';
+
+  @override
+  String get portalEditHost => '编辑远程主机';
+
+  @override
+  String get portalDeleteHost => '删除远程主机？';
+
+  @override
+  String portalDeleteHostConfirmation(String name) {
+    return '要从此设备移除$name吗？重新添加时需要再次登录。';
+  }
+
+  @override
   String get portalPassword => '密码';
 
   @override

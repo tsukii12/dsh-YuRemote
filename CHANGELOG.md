@@ -5,6 +5,10 @@ versions are the plugin's own, not dsh's.
 
 ## Unreleased
 
+- YuRemote now asks for a server name after scanning a QR code. Rename or
+  delete saved hosts from the remote host list or by long-pressing a host in
+  the sidebar switcher.
+
 - Relay home, offline and error pages now share the Web sign-in page's rounded
   mist-blue design, with a retry action and DSH naming. Web sign-in recommends
   the YuRemote app without blocking browser access. Both follow the system theme

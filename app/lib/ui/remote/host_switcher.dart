@@ -8,6 +8,7 @@ import '../common/app_sheet.dart';
 import '../common/status_chip.dart';
 import '../theme/app_icons.dart';
 import '../theme/theme.dart';
+import 'host_actions.dart';
 import 'host_status.dart';
 
 class HostChip extends ConsumerWidget {
@@ -62,6 +63,29 @@ class HostSheet extends ConsumerWidget {
               leading: Icon(host.id == active.id ? Icons.check_circle : Icons.dns_outlined),
               title: Text(host.name),
               subtitle: Text(host.base.toString()),
+              onLongPress: () async {
+                final action = await showAppSheet<HostAction>(
+                  context,
+                  builder: (menuContext) => SafeArea(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        for (final action in HostAction.values)
+                          ListTile(
+                            title: Text(action.label(menuContext.l10n)),
+                            onTap: () => Navigator.of(menuContext).pop(action),
+                          ),
+                      ],
+                    ),
+                  ),
+                );
+                if (!context.mounted || action == null) return;
+                final deleted = await runHostAction(context, ref, host, action);
+                if (deleted && context.mounted &&
+                    ref.read(activeHostProvider) == HostRef.none && ModalRoute.of(context)?.isCurrent == true) {
+                  Navigator.of(context).pop();
+                }
+              },
               onTap: () {
                 ref.read(activeHostProvider.notifier).select(HostRef.portal(host.id, name: host.name));
                 Navigator.of(context).pop();

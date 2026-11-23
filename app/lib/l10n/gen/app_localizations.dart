@@ -9026,6 +9026,30 @@ abstract class L10n {
   /// **'服务器名称'**
   String get portalName;
 
+  /// No description provided for @portalNameRequired.
+  ///
+  /// In zh, this message translates to:
+  /// **'请输入服务器名称。'**
+  String get portalNameRequired;
+
+  /// No description provided for @portalEditHost.
+  ///
+  /// In zh, this message translates to:
+  /// **'编辑远程主机'**
+  String get portalEditHost;
+
+  /// No description provided for @portalDeleteHost.
+  ///
+  /// In zh, this message translates to:
+  /// **'删除远程主机？'**
+  String get portalDeleteHost;
+
+  /// No description provided for @portalDeleteHostConfirmation.
+  ///
+  /// In zh, this message translates to:
+  /// **'要从此设备移除{name}吗？重新添加时需要再次登录。'**
+  String portalDeleteHostConfirmation(String name);
+
   /// No description provided for @portalPassword.
   ///
   /// In zh, this message translates to:

@@ -31,7 +31,9 @@ class HostConnection {
 
 final networkKicksProvider = Provider<Stream<void>>((ref) => networkKicks());
 final hostLinkProvider = Provider.autoDispose.family<HostLink?, HostRef>((ref, host) {
-  final config = ref.watch(hostsProvider.select((value) => value.portalById(host.id)));
+  final base = ref.watch(hostsProvider.select((value) => value.portalById(host.id)?.base));
+  if (base == null) return null;
+  final config = ref.read(hostsProvider).portalById(host.id);
   if (config == null) return null;
   final link = PortalHostLink(config, ref.read(secretStoreProvider), kicks: ref.watch(networkKicksProvider));
   ref.onDispose(() => unawaited(link.close()));

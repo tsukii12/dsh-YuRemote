@@ -9,6 +9,7 @@ import '../../state/hosts_state.dart';
 import '../shell/brand_mark.dart';
 import '../shell/page_frame.dart';
 import '../theme/theme.dart';
+import 'host_actions.dart';
 import 'pairing_page.dart';
 
 class RemoteScreen extends ConsumerStatefulWidget {
@@ -24,6 +25,7 @@ class _RemoteScreenState extends ConsumerState<RemoteScreen> {
   final _password = TextEditingController();
   String? _token;
   String? _error;
+  bool _scanned = false;
   bool _busy = false;
   @override
   void initState() {
@@ -49,7 +51,8 @@ class _RemoteScreenState extends ConsumerState<RemoteScreen> {
       final scan = PortalScan.parse(result);
       setState(() {
         _url.text = scan.base.toString();
-        _name.text = scan.base.host;
+        _name.clear();
+        _scanned = true;
         _token = scan.token;
         _password.clear();
         _error = null;
@@ -61,6 +64,11 @@ class _RemoteScreenState extends ConsumerState<RemoteScreen> {
 
   Future<void> _login() async {
     if (_busy) return;
+    final name = _name.text.trim();
+    if (_scanned && name.isEmpty) {
+      setState(() => _error = context.l10n.portalNameRequired);
+      return;
+    }
     setState(() {
       _busy = true;
       _error = null;
@@ -72,7 +80,7 @@ class _RemoteScreenState extends ConsumerState<RemoteScreen> {
       final existing = hosts.where((h) => h.base == base).firstOrNull;
       final config = PortalHostConfig(
         id: existing?.id ?? base.toString(),
-        name: _name.text.trim().isEmpty ? base.host : _name.text.trim(),
+        name: name.isEmpty ? base.host : name,
         base: base,
       );
       final secrets = ref.read(secretStoreProvider);
@@ -86,6 +94,7 @@ class _RemoteScreenState extends ConsumerState<RemoteScreen> {
       if (!mounted) return;
       _password.clear();
       _token = null;
+      _scanned = false;
       await ref.read(hostsProvider.notifier).save(config);
       if (!mounted) return;
       final host = HostRef.portal(config.id, name: config.name);
@@ -180,6 +189,14 @@ class _RemoteScreenState extends ConsumerState<RemoteScreen> {
             leading: const Icon(Icons.dns_outlined),
             title: Text(host.name),
             subtitle: Text(host.base.toString()),
+            trailing: PopupMenuButton<HostAction>(
+              enabled: !_busy,
+              onSelected: (action) => runHostAction(context, ref, host, action),
+              itemBuilder: (context) => [
+                for (final action in HostAction.values)
+                  PopupMenuItem(value: action, child: Text(action.label(context.l10n))),
+              ],
+            ),
             onTap: _busy
                 ? null
                 : () {
