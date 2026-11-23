@@ -4,13 +4,21 @@
 
 YuRemote is a remote-only Flutter port of dsh-Go v1.2.0. The app works with the YuRemote gateway, not with SSH or a plain DeepSeek Harness (DSH) Web URL. It does not run DSH locally or embed its website. Open and continue chats, stream responses, handle approvals and questions, and browse workspaces or attach files when the host supports those operations.
 
-<img src="screenshots/app-home-chat.png" alt="iOS chat on the Studio Mac demo host" width="220"> <img src="screenshots/app-sidebar.png" alt="iOS sidebar with demo conversations, search and filters" width="220"> <img src="screenshots/app-folder-picker.png" alt="iOS remote folder picker in the demo workspace" width="220">
-
-<img src="screenshots/app-settings-about.png" alt="The iOS app's About page with license and upstream credits" width="220">
+<div align="center">
+  <table>
+    <tbody>
+      <tr>
+        <td align="center"><img src="screenshots/app-home-chat.png" alt="iOS chat on the Studio Mac demo host" width="220"></td>
+        <td align="center"><img src="screenshots/app-sidebar.png" alt="iOS sidebar with demo conversations, search and filters" width="220"></td>
+        <td align="center"><img src="screenshots/app-folder-picker.png" alt="iOS remote folder picker in the demo workspace" width="220"></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
 ## Install
 
-From the [v0.7.0 release](https://github.com/tsukii12/dsh-YuRemote/releases/tag/v0.7.0), choose the Android APK or unsigned iOS IPA. That release currently lists the assets with `0.7.1` in their filenames.
+From the [latest release](https://github.com/tsukii12/dsh-YuRemote/releases/latest), choose the Android APK or unsigned iOS IPA.
 
 - **Android:** open the arm64 APK on a 64-bit ARM device. Allow installation from the trusted download source if prompted. An APK signed with a different key cannot replace an existing installation; uninstalling clears the app's local settings and sign-in state.
 - **iPhone/iPad:** sign the IPA yourself using a trusted tool or your Apple developer certificate and provisioning profile. The unsigned file cannot be installed directly. Follow your signing tool's instructions and enable Developer Mode if required. Alternatively, build and run from Xcode with your own signing team.
@@ -44,3 +52,7 @@ For a development install on a connected device, use `flutter run` after selecti
 The server, plugin, relay, installers and web remote remain [MIT](../LICENSE). The app and its accompanying Dart packages are [AGPL-3.0](../app/LICENSE), except where the notices indicate separate terms. The app is based on [ccch1mneyyy/dsh-Go v1.2.0, commit `c1a84e3f`](https://github.com/ccch1mneyyy/dsh-Go/commit/c1a84e3f833ad59ff07a5027994dae3935907a2d). The app and package source stays public. Keep the [app notice](../app/NOTICE), [package notices](../packages/NOTICE) and [third-party notices](../app/THIRD_PARTY_NOTICES.md) when redistributing.
 
 The app uses YuRemote branding and Tsuki’s illustration, not dsh-Go’s excluded name, logo or mascots. See [branding and artwork](../app/ASSETS.md).
+
+<p align="center">
+  <img src="screenshots/app-settings-about.png" alt="The iOS app's About page with license and upstream credits" width="220">
+</p>

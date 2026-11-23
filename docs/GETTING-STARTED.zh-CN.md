@@ -22,7 +22,9 @@ Windows 下先运行 `dsh --profile web --dump-config`，再在检出目录运�
 2. 从侧栏打开 **远程访问 → 基本设置**，保持远程访问开启，并保存至少 8 个字符的访问密码。
 3. 在同一网络的另一台设备上打开 **局域网访问** 显示的地址，输入门户密码。网关默认端口为 **3081**；示例中的 DSH Web 端口 **3080** 不是门户。
 
-![手机密码登录页](screenshots/mobile-login.png)
+<p align="center">
+  <img src="screenshots/mobile-login.png" alt="手机密码登录页" width="280">
+</p>
 
 若想免输密码，在主机上打开 **局域网访问**，用手机相机扫描配对二维码。打开链接后，浏览器会直接登录。配对链接只能使用一次，默认三分钟后过期。刷新可生成新链接；请勿公开分享。应用内扫码见[移动应用指南](APP.zh-CN.md)。
 
@@ -63,4 +65,13 @@ Windows 下先运行 `dsh --profile web --dump-config`，再在检出目录运�
 
 网页端在窄屏下通过抽屉访问工作区和会话；**添加工作区** 会打开主机目录选择器。
 
-![网页移动端抽屉](screenshots/mobile-drawer.png) ![网页移动端目录选择器](screenshots/mobile-workspace-picker.png)
+<div align="center">
+  <table>
+    <tbody>
+      <tr>
+        <td align="center"><img src="screenshots/mobile-drawer.png" alt="网页移动端抽屉" width="280"></td>
+        <td align="center"><img src="screenshots/mobile-workspace-picker.png" alt="网页移动端目录选择器" width="280"></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
