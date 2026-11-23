@@ -19,7 +19,6 @@ import '../../common/app_sheet.dart';
 import '../../common/sheet_title_bar.dart';
 import '../../session/workspace_files.dart' show formatBytes;
 import '../../settings/settings_widgets.dart' show SettingsTile;
-import '../../share/share_entry.dart' show shareArtifact;
 import '../../theme/app_icons.dart';
 import '../../theme/theme.dart';
 import '../artifact_preview.dart';
@@ -226,8 +225,6 @@ class _ArtifactTileState extends ConsumerState<ArtifactTile> {
         await _open();
       case ArtifactAction.openWith:
         await _open(chooser: true);
-      case ArtifactAction.share:
-        await shareArtifact(context, sessionId: widget.sessionId, artifact: _artifact);
       case ArtifactAction.save:
         await _save();
       case ArtifactAction.copyPath:
@@ -425,7 +422,6 @@ enum ArtifactAction {
   preview(AppIcons.preview),
   open(AppIcons.openExternal),
   openWith(AppIcons.openWith),
-  share(AppIcons.share),
   save(AppIcons.save),
   copyPath(AppIcons.copy);
 
@@ -436,7 +432,6 @@ enum ArtifactAction {
     ArtifactAction.preview => appL10n.chatPreview,
     ArtifactAction.open => appL10n.commonOpen,
     ArtifactAction.openWith => appL10n.commonOpenWith,
-    ArtifactAction.share => appL10n.commonShare,
     ArtifactAction.save =>
       harmony
           ? appL10n.harmonySaveToFile
@@ -533,7 +528,7 @@ Future<ArtifactAction?> showArtifactMenu(
       final dsh = DshColors.of(sheet);
       final actions = [
         if (canFetch && artifactPreviewable(artifact, officeToPdf: officeToPdf)) ArtifactAction.preview,
-        if (canFetch) ...[ArtifactAction.open, ArtifactAction.openWith, ArtifactAction.share],
+        if (canFetch) ...[ArtifactAction.open, ArtifactAction.openWith],
         if (canFetch) ArtifactAction.save,
         ArtifactAction.copyPath,
       ];

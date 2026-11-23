@@ -249,9 +249,10 @@ function cookieHeaderFrom(response) {
   return { all: list, portal: portal || "" };
 }
 
-async function login(portalPort, password, { headers = {}, next } = {}) {
+async function login(portalPort, password, { headers = {}, next, deviceInfo = {} } = {}) {
   const form = new URLSearchParams();
   form.set("password", password);
+  for (const [key, value] of Object.entries(deviceInfo)) form.set(key, value);
   if (next) form.set("next", next);
   const body = form.toString();
   const response = await request(portalPort, "/__portal/login", {
@@ -1031,6 +1032,105 @@ test("serves the login page instead of dsh's 401 text when re-minting cannot hel
 // ───────────────────────────────────────────────────────────────────────────
 // state
 // ───────────────────────────────────────────────────────────────────────────
+
+test("app installations remain distinct and retain their display metadata after restart", async () => {
+  const dir = tmpDir();
+  const upstream = await startUpstream();
+  const { gw } = await startPortal({ stateDir: dir, upstreamPort: upstream.port });
+  await gw.setPassword("correct horse battery");
+  await gw.start();
+  const port = gw.status().port;
+  const headers = { "user-agent": "DSHRemotePortal/2.0" };
+  const phone = { clientId: "install_phone_1", deviceName: "Tsuki 的 iPhone", platform: "iOS", osVersion: "18.2", appVersion: "0.7.0+8" };
+  const first = await login(port, "correct horse battery", { headers, deviceInfo: phone });
+  assert.equal(first.response.status, 303);
+  const id = gw.devices()[0].id;
+  const other = await login(port, "correct horse battery", { headers, deviceInfo: { ...phone, clientId: "install_phone_2", deviceName: "Pixel 9", platform: "Android", osVersion: "15" } });
+  assert.equal(gw.devices().length, 2, "phones sharing a UA and network are separate");
+  await login(port, "correct horse battery", { headers, deviceInfo: { ...phone, appVersion: "0.7.1+9" } });
+  assert.equal(gw.devices().length, 2, "signing in again updates the same installation");
+  const device = gw.devices().find((d) => d.id === id);
+  assert.equal(device.deviceName, phone.deviceName);
+  assert.equal(device.platform, phone.platform);
+  assert.equal(device.osVersion, phone.osVersion);
+  assert.equal(device.appVersion, "0.7.1+9");
+  assert.equal(device.clientKind, "app");
+  assert.equal(device.lastLoginVia, "password");
+  assert.equal(device.sessions, 2);
+  assert.ok(device.lastSeenAt >= device.createdAt);
+  await gw.stop();
+  const restored = await startPortal({ stateDir: dir, upstreamPort: upstream.port });
+  assert.deepEqual(restored.gw.devices().find((d) => d.id === id), device);
+  await restored.gw.start();
+  await restored.gw.revokeDevice(id);
+  const revoked = await request(restored.gw.status().port, "/", { headers: { ...headers, cookie: first.portal, accept: "application/json" } });
+  assert.equal(revoked.status, 401);
+  const stillValid = await request(restored.gw.status().port, "/", { headers: { ...headers, cookie: other.portal, accept: "application/json" } });
+  assert.equal(stillValid.status, 200, "revoking one phone does not revoke the other");
+});
+
+test("pairing accepts app metadata as JSON and form fields on both POST routes", async () => {
+  const { gw } = await startPortal();
+  await gw.setPassword("correct horse battery");
+  await gw.start();
+  for (const [path, json] of [["/__portal/login", true], ["/__portal/pair", false]]) {
+    const pair = await gw.mintPairing({ label: "My phone" });
+    const fields = { token: pair.token, clientId: json ? "pair_json_phone" : "pair_form_phone", deviceName: "Galaxy S25", platform: "Android", osVersion: "15", appVersion: "0.7.0" };
+    const body = json ? JSON.stringify(fields) : new URLSearchParams(fields).toString();
+    const response = await request(gw.status().port, path, {
+      method: "POST", body,
+      headers: { "content-type": json ? "application/json" : "application/x-www-form-urlencoded", "user-agent": "DSHRemotePortal/2.0" },
+    });
+    assert.equal(response.status, 303);
+    const device = gw.devices().find((d) => d.clientId === fields.clientId);
+    assert.equal(device.deviceName, fields.deviceName);
+    assert.equal(device.lastLoginVia, "pair");
+    assert.equal(device.appVersion, fields.appVersion);
+  }
+});
+
+test("old app records get a useful name without changing their cookies", async () => {
+  const dir = tmpDir();
+  const upstream = await startUpstream();
+  const { gw } = await startPortal({ stateDir: dir, upstreamPort: upstream.port });
+  await gw.setPassword("correct horse battery");
+  await gw.start();
+  const headers = { "user-agent": "DSHRemotePortal/2.0" };
+  const signedIn = await login(gw.status().port, "correct horse battery", { headers });
+  assert.equal(gw.devices()[0].label, "YuRemote App");
+  await gw.stop();
+  const path = join(dir, "state.json");
+  const raw = JSON.parse(readFileSync(path, "utf8"));
+  const device = Object.values(raw.devices)[0];
+  device.label = "device";
+  delete device.lastLoginVia;
+  writeFileSync(path, JSON.stringify(raw));
+  const restored = await startPortal({ stateDir: dir, upstreamPort: upstream.port });
+  assert.equal(restored.gw.devices()[0].label, "YuRemote App");
+  assert.equal(restored.gw.devices()[0].lastLoginVia, "password");
+  await restored.gw.start();
+  const response = await request(restored.gw.status().port, "/", { headers: { ...headers, cookie: signedIn.portal, accept: "application/json" } });
+  assert.equal(response.status, 200);
+});
+
+test("device claims are bounded display text and failed login cannot update them", async () => {
+  const { gw } = await startPortal();
+  await gw.setPassword("correct horse battery");
+  await gw.start();
+  const headers = { "user-agent": "DSHRemotePortal/2.0", "content-type": "application/json" };
+  const claims = { password: "correct horse battery", clientId: "x".repeat(100), deviceName: "Phone\u0000\u202e" + "x".repeat(100), platform: ["Android"], osVersion: { version: "15" }, appVersion: "a".repeat(100) };
+  const response = await request(gw.status().port, "/__portal/login", { method: "POST", headers, body: JSON.stringify(claims) });
+  assert.equal(response.status, 303);
+  const device = gw.devices()[0];
+  assert.equal(device.clientId, "");
+  assert.equal(device.deviceName, "Phone" + "x".repeat(75));
+  assert.equal(device.platform, "");
+  assert.equal(device.osVersion, "");
+  assert.equal(device.appVersion.length, 40);
+  const bad = await request(gw.status().port, "/__portal/login", { method: "POST", headers, body: JSON.stringify({ ...claims, password: "wrong", deviceName: "Changed" }) });
+  assert.equal(bad.status, 401);
+  assert.equal(gw.devices()[0].deviceName, device.deviceName);
+});
 
 test("state survives a restart (password, devices, counters, access log)", async () => {
   const upstream = await startUpstream();

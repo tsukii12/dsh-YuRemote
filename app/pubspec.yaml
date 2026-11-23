@@ -20,7 +20,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # dsh-go: only the version name is kept here. `+1` is a placeholder: the
 # versionCode is the build minute, stamped by tooling/build-apk.sh (see
 # docs/release.md「构建号」). Don't bump it by hand.
-version: 0.7.0+29919572
+version: 0.8.0+29923483
 
 environment:
   sdk: ^3.13.4
@@ -76,6 +76,7 @@ dependencies:
   # (already pulled in by dartssh2, MIT).
   http: ^1.6.0
   mobile_scanner: ^7.5.0
+  open_filex: ^5.0.0
 
 dev_dependencies:
   flutter_test:
