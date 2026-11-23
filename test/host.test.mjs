@@ -1035,7 +1035,8 @@ test("serves the login page instead of dsh's 401 text when re-minting cannot hel
 
 test("app installations remain distinct and retain their display metadata after restart", async () => {
   const dir = tmpDir();
-  const { gw } = await startPortal({ stateDir: dir });
+  const upstream = await startUpstream();
+  const { gw } = await startPortal({ stateDir: dir, upstreamPort: upstream.port });
   await gw.setPassword("correct horse battery");
   await gw.start();
   const port = gw.status().port;
@@ -1058,13 +1059,13 @@ test("app installations remain distinct and retain their display metadata after 
   assert.equal(device.sessions, 2);
   assert.ok(device.lastSeenAt >= device.createdAt);
   await gw.stop();
-  const restored = await startPortal({ stateDir: dir });
+  const restored = await startPortal({ stateDir: dir, upstreamPort: upstream.port });
   assert.deepEqual(restored.gw.devices().find((d) => d.id === id), device);
   await restored.gw.start();
   await restored.gw.revokeDevice(id);
   const revoked = await request(restored.gw.status().port, "/", { headers: { ...headers, cookie: first.portal, accept: "application/json" } });
   assert.equal(revoked.status, 401);
-  const stillValid = await request(restored.gw.status().port, "/__portal/status", { headers: { ...headers, cookie: other.portal, accept: "application/json" } });
+  const stillValid = await request(restored.gw.status().port, "/", { headers: { ...headers, cookie: other.portal, accept: "application/json" } });
   assert.equal(stillValid.status, 200, "revoking one phone does not revoke the other");
 });
 
@@ -1090,7 +1091,8 @@ test("pairing accepts app metadata as JSON and form fields on both POST routes",
 
 test("old app records get a useful name without changing their cookies", async () => {
   const dir = tmpDir();
-  const { gw } = await startPortal({ stateDir: dir });
+  const upstream = await startUpstream();
+  const { gw } = await startPortal({ stateDir: dir, upstreamPort: upstream.port });
   await gw.setPassword("correct horse battery");
   await gw.start();
   const headers = { "user-agent": "DSHRemotePortal/2.0" };
@@ -1103,11 +1105,11 @@ test("old app records get a useful name without changing their cookies", async (
   device.label = "device";
   delete device.lastLoginVia;
   writeFileSync(path, JSON.stringify(raw));
-  const restored = await startPortal({ stateDir: dir });
+  const restored = await startPortal({ stateDir: dir, upstreamPort: upstream.port });
   assert.equal(restored.gw.devices()[0].label, "YuRemote App");
   assert.equal(restored.gw.devices()[0].lastLoginVia, "password");
   await restored.gw.start();
-  const response = await request(restored.gw.status().port, "/__portal/status", { headers: { ...headers, cookie: signedIn.portal, accept: "application/json" } });
+  const response = await request(restored.gw.status().port, "/", { headers: { ...headers, cookie: signedIn.portal, accept: "application/json" } });
   assert.equal(response.status, 200);
 });
 
