@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../l10n/l10n.dart';
+import '../../remote/portal_device_info.dart';
 import '../../state/connection_state.dart';
 import '../../state/hosts_state.dart';
 import '../shell/brand_mark.dart';
@@ -80,7 +81,8 @@ class _RemoteScreenState extends ConsumerState<RemoteScreen> {
         saveCookies: (value) =>
             value == null ? secrets.delete(config.cookieKey) : secrets.write(config.cookieKey, value),
       );
-      await session.login(_token ?? _password.text, pairing: _token != null);
+      final deviceInfo = await PortalDeviceIdentity.instance.deviceInfo();
+      await session.login(_token ?? _password.text, pairing: _token != null, deviceInfo: deviceInfo);
       if (!mounted) return;
       _password.clear();
       _token = null;

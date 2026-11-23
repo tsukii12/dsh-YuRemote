@@ -48,6 +48,16 @@ def source_hash(src):
 
 def page(src, *, connect, title, data):
     script = src['viewer.js'].rstrip() + '\nDshgoViewer.boot();\n'
+    for before, after in {
+        '用 dsh-go 打开': '用 DSH 打开',
+        '下载 dsh-go': '下载 DSH',
+        '需要更新 dsh-go 才能打开': '需要更新 DeepSeek Harness 才能打开',
+        'Open in dsh-go': 'Open in DSH',
+        'Download dsh-go': 'Download DSH',
+        'Update dsh-go to open this': 'Update DeepSeek Harness to open this',
+        ' · dsh-go': ' · DSH',
+    }.items():
+        script = script.replace(before, after)
     for bad in ('</script', '<!--'):
         if bad in script.lower() or bad in src['viewer.css'].lower():
             sys.exit(f'viewer source contains {bad!r}: it would end the inline block')

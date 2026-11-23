@@ -31,7 +31,7 @@ This is **not** a claim that the full upstream suite passes.
       Imported/partially regenerated golden images are deliberately not shipped.
 - [ ] Replace or remove remaining dormant runtime/native-channel compatibility
       surfaces; native engine binaries, SSH and DSHarness transports are not bundled.
-- [ ] Revisit stock-dsh versus dsh-Go bridge capabilities before enabling ancillary
+- [ ] Revisit stock DeepSeek Harness versus dsh-Go bridge capabilities before enabling ancillary
       native settings, files, notifications, voice and terminal features.
 
 - [ ] 补齐 portal 测试的保存主机资料，不再依赖已删除的隐式本地主机身份。
@@ -39,7 +39,7 @@ This is **not** a claim that the full upstream suite passes.
 - [ ] 分批恢复通用会话、抽屉、状态和插件测试。
 - [ ] 在固定渲染环境中重新生成并检查 YuRemote golden 基线；不提交上游或部分更新的快照。
 - [ ] 清理剩余休眠的运行时/原生通道兼容层；应用不打包本地引擎二进制、SSH 或 DSHarness 传输。
-- [ ] 启用周边设置、文件、通知、语音、终端能力前检查 stock dsh 与 dsh-Go 桥接能力差异。
+- [ ] 启用周边设置、文件、通知、语音、终端能力前检查原版 DeepSeek Harness 与 dsh-Go 桥接能力差异。
 
 Last completed broad run before the final fixture fixes:
 `16:15 +8984 ~202 -739: Some tests failed.`

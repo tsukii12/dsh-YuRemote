@@ -11,7 +11,7 @@
   "systemActionsResultClipboard": "The text is on the clipboard.",
   "systemActionsResultUnknownDetail": "The system call may have gone out and the outcome is unknown. It won't be retried, so check for yourself.",
   "systemActionsResultUnsupported": "HarmonyOS doesn't support this action. Nothing ran.",
-  "systemActionsResultOffScreen": "DSH Go wasn't on screen. Nothing ran.",
+  "systemActionsResultOffScreen": "DSH wasn't on screen. Nothing ran.",
   "systemActionsResultUnavailable": "System actions are off or can't connect right now. Nothing ran. See Settings > System actions.",
   "systemActionsResultStopped": "Stopped.",
   "systemActionsResultTimeout": "Timed out with no outcome.",

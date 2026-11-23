@@ -8,6 +8,24 @@ import 'package:dsh_client/dsh_client.dart';
 
 export 'src/filesystem.dart';
 
+class PortalDeviceInfo {
+  const PortalDeviceInfo({this.clientId, this.deviceName, this.platform, this.osVersion, this.appVersion});
+
+  final String? clientId;
+  final String? deviceName;
+  final String? platform;
+  final String? osVersion;
+  final String? appVersion;
+
+  Map<String, String> toForm() => {
+    if (clientId != null) 'clientId': clientId!,
+    if (deviceName != null) 'deviceName': deviceName!,
+    if (platform != null) 'platform': platform!,
+    if (osVersion != null) 'osVersion': osVersion!,
+    if (appVersion != null) 'appVersion': appVersion!,
+  };
+}
+
 Uri normalizePortalUrl(String input) {
   final value = Uri.tryParse(input.trim());
   if (value == null || !['http', 'https'].contains(value.scheme.toLowerCase()) ||
@@ -135,8 +153,11 @@ class PortalSession implements DshHttpAuthPolicy {
     if (!_expired.isClosed) _expired.add(null);
   }
 
-  Future<void> login(String secret, {bool pairing = false}) async {
-    final body = '${pairing ? 'token' : 'password'}=${Uri.encodeQueryComponent(secret)}';
+  Future<void> login(String secret, {bool pairing = false, PortalDeviceInfo? deviceInfo}) async {
+    final body = Uri(queryParameters: {
+      pairing ? 'token' : 'password': secret,
+      ...?deviceInfo?.toForm(),
+    }).query;
     final response = await connection.postBytes('/__portal/login', utf8.encode(body),
       contentType: 'application/x-www-form-urlencoded', followRedirects: false,
       maxResponseBytes: 65536, timeout: const Duration(seconds: 15));

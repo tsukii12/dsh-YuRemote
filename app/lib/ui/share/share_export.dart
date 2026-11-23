@@ -64,7 +64,7 @@ class ShareExporter {
   String fileName() {
     final t = _clock();
     String two(int n) => n.toString().padLeft(2, '0');
-    return 'dsh-go-${t.year}${two(t.month)}${two(t.day)}-${two(t.hour)}${two(t.minute)}${two(t.second)}.png';
+    return 'DSH-${t.year}${two(t.month)}${two(t.day)}-${two(t.hour)}${two(t.minute)}${two(t.second)}.png';
   }
 
   /// Writes [png] into the cache's `share/` (keeping only the last few).

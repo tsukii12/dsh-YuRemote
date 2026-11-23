@@ -2017,7 +2017,7 @@
   "featuresPresetStandardDescription": "代码、文件和资料，适合大多数任务",
   "featuresPresetPtcDescription": "批量调用工具，再筛选、统计、汇总",
   "featuresPresetMinimalDescription": "只用终端和读图，适合测试对比",
-  "featuresPresetCreatorDescription": "让 Agent 写插件，定制 DSH 本身",
+  "featuresPresetCreatorDescription": "让 Agent 写插件，定制 DeepSeek Harness 本身",
   "featuresHostUnreachable": "连不上「{name}」",
   "@featuresHostUnreachable": {
     "placeholders": {
@@ -2529,7 +2529,7 @@
   "featuresExportTitle": "导出对话日志",
   "featuresExportSubtitle": "打包成一个 ZIP，用于反馈或备份",
   "featuresExportUnavailable": "这个连接导不了",
-  "featuresExportRemoteHint": "经 DSH Remote 中转时拿不到日志，可以在电脑上的网页版导出",
+  "featuresExportRemoteHint": "经 DeepSeek Harness Remote 中转时拿不到日志，可以在电脑上的网页版导出",
   "featuresExportShareHint": "附在问题反馈里，或发给自己",
   "featuresExportSaveDownloads": "存到「下载」",
   "featuresExportDownloadsHint": "存进 下载/DSH-Go",
@@ -2954,7 +2954,7 @@
   "hubAbout": "关于鱼鱼远程",
   "hubThemeLightDark": "明暗",
   "iosSaveToFiles": "存到「文件」",
-  "iosFilesFolderHint": "文件 App 的 DSH Go 文件夹",
+  "iosFilesFolderHint": "文件 App 中的 DSH 文件",
   "iosSavingToFiles": "正在存到「文件」…",
   "iosCommandExportDescription": "把这个对话的完整记录打包成 ZIP，分享或存到「文件」",
   "iosPhotosDenied": "没有相册权限，未能保存",
@@ -3391,7 +3391,7 @@
     }
   },
   "portalAppName": "鱼鱼远程",
-  "portalRemoteOnly": "连接 YuRemote 服务器，引擎仅在远程主机运行。",
+  "portalRemoteOnly": "连接 DeepSeek Harness 的 YuRemote 门户，引擎仅在远程主机运行。",
   "portalAddress": "服务器地址",
   "portalName": "服务器名称",
   "portalPassword": "密码",
@@ -4362,7 +4362,7 @@
   "systemActionsResultClipboard": "文字已写入剪贴板。",
   "systemActionsResultUnknownDetail": "系统调用可能已经发出，结果未知。不会自动重试，请自己看一下实际状态。",
   "systemActionsResultUnsupported": "鸿蒙版不支持这个动作，没有执行。",
-  "systemActionsResultOffScreen": "DSH Go 不在屏幕上，没有执行。",
+  "systemActionsResultOffScreen": "DSH 不在屏幕上，没有执行。",
   "systemActionsResultUnavailable": "系统操作没开或暂时连不上，没有执行。到「设置 → 系统操作」看看。",
   "systemActionsResultStopped": "已停止。",
   "systemActionsResultTimeout": "等待超时，没有结果。",
@@ -4457,7 +4457,7 @@
   "viewChartHorizontalBar": "横向柱状图",
   "viewChartLine": "折线图",
   "viewChartDonut": "环形图",
-  "viewUiResendMessage": "上一个 dsh-ui 视图无法显示：{value}。请修正后重发。",
+  "viewUiResendMessage": "上一个 DSH 视图无法显示：{value}。请修正后重发。",
   "@viewUiResendMessage": {
     "placeholders": {
       "value": {
@@ -5136,7 +5136,7 @@
       }
     }
   },
-  "viewContinueHeader": "> 分享的 DSH Go 对话 · {value}\n",
+  "viewContinueHeader": "> 分享的 DeepSeek Harness 对话 · {value}\n",
   "@viewContinueHeader": {
     "placeholders": {
       "value": {
@@ -5173,7 +5173,7 @@
   "viewShareNoPermission": "没有存储权限，没能保存",
   "viewShareOpenFailed": "没能打开分享",
   "viewShareLinkFailed": "没能生成链接，稍后再试",
-  "viewShareLinkText": "「{first}」· DSH Go 对话\n{second}",
+  "viewShareLinkText": "「{first}」· DeepSeek Harness 对话\n{second}",
   "@viewShareLinkText": {
     "placeholders": {
       "first": {
@@ -5201,7 +5201,7 @@
       }
     }
   },
-  "viewShareFileHint": "在 DSH Go 里回放、接着聊",
+  "viewShareFileHint": "在 DeepSeek Harness 里回放、接着聊",
   "viewShareWebHint": "任何浏览器都能打开，不用联网",
   "viewShareMarkdownHint": "纯文本，随处可读",
   "viewShareLinkHint": "端到端加密，服务器看不到内容",

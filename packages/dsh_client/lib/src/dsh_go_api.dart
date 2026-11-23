@@ -878,7 +878,7 @@ extension DshGoApi on DshClient {
   DshConnection _dshGoConnection(String path) {
     final carrier = this.carrier;
     if (carrier is! DshHttpCarrier) {
-      throw DshRemoteException('dsh-go/unsupported', 'This connection cannot reach the dsh-go bridge', {'path': path});
+      throw DshRemoteException('dsh-go/unsupported', 'This connection cannot reach the DeepSeek Harness bridge', {'path': path});
     }
     return carrier.connection;
   }

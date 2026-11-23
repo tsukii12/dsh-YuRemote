@@ -11,7 +11,7 @@
   "systemActionsResultClipboard": "文字已写入剪贴板。",
   "systemActionsResultUnknownDetail": "系统调用可能已经发出，结果未知。不会自动重试，请自己看一下实际状态。",
   "systemActionsResultUnsupported": "鸿蒙版不支持这个动作，没有执行。",
-  "systemActionsResultOffScreen": "DSH Go 不在屏幕上，没有执行。",
+  "systemActionsResultOffScreen": "DSH 不在屏幕上，没有执行。",
   "systemActionsResultUnavailable": "系统操作没开或暂时连不上，没有执行。到「设置 → 系统操作」看看。",
   "systemActionsResultStopped": "已停止。",
   "systemActionsResultTimeout": "等待超时，没有结果。",
