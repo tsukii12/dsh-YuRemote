@@ -31,7 +31,7 @@
   "remotePathTurn": "TURN",
   "remotePathRelay": "Relay 中继",
   "remoteHost": "主机",
-  "remoteHostedUpdateRequired": "需要更新 App 才能打开",
+  "remoteHostedUpdateRequired": "需要更新鱼鱼远程才能打开",
   "remoteHostedCannotOpen": "这个链接无法打开",
   "remoteOpening": "正在打开…",
   "remoteHostedNeverExpires": "永久有效",

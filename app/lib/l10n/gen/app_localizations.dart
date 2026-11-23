@@ -5729,7 +5729,7 @@ abstract class L10n {
   /// No description provided for @featuresPresetCreatorDescription.
   ///
   /// In zh, this message translates to:
-  /// **'让 Agent 写插件，定制 DSH 本身'**
+  /// **'让 Agent 写插件，定制 DeepSeek Harness 本身'**
   String get featuresPresetCreatorDescription;
 
   /// No description provided for @featuresHostUnreachable.
@@ -7325,7 +7325,7 @@ abstract class L10n {
   /// No description provided for @featuresExportRemoteHint.
   ///
   /// In zh, this message translates to:
-  /// **'经 DSH Remote 中转时拿不到日志，可以在电脑上的网页版导出'**
+  /// **'经 DeepSeek Harness Remote 中转时拿不到日志，可以在电脑上的网页版导出'**
   String get featuresExportRemoteHint;
 
   /// No description provided for @featuresExportShareHint.
@@ -8057,7 +8057,7 @@ abstract class L10n {
   /// No description provided for @iosFilesFolderHint.
   ///
   /// In zh, this message translates to:
-  /// **'文件 App 的 DSH Go 文件夹'**
+  /// **'文件 App 的 YuRemote 文件夹'**
   String get iosFilesFolderHint;
 
   /// No description provided for @iosSavingToFiles.
@@ -9011,7 +9011,7 @@ abstract class L10n {
   /// No description provided for @portalRemoteOnly.
   ///
   /// In zh, this message translates to:
-  /// **'连接 YuRemote 服务器，引擎仅在远程主机运行。'**
+  /// **'连接 DeepSeek Harness 的 YuRemote 门户，引擎仅在远程主机运行。'**
   String get portalRemoteOnly;
 
   /// No description provided for @portalAddress.
@@ -9257,7 +9257,7 @@ abstract class L10n {
   /// No description provided for @remoteHostedUpdateRequired.
   ///
   /// In zh, this message translates to:
-  /// **'需要更新 App 才能打开'**
+  /// **'需要更新鱼鱼远程才能打开'**
   String get remoteHostedUpdateRequired;
 
   /// No description provided for @remoteHostedCannotOpen.
@@ -11897,7 +11897,7 @@ abstract class L10n {
   /// No description provided for @systemActionsResultOffScreen.
   ///
   /// In zh, this message translates to:
-  /// **'DSH Go 不在屏幕上，没有执行。'**
+  /// **'鱼鱼远程不在屏幕上，没有执行。'**
   String get systemActionsResultOffScreen;
 
   /// No description provided for @systemActionsResultUnavailable.
@@ -12245,7 +12245,7 @@ abstract class L10n {
   /// No description provided for @viewUiResendMessage.
   ///
   /// In zh, this message translates to:
-  /// **'上一个 dsh-ui 视图无法显示：{value}。请修正后重发。'**
+  /// **'上一个 DSH 视图无法显示：{value}。请修正后重发。'**
   String viewUiResendMessage(Object value);
 
   /// No description provided for @viewUiBytesLimit.
@@ -13103,7 +13103,7 @@ abstract class L10n {
   /// No description provided for @viewContinueHeader.
   ///
   /// In zh, this message translates to:
-  /// **'> 分享的 DSH Go 对话 · {value}\n'**
+  /// **'> 分享的鱼鱼远程对话 · {value}\n'**
   String viewContinueHeader(String value);
 
   /// No description provided for @viewContinueUser.
@@ -13199,7 +13199,7 @@ abstract class L10n {
   /// No description provided for @viewShareLinkText.
   ///
   /// In zh, this message translates to:
-  /// **'「{first}」· DSH Go 对话\n{second}'**
+  /// **'「{first}」· 鱼鱼远程对话\n{second}'**
   String viewShareLinkText(String first, String second);
 
   /// No description provided for @viewShareEmpty.
@@ -13223,7 +13223,7 @@ abstract class L10n {
   /// No description provided for @viewShareFileHint.
   ///
   /// In zh, this message translates to:
-  /// **'在 DSH Go 里回放、接着聊'**
+  /// **'在鱼鱼远程里回放、接着聊'**
   String get viewShareFileHint;
 
   /// No description provided for @viewShareWebHint.
@@ -13451,13 +13451,13 @@ abstract class L10n {
   /// No description provided for @viewShareBrandLine.
   ///
   /// In zh, this message translates to:
-  /// **'手机上的 DSH · 扫码获取'**
+  /// **'手机上的鱼鱼远程 · 扫码获取'**
   String get viewShareBrandLine;
 
   /// No description provided for @viewShareBrandLineNoQr.
   ///
   /// In zh, this message translates to:
-  /// **'手机上的 DSH'**
+  /// **'手机上的鱼鱼远程'**
   String get viewShareBrandLineNoQr;
 
   /// No description provided for @viewShareSteps.

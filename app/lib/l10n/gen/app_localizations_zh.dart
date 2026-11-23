@@ -3101,7 +3101,7 @@ class L10nZh extends L10n {
   String get featuresPresetMinimalDescription => '只用终端和读图，适合测试对比';
 
   @override
-  String get featuresPresetCreatorDescription => '让 Agent 写插件，定制 DSH 本身';
+  String get featuresPresetCreatorDescription => '让 Agent 写插件，定制 DeepSeek Harness 本身';
 
   @override
   String featuresHostUnreachable(String name) {
@@ -3959,7 +3959,7 @@ class L10nZh extends L10n {
   String get featuresExportUnavailable => '这个连接导不了';
 
   @override
-  String get featuresExportRemoteHint => '经 DSH Remote 中转时拿不到日志，可以在电脑上的网页版导出';
+  String get featuresExportRemoteHint => '经 DeepSeek Harness Remote 中转时拿不到日志，可以在电脑上的网页版导出';
 
   @override
   String get featuresExportShareHint => '附在问题反馈里，或发给自己';
@@ -4397,7 +4397,7 @@ class L10nZh extends L10n {
   String get iosSaveToFiles => '存到「文件」';
 
   @override
-  String get iosFilesFolderHint => '文件 App 的 DSH Go 文件夹';
+  String get iosFilesFolderHint => '文件 App 的 YuRemote 文件夹';
 
   @override
   String get iosSavingToFiles => '正在存到「文件」…';
@@ -4944,7 +4944,7 @@ class L10nZh extends L10n {
   String get portalAppName => '鱼鱼远程';
 
   @override
-  String get portalRemoteOnly => '连接 YuRemote 服务器，引擎仅在远程主机运行。';
+  String get portalRemoteOnly => '连接 DeepSeek Harness 的 YuRemote 门户，引擎仅在远程主机运行。';
 
   @override
   String get portalAddress => '服务器地址';
@@ -5069,7 +5069,7 @@ class L10nZh extends L10n {
   String get remoteHost => '主机';
 
   @override
-  String get remoteHostedUpdateRequired => '需要更新 App 才能打开';
+  String get remoteHostedUpdateRequired => '需要更新鱼鱼远程才能打开';
 
   @override
   String get remoteHostedCannotOpen => '这个链接无法打开';
@@ -6516,7 +6516,7 @@ class L10nZh extends L10n {
   String get systemActionsResultUnsupported => '鸿蒙版不支持这个动作，没有执行。';
 
   @override
-  String get systemActionsResultOffScreen => 'DSH Go 不在屏幕上，没有执行。';
+  String get systemActionsResultOffScreen => '鱼鱼远程不在屏幕上，没有执行。';
 
   @override
   String get systemActionsResultUnavailable => '系统操作没开或暂时连不上，没有执行。到「设置 → 系统操作」看看。';
@@ -6708,7 +6708,7 @@ class L10nZh extends L10n {
 
   @override
   String viewUiResendMessage(Object value) {
-    return '上一个 dsh-ui 视图无法显示：$value。请修正后重发。';
+    return '上一个 DSH 视图无法显示：$value。请修正后重发。';
   }
 
   @override
@@ -7273,7 +7273,7 @@ class L10nZh extends L10n {
 
   @override
   String viewContinueHeader(String value) {
-    return '> 分享的 DSH Go 对话 · $value\n';
+    return '> 分享的鱼鱼远程对话 · $value\n';
   }
 
   @override
@@ -7327,7 +7327,7 @@ class L10nZh extends L10n {
 
   @override
   String viewShareLinkText(String first, String second) {
-    return '「$first」· DSH Go 对话\n$second';
+    return '「$first」· 鱼鱼远程对话\n$second';
   }
 
   @override
@@ -7344,7 +7344,7 @@ class L10nZh extends L10n {
   }
 
   @override
-  String get viewShareFileHint => '在 DSH Go 里回放、接着聊';
+  String get viewShareFileHint => '在鱼鱼远程里回放、接着聊';
 
   @override
   String get viewShareWebHint => '任何浏览器都能打开，不用联网';
@@ -7470,10 +7470,10 @@ class L10nZh extends L10n {
   String get viewShareProjectQr => '项目主页二维码';
 
   @override
-  String get viewShareBrandLine => '手机上的 DSH · 扫码获取';
+  String get viewShareBrandLine => '手机上的鱼鱼远程 · 扫码获取';
 
   @override
-  String get viewShareBrandLineNoQr => '手机上的 DSH';
+  String get viewShareBrandLineNoQr => '手机上的鱼鱼远程';
 
   @override
   String viewShareSteps(int count) {

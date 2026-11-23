@@ -334,7 +334,7 @@ class DshConnection {
     final response = await _exchange('GET', uri, followRedirects: false);
     _trace('in', 'http', {'status': response.statusCode, 'path': '/'});
     if (response.statusCode == 401) {
-      throw const DshHttpException(401, 'launch token rejected (stale token, other dsh process, or wrong host:port)');
+      throw const DshHttpException(401, 'launch token rejected (stale token, other DeepSeek Harness process, or wrong host:port)');
     }
     if (response.statusCode != 303 && response.statusCode != 302) {
       throw DshHttpException(response.statusCode, 'unexpected login response', body: response.text);

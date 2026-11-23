@@ -24,7 +24,7 @@
   "remotePathTurn": "TURN",
   "remotePathRelay": "Relay",
   "remoteHost": "Host",
-  "remoteHostedUpdateRequired": "Update DSH to open this link",
+  "remoteHostedUpdateRequired": "Update YuRemote to open this link",
   "remoteHostedCannotOpen": "Can’t open this link",
   "remoteOpening": "Opening…",
   "remoteHostedNeverExpires": "Never expires",

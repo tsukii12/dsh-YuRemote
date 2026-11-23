@@ -3341,7 +3341,7 @@ class L10nEn extends L10n {
   String get featuresPresetMinimalDescription => 'Terminal and image viewing only, for testing and comparison';
 
   @override
-  String get featuresPresetCreatorDescription => 'Have the agent write plugins to customize DSH';
+  String get featuresPresetCreatorDescription => 'Have the agent write plugins to customize DeepSeek Harness';
 
   @override
   String featuresHostUnreachable(String name) {
@@ -4221,7 +4221,7 @@ class L10nEn extends L10n {
 
   @override
   String get featuresExportRemoteHint =>
-      'Logs aren’t available over DSH Remote. Export them from DSH Web on your computer.';
+      'Logs aren’t available over DeepSeek Harness Remote. Export them from DeepSeek Harness Web on your computer.';
 
   @override
   String get featuresExportShareHint => 'Attach to feedback or send to yourself';
@@ -4715,7 +4715,7 @@ class L10nEn extends L10n {
   String get iosSaveToFiles => 'Save to Files';
 
   @override
-  String get iosFilesFolderHint => 'DSH Go folder in the Files app';
+  String get iosFilesFolderHint => 'YuRemote folder in the Files app';
 
   @override
   String get iosSavingToFiles => 'Saving to Files…';
@@ -5271,7 +5271,7 @@ class L10nEn extends L10n {
   String get portalAppName => 'YuRemote';
 
   @override
-  String get portalRemoteOnly => 'Connect to your YuRemote server. The engine stays on your host.';
+  String get portalRemoteOnly => 'Connect to a YuRemote portal for DeepSeek Harness. The engine stays on your host.';
 
   @override
   String get portalAddress => 'Server address';
@@ -5397,7 +5397,7 @@ class L10nEn extends L10n {
   String get remoteHost => 'Host';
 
   @override
-  String get remoteHostedUpdateRequired => 'Update DSH to open this link';
+  String get remoteHostedUpdateRequired => 'Update YuRemote to open this link';
 
   @override
   String get remoteHostedCannotOpen => 'Can’t open this link';
@@ -6996,7 +6996,7 @@ class L10nEn extends L10n {
   String get systemActionsResultUnsupported => 'HarmonyOS doesn\'t support this action. Nothing ran.';
 
   @override
-  String get systemActionsResultOffScreen => 'DSH Go wasn\'t on screen. Nothing ran.';
+  String get systemActionsResultOffScreen => 'YuRemote wasn\'t on screen. Nothing ran.';
 
   @override
   String get systemActionsResultUnavailable =>
@@ -7194,7 +7194,7 @@ class L10nEn extends L10n {
 
   @override
   String viewUiResendMessage(Object value) {
-    return 'The previous dsh-ui view couldn’t be displayed: $value. Fix it and resend.';
+    return 'The previous DSH view couldn’t be displayed: $value. Fix it and resend.';
   }
 
   @override
@@ -7832,7 +7832,7 @@ class L10nEn extends L10n {
 
   @override
   String viewContinueHeader(String value) {
-    return '> Shared DSH Go chat · $value\n';
+    return '> Shared YuRemote chat · $value\n';
   }
 
   @override
@@ -7887,7 +7887,7 @@ class L10nEn extends L10n {
 
   @override
   String viewShareLinkText(String first, String second) {
-    return '“$first” · DSH Go chat\n$second';
+    return '“$first” · YuRemote chat\n$second';
   }
 
   @override
@@ -7906,7 +7906,7 @@ class L10nEn extends L10n {
   }
 
   @override
-  String get viewShareFileHint => 'Replay and continue in DSH Go';
+  String get viewShareFileHint => 'Replay and continue in YuRemote';
 
   @override
   String get viewShareWebHint => 'Opens in any browser, even offline';
@@ -8034,10 +8034,10 @@ class L10nEn extends L10n {
   String get viewShareProjectQr => 'Project QR code';
 
   @override
-  String get viewShareBrandLine => 'DSH on your phone · Scan to get it';
+  String get viewShareBrandLine => 'YuRemote on your phone · Scan to get it';
 
   @override
-  String get viewShareBrandLineNoQr => 'DSH on your phone';
+  String get viewShareBrandLineNoQr => 'YuRemote on your phone';
 
   @override
   String viewShareSteps(int count) {

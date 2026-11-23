@@ -155,6 +155,37 @@ void main() {
       expect(session.headersFor(session.base)['Cookie'], isNull);
     });
 
+    for (final pairing in [false, true]) {
+      test('device metadata is form encoded for ${pairing ? 'pairing' : 'password'} login', () async {
+        const info = PortalDeviceInfo(
+          clientId: 'install_0123456789-AB',
+          deviceName: 'Studio 手机 + &',
+          platform: 'iOS',
+          osVersion: '27.0',
+          appVersion: '0.7.0+123',
+        );
+        server.listen((request) async {
+          expect(request.method, 'POST');
+          expect(request.uri.path, '/__t/test/__portal/login');
+          expect(request.headers.contentType?.mimeType, 'application/x-www-form-urlencoded');
+          expect(request.headers.value('user-agent'), PortalSession.userAgent);
+          expect(Uri.splitQueryString(await utf8.decoder.bind(request).join()), {
+            pairing ? 'token' : 'password': 'secret+令牌 &',
+            ...info.toForm(),
+          });
+          request.response.statusCode = 303;
+          request.response.headers.add('Set-Cookie', 'portal=test; Path=/__t/test/');
+          await request.response.close();
+        });
+        await session.login('secret+令牌 &', pairing: pairing, deviceInfo: info);
+      });
+    }
+
+    test('device info omits unspecified fields', () {
+      expect(const PortalDeviceInfo().toForm(), isEmpty);
+      expect(const PortalDeviceInfo(platform: 'Android').toForm(), {'platform': 'Android'});
+    });
+
     test('empty/no-cookie and rejected/rate-limited logins are errors', () async {
       var status = 303;
       server.listen((request) async { await request.drain<void>();
