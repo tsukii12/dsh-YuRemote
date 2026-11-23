@@ -310,22 +310,26 @@ function sendPlain(res, status, text, extra = {}) {
 
 const PAGE_COPY = {
   en: {
-    home: ["YuRemote relay", "Open the private link your Harness gave you: <code>{value}/&lt;tunnel&gt;/</code>"],
+    home: ["YuRemote relay", "Open the private link provided by DeepSeek Harness: <code>{value}/&lt;tunnel&gt;/</code>"],
     notFound: ["Not found", "This relay only serves tunnel links."],
-    unknown: ["Unknown tunnel", "No tunnel named <code>{value}</code> is registered here."],
-    offline: ["The host is offline", "The dsh machine is not connected to the relay right now. Start dsh (or turn the portal back on) and this page will work again — the link itself does not change."],
+    unknown: ["Unknown tunnel", "This tunnel is not registered on this relay.<code>{value}</code>"],
+    offline: ["The host is offline", "The DSH machine is not connected to the relay right now. Start DeepSeek Harness (or turn remote access back on), then try again. Your link stays the same."],
     busy: ["The relay is busy", "There are too many simultaneous connections. Please try again in a moment."],
-    timeout: ["The host took too long to respond", "The dsh host did not answer in time. Please try again in a moment."],
-    failed: ["Tunnel error", "The relay could not complete this request. Check that dsh is running on the host and try again."],
+    timeout: ["The host took too long to respond", "The DSH host did not answer in time. Please try again in a moment."],
+    failed: ["Tunnel error", "The relay could not complete this request. Check that DeepSeek Harness is running on the host and try again."],
+    relay: "Remote access", retry: "Try again",
+    theme: { auto: "System", light: "Light", dark: "Dark", change: "Theme: {t}. Change theme" },
   },
   zh: {
-    home: ["鱼鱼远程中继", "请打开 dsh 提供的专属链接：<code>{value}/&lt;隧道 ID&gt;/</code>"],
+    home: ["鱼鱼远程中继", "请打开 DeepSeek Harness 提供的专属链接：<code>{value}/&lt;隧道 ID&gt;/</code>"],
     notFound: ["找不到页面", "此中继只提供隧道链接。"],
-    unknown: ["找不到隧道", "此中继未注册名为 <code>{value}</code> 的隧道。"],
-    offline: ["主机已离线", "主机上的 dsh 尚未连接到中继。请启动 dsh，或重新开启远程访问，原链接无需更换。"],
+    unknown: ["找不到隧道", "此中继未注册该隧道。<code>{value}</code>"],
+    offline: ["主机已离线", "主机上的 DSH 尚未连接到中继。请启动 DeepSeek Harness，或重新开启远程访问，再试一次。原链接无需更换。"],
     busy: ["中继繁忙", "同时连接的请求过多，请稍后重试。"],
-    timeout: ["主机响应超时", "dsh 主机未能及时响应，请稍后重试。"],
-    failed: ["隧道连接出错", "中继无法完成此请求。请确认主机上的 dsh 正在运行，然后重试。"],
+    timeout: ["主机响应超时", "DSH 主机未能及时响应，请稍后重试。"],
+    failed: ["隧道连接出错", "中继无法完成此请求。请确认主机上的 DeepSeek Harness 正在运行，然后重试。"],
+    relay: "远程访问", retry: "重试连接",
+    theme: { auto: "跟随系统", light: "浅色", dark: "深色", change: "主题：{t}，点击切换" },
   },
 };
 
@@ -348,6 +352,55 @@ function pageLanguage(acceptLanguage) {
 
 const BRAND_PATH = "/__relay/brand.png";
 const relayDir = dirname(fileURLToPath(import.meta.url));
+
+// Keep the deployed relay standalone: the installer copies this file and its
+// brand asset, not the host plugin's modules. Theme preference is origin-local
+// and shared with the login gate when it is reached through this relay.
+function pageThemeScript(labels) {
+  return `(function () {
+  var root = document.documentElement;
+  var labels = ${JSON.stringify(labels)};
+  var order = ["auto", "light", "dark"];
+  var theme = "auto";
+  try { theme = localStorage.getItem("yuremote-theme") || "auto"; } catch (e) {}
+  if (order.indexOf(theme) < 0) theme = "auto";
+  function apply(value) {
+    root.setAttribute("data-theme", value);
+    document.getElementById("theme-light").media = value === "dark" ? "not all" : value === "light" ? "all" : "(prefers-color-scheme: light)";
+    document.getElementById("theme-dark").media = value === "dark" ? "all" : value === "light" ? "not all" : "(prefers-color-scheme: dark)";
+    var button = document.getElementById("yuremote-theme-btn");
+    if (button) {
+      button.setAttribute("aria-label", labels.change.replace("{t}", labels[value]));
+      button.title = labels[value];
+    }
+  }
+  apply(theme);
+  root.classList.add("js");
+  document.addEventListener("DOMContentLoaded", function () {
+    apply(theme);
+    document.getElementById("yuremote-theme-btn").addEventListener("click", function () {
+      theme = order[(order.indexOf(theme) + 1) % order.length];
+      apply(theme);
+      try { localStorage.setItem("yuremote-theme", theme); } catch (e) {}
+    });
+  });
+})();`;
+}
+
+const PAGE_STYLE = `
+:root{color-scheme:light;--canvas:radial-gradient(ellipse at 95% 0,rgba(128,166,255,.13),transparent 55%),linear-gradient(180deg,#ebf1fe,#f6f7fc);--surface:rgba(255,255,255,.88);--ink:#202632;--muted:#4f5562;--line:rgba(255,255,255,.95);--field:#f6f9fe;--accent:#4263db;--edge:#dce0e8}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--canvas:radial-gradient(ellipse at 95% 0,rgba(77,107,254,.15),transparent 55%),linear-gradient(180deg,#151b2b,#151517);--surface:#232324;--ink:#f9fafb;--muted:#cfd3d6;--line:#363d50;--field:#2c2c2e;--accent:#7aaaff;--edge:#ffffff1f}}
+:root[data-theme="dark"]{color-scheme:dark;--canvas:radial-gradient(ellipse at 95% 0,rgba(77,107,254,.15),transparent 55%),linear-gradient(180deg,#151b2b,#151517);--surface:#232324;--ink:#f9fafb;--muted:#cfd3d6;--line:#363d50;--field:#2c2c2e;--accent:#7aaaff;--edge:#ffffff1f}
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{margin:0;min-height:100vh;min-height:100dvh;display:flex;align-items:center;align-items:safe center;justify-content:center;padding:max(24px,env(safe-area-inset-top)) max(20px,env(safe-area-inset-right)) max(24px,env(safe-area-inset-bottom)) max(20px,env(safe-area-inset-left));font:15px/1.5 ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei","Noto Sans SC",system-ui,sans-serif;background:var(--canvas);color:var(--ink);-webkit-font-smoothing:antialiased}
+.card{width:100%;max-width:440px;padding:32px;border-radius:24px;background:var(--surface);border:1px solid var(--line);box-shadow:0 8px 40px rgba(11,21,45,.05)}
+.top,.brand{display:flex;align-items:center;gap:12px}.top{justify-content:space-between}.brand{min-width:0;font-size:17px;font-weight:600}.brand img{flex:none;width:48px;height:48px;padding:7px;border-radius:16px;background:var(--field);border:1px solid var(--line)}
+.eyebrow{margin:28px 0 10px;color:var(--accent);font-size:12px;font-weight:600;letter-spacing:.04em}h1{margin:0 0 12px;font-size:27px;line-height:1.25;letter-spacing:-.025em;overflow-wrap:anywhere}p{margin:0;color:var(--muted);overflow-wrap:anywhere}code{display:block;margin-top:12px;padding:12px;border:1px solid var(--edge);border-radius:12px;background:var(--field);font:13px/1.6 ui-monospace,Menlo,monospace;white-space:normal;overflow-wrap:anywhere}
+.retry{display:flex;align-items:center;justify-content:center;min-height:48px;margin-top:24px;padding:12px 20px;border-radius:999px;background:#4d6bfe;color:#fff;text-decoration:none;font-weight:600}.retry:hover{background:#405be0}.retry:focus-visible,.theme:focus-visible{outline:3px solid var(--accent);outline-offset:4px}
+.theme{display:none;flex:none;align-items:center;justify-content:center;width:44px;height:44px;padding:0;border:1px solid var(--edge);border-radius:50%;background:var(--field);color:var(--muted);cursor:pointer}.js .theme{display:flex}.theme svg{width:18px;height:18px;display:none}[data-theme="auto"] .icon-auto,[data-theme="light"] .icon-light,[data-theme="dark"] .icon-dark{display:block}
+footer{margin-top:26px;padding-top:14px;border-top:1px solid var(--edge);font-size:11.5px;color:var(--muted)}
+@media(max-width:480px){body{padding:max(24px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(24px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left))}.card{padding:24px}.brand{font-size:16px}h1{font-size:25px}}
+`;
 
 function serveBrand(req, res) {
   if (req.method !== "GET" && req.method !== "HEAD") {
@@ -376,21 +429,29 @@ function sendPage(req, res, status, page, value = "") {
   const [title, template] = PAGE_COPY[lang][page];
   const escaped = String(value).replace(/[&<>]/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[ch]);
   const message = template.replace("{value}", () => escaped);
+  const copy = PAGE_COPY[lang];
+  const script = pageThemeScript(copy.theme);
+  const scriptHash = createHash("sha256").update(script).digest("base64");
   const html = `<!doctype html><html lang="${lang}"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>${title}</title><link rel="icon" type="image/png" href="${BRAND_PATH}"><style>
-:root{color-scheme:light dark}
-body{margin:0;min-height:100vh;display:grid;place-items:center;font:15px/1.6 ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
-background:#0f1115;color:#f9fafb;padding:24px}
-.card{max-width:420px;padding:28px 30px;border-radius:14px;background:#1b1b1c;border:1px solid #ffffff1f}
-.brand{display:flex;align-items:center;gap:8px;margin-bottom:12px;font-size:13px;font-weight:600}
-h1{margin:0 0 8px;font-size:17px}p{margin:0;color:#cfd3d6}
-code{font:12px ui-monospace,Menlo,monospace;color:#adb2b8}
-@media (prefers-color-scheme:light){body{background:#f9fafb;color:#0f1115}.card{background:#fff;border-color:#0000001a}p{color:#61666b}code{color:#81858c}}
-</style></head><body><div class="card"><div class="brand"><img src="${BRAND_PATH}" width="28" height="28" alt="">${brand}</div><h1>${title}</h1><p>${message}</p></div></body></html>`;
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#ebf1fe" id="theme-light">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#151b2b" id="theme-dark">
+<title>${title}</title><link rel="icon" type="image/png" href="${BRAND_PATH}">
+<style>${PAGE_STYLE}</style><script>${script}</script></head><body><main class="card">
+<header class="top"><div class="brand"><img src="${BRAND_PATH}" width="48" height="48" alt="">${brand}</div>
+<button class="theme" id="yuremote-theme-btn" type="button" aria-label="${copy.theme.change.replace("{t}", copy.theme.auto)}">
+<svg class="icon-auto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5a8.5 8.5 0 0 0 0 17Z" fill="currentColor" stroke="none"/></svg>
+<svg class="icon-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3M5 5l2 2m10 10 2 2M5 19l2-2M17 7l2-2"/></svg>
+<svg class="icon-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><path d="M20 14.2A8.2 8.2 0 0 1 9.8 4a8.5 8.5 0 1 0 10.2 10.2Z"/></svg></button></header>
+<p class="eyebrow">${copy.relay}</p><h1>${title}</h1><p>${message}</p>
+${page === "home" ? "" : `<a class="retry" href="">${copy.retry}</a>`}
+<footer>DeepSeek Harness · ${brand}</footer></main></body></html>`;
   const body = Buffer.from(html, "utf8");
   res.writeHead(status, {
     ...LOCAL_HEADERS,
+    "content-security-policy": `${LOCAL_HEADERS["content-security-policy"]}; script-src 'sha256-${scriptHash}'`,
     "content-type": "text/html; charset=utf-8",
     "content-language": lang,
     vary: "Accept-Language",

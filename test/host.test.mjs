@@ -25,6 +25,7 @@ import {
   buildUpstreamHeaders, sanitizeTarget, rewriteLocation, stripCookies, withMintedCookies, upstreamFromContext,
 } from "../lib/proxy.mjs";
 import { sanitizeSetCookie, cookieAuthority } from "../lib/mint.mjs";
+import { exercisePageTheme } from "./page-theme.mjs";
 
 // ───────────────────────────────────────────────────────────────────────────
 // harness
@@ -1323,7 +1324,7 @@ test("the directory picker endpoint is behind the portal gate", async () => {
   assert.equal(authed.status === 401 || authed.status === 200, true, "a session may reach the route");
 });
 
-test("the login page speaks the visitor's language and never stores a theme", async () => {
+test("the login page localizes its app banner and remembers a system-default theme", async () => {
   const { gw } = await startPortal();
   await gw.setPassword("correct horse battery");
   await gw.start();
@@ -1335,13 +1336,17 @@ test("the login page speaks the visitor's language and never stores a theme", as
   // login screen is a bug report, not a message.
   assert.match(zh.body, /访问密码/, "Chinese page expected");
   assert.equal(/密码在桌面端/.test(zh.body), false, "the setup hint must be gone");
-  assert.equal(/localStorage/.test(zh.body), false, "the page must not persist a theme");
+  exercisePageTheme(zh.body);
+  assert.match(zh.body, /使用 App，获得最佳体验/);
+  assert.match(zh.body, /href="https:\/\/github.com\/tsukii12\/dsh-YuRemote\/releases\/latest"/);
   assert.match(zh.body, /<img class="yuremote-mark" src="yuremote\/assets\/brand\/yuremote-favicon\.png"/);
   assert.match(zh.body, /<title>登录 · 鱼鱼远程<\/title>/);
 
   const en = await request(port, "/", { headers: { accept: "text/html", "accept-language": "en-US,en;q=0.9" } });
   assert.match(en.body, /access password|Remote access/i);
   assert.match(en.body, /<title>Sign in · YuRemote<\/title>/);
+  assert.match(en.body, /Best experienced in the app/);
+  exercisePageTheme(en.body);
 });
 
 test("redirects stay inside the mount prefix a proxy reports", async () => {
