@@ -45,6 +45,8 @@ flutter build apk --release
 flutter build ipa --release --no-codesign
 ```
 
+Release APK 使用 `app/android/key.properties`（`storeFile`、`storePassword`、`keyAlias`、`keyPassword`，不提交到仓库）中指定的密钥签名。所有发布的 APK 都必须使用同一个鱼鱼远程发布密钥，新版本才能覆盖安装旧版本；缺少该文件时，release 构建使用本机调试密钥，无法覆盖已发布的安装。
+
 选择连接的设备并配置必要签名后，可用 `flutter run` 安装开发版本。应用当前启用的检查见[开发与测试](TESTING.zh-CN.md)。
 
 ## 许可与致谢

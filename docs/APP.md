@@ -45,6 +45,8 @@ flutter build apk --release
 flutter build ipa --release --no-codesign
 ```
 
+Release APKs are signed with the key named in `app/android/key.properties` (`storeFile`, `storePassword`, `keyAlias`, `keyPassword`), which is never committed. Published APKs must all use the same YuRemote release key so each update installs over the previous one; without the file, release builds use the local debug key and cannot replace a published install.
+
 For a development install on a connected device, use `flutter run` after selecting the target and configuring any required signing. See [development and testing](TESTING.md) for the active app checks.
 
 ## License and credits
