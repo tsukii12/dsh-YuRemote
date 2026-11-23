@@ -18,7 +18,7 @@ YuRemote is a remote-only Flutter port of dsh-Go v1.2.0. The app works with the 
 
 ## Install
 
-From the [v0.7.0 release](https://github.com/tsukii12/dsh-YuRemote/releases/tag/v0.7.0), choose the Android APK or unsigned iOS IPA. That release currently lists the assets with `0.7.1` in their filenames.
+From the [latest release](https://github.com/tsukii12/dsh-YuRemote/releases/latest), choose the Android APK or unsigned iOS IPA.
 
 - **Android:** open the arm64 APK on a 64-bit ARM device. Allow installation from the trusted download source if prompted. An APK signed with a different key cannot replace an existing installation; uninstalling clears the app's local settings and sign-in state.
 - **iPhone/iPad:** sign the IPA yourself using a trusted tool or your Apple developer certificate and provisioning profile. The unsigned file cannot be installed directly. Follow your signing tool's instructions and enable Developer Mode if required. Alternatively, build and run from Xcode with your own signing team.

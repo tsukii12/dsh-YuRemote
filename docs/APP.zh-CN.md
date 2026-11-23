@@ -18,7 +18,7 @@
 
 ## 安装
 
-打开 [v0.7.0 发布页](https://github.com/tsukii12/dsh-YuRemote/releases/tag/v0.7.0)，选择 Android APK 或未签名的 iOS IPA。发布页当前的安装包文件名中标有 `0.7.1`。
+打开[最新发布页](https://github.com/tsukii12/dsh-YuRemote/releases/latest)，选择 Android APK 或未签名的 iOS IPA。
 
 - **Android：** 在 64 位 ARM 设备上打开 arm64 APK。若系统询问，请允许从受信任的下载来源安装。签名不同的 APK 无法覆盖已有安装；卸载会清除应用本地设置和登录状态。
 - **iPhone/iPad：** 用可信的签名工具，或用自己的 Apple 开发者证书和描述文件为 IPA 签名。未签名的文件不能直接安装。按签名工具的提示操作，必要时打开开发者模式。也可以在 Xcode 中选择自己的签名团队后构建并运行。
