@@ -623,6 +623,8 @@ class ChatController extends Notifier<ChatState> {
     // Not connected is a screen state (the composer explains it), not an
     // error. What was loaded stays until a new snapshot replaces it.
     if (client == null) return _retained(loading: false);
+    // A reconnect swaps in a new client; the old one's last state (closed) must not linger in the header.
+    _transcript.connectionState = client.mux.state;
     _sameClock = ref.read(activeConnectionProvider).value!.isLocal;
     if (_sameClock) {
       _quiet = false;

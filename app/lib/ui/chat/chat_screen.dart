@@ -24,6 +24,7 @@ import '../../state/commands_state.dart';
 import '../../state/compose_inbox.dart';
 import '../../state/composer_insert.dart';
 import '../../state/composer_quote.dart';
+import '../../remote/link_status.dart' show HostLinkPhase;
 import '../../state/connection_state.dart';
 import '../../state/draft_store.dart';
 import '../../state/drawer_view_state.dart';
@@ -1176,6 +1177,12 @@ class _ChatScreenState extends ConsumerState<ChatScreen> with WidgetsBindingObse
     final connAsync = ref.watch(activeConnectionProvider);
     final conn = connAsync.value;
     final connected = conn != null;
+    final activeHost = ref.watch(activeHostProvider);
+    final linkPhase = ref.watch(hostLinkStatusProvider(activeHost)).value?.phase;
+    final connFailed = connAsync.hasError && !connAsync.isLoading;
+    final hostDown = connFailed || linkPhase == HostLinkPhase.reconnecting || linkPhase == HostLinkPhase.failed;
+    // An empty chat already has the Reconnect pill for a failed connection.
+    final reconnectBanner = hostDown && (sessionId != null || !connFailed);
     const starting = false;
     const tidying = false;
     const failureCard = false;
@@ -1508,7 +1515,20 @@ class _ChatScreenState extends ConsumerState<ChatScreen> with WidgetsBindingObse
                               duration: AppMotion.of(context, AppMotion.standard),
                               curve: AppMotion.std,
                               alignment: Alignment.bottomCenter,
-                              child: connected && sessionId != null && !(chat?.controlReady ?? true)
+                              child: reconnectBanner
+                                  ? Padding(
+                                      padding: const EdgeInsets.only(bottom: 8),
+                                      child: ErrorBanner(
+                                        message:
+                                            (linkPhase == HostLinkPhase.reconnecting
+                                            ? l10n.shellHostReconnecting
+                                            : l10n.shellHostUnreachable)(
+                                              ref.watch(hostNameProvider(activeHost)) ?? l10n.commonRemoteHost,
+                                            ),
+                                        action: (label: l10n.viewEmptyReconnect, onPressed: _reconnect),
+                                      ),
+                                    )
+                                  : connected && sessionId != null && !(chat?.controlReady ?? true)
                                   ? Padding(
                                       padding: const EdgeInsets.only(bottom: 8),
                                       child: ErrorBanner(
