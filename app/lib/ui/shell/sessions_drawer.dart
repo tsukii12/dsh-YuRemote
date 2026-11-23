@@ -919,6 +919,15 @@ class IdentityBar extends ConsumerWidget {
             ),
           ),
           const SizedBox(width: 8),
+          if (link?.phase == HostLinkPhase.reconnecting || link?.phase == HostLinkPhase.failed) ...[
+            _RoundButton(
+              key: const ValueKey('identity-host-reconnect'),
+              icon: AppIcons.reconnecting,
+              tooltip: l10n.viewEmptyReconnect,
+              onTap: () => ref.read(remoteConnectionProvider(host).notifier).retry(),
+            ),
+            const SizedBox(width: 8),
+          ],
           const SizedBox(width: 8),
           _RoundButton(
             icon: AppIcons.settings,
@@ -934,7 +943,7 @@ class IdentityBar extends ConsumerWidget {
 
 /// 44dp pill-glass circle (no blur: the drawer is already glass).
 class _RoundButton extends StatelessWidget {
-  const _RoundButton({required this.icon, required this.tooltip, required this.onTap, this.onLongPress});
+  const _RoundButton({super.key, required this.icon, required this.tooltip, required this.onTap, this.onLongPress});
 
   final IconData icon;
   final String tooltip;
