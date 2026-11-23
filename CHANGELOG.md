@@ -23,6 +23,7 @@ versions are the plugin's own, not dsh's.
 - YuRemote (鱼鱼远程): rebranded the plugin and relay. The installers migrate
   existing state and keep the old relay installation available for rollback.
   Native app login, pairing, tunnel URLs and the wire protocol are unchanged.
+- `yuremote status` now suggests running with sudo instead of showing default settings when it cannot read the relay config.
 - Remote access password: changing it from the panel now signs out every
   device and cancels unused pairing links, as the note under the field always
   said. Before, signed-in phones stayed signed in. A phone that makes the change
@@ -1217,7 +1218,6 @@ real sockets.
 Initial version: authenticated gateway (HTTP + WebSocket reverse proxy), password
 / one-time QR pairing / device registry / lockout, dsh browser-cookie minting,
 login wall, Settings panel, mobile presentation layer, install script, 51 tests.
-
 
 
 

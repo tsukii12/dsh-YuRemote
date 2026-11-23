@@ -20,13 +20,13 @@ set -euo pipefail
 if [ ! -x "$0" ] && [ -f "$0" ]; then chmod +x "$0" 2>/dev/null || true; fi
 
 SELF_VERSION="0.6.2"
-INSTALLER_REVISION=4
 
 RELAY_DIR=/opt/yuremote-relay
 STATE_DIR=/var/lib/yuremote-relay
 UNIT=/etc/systemd/system/yuremote-relay.service
 SERVICE=yuremote-relay
 BIN=/usr/local/bin/yuremote
+SAVED_INSTALLER=/usr/local/libexec/yuremote-deploy-relay.sh
 LEGACY_RELAY_DIR=/opt/dsh-relay
 LEGACY_STATE_DIR=/var/lib/dsh-relay
 LEGACY_SERVICE=dsh-relay
@@ -224,10 +224,24 @@ ask_yn() {
   case "${reply:-$def}" in [Yy]*) return 0 ;; *) return 1 ;; esac
 }
 
+read_relay_config() {
+  local line key
+  while IFS= read -r line || [ -n "$line" ]; do
+    case "$line" in *=*) key=${line%%=*} ;; *) continue ;; esac
+    case "$key" in
+      HOST|SCHEME|VISIT_MODE|VISITOR_TLS|AGENT_TLS|AGENT_PORT|HTTP_PORT|PUBLIC_PORT|PROXY_MODE|CERT_SOURCE|ACME_MODE|ADVERTISED_URL|CERT_FILE|KEY_FILE|LANG_MODE)
+        IFS= read -r "$key" <<VALUE
+${line#*=}
+VALUE
+        ;;
+    esac
+  done < "$1"
+}
+
 # Previous choices, so a re-run offers what is installed and ports never drift.
 CONF_FILE="$STATE_DIR/deploy.conf"
 if [ "$UNINSTALL" = 0 ] && [ -r "$CONF_FILE" ]; then
-  . "$CONF_FILE" 2>/dev/null || true
+  read_relay_config "$CONF_FILE" 2>/dev/null || true
   HOST=${HOST:-}; AGENT_PORT=${AGENT_PORT:-9443}; HTTP_PORT=${HTTP_PORT:-8080}
   PUBLIC_PORT=${PUBLIC_PORT:-80}; PROXY_MODE=${PROXY_MODE:-}
   SAVED_PROXY=$PROXY_MODE
@@ -249,7 +263,7 @@ if [ -f "$UNIT" ]; then
 fi
 
 install_yuremote() {
-  cat > "$BIN" <<'YUREMOTE_EOF'
+  cat > "$BIN" <<'YUREMOTE_HEADER'
 #!/bin/sh
 # yuremote — manage the yuremote relay.
 #   yuremote                     status (default)
@@ -271,6 +285,10 @@ SERVICE=yuremote-relay
 set -u
 LANG_MODE=en
 t() { if [ "$LANG_MODE" = zh ]; then printf '%s' "$2"; else printf '%s' "$1"; fi; }
+YUREMOTE_HEADER
+  printf 'SCRIPT=%s\n' "$SAVED_INSTALLER" >> "$BIN"
+  declare -f read_relay_config >> "$BIN"
+  cat >> "$BIN" <<'YUREMOTE_EOF'
 
 # Colour only when someone is looking at a terminal.
 if [ -t 1 ]; then
@@ -296,12 +314,17 @@ human() {
 }
 
 load() {
-  [ -r "$CONF" ] && . "$CONF"
+  [ -r "$CONF" ] && read_relay_config "$CONF"
   HOST=${HOST:-127.0.0.1}; AGENT_PORT=${AGENT_PORT:-9443}; HTTP_PORT=${HTTP_PORT:-8080}
   PUBLIC_PORT=${PUBLIC_PORT:-80}; PROXY_MODE=${PROXY_MODE:-none}
   SCHEME=${SCHEME:-http}; VISITOR_TLS=${VISITOR_TLS:-0}; AGENT_TLS=${AGENT_TLS:-1}
   CERT_SOURCE=${CERT_SOURCE:-self}
-  SCRIPT=${SCRIPT:-}
+}
+require_saved_installer() {
+  if [ -n "$SCRIPT" ] && [ -f "$SCRIPT" ] && [ -r "$SCRIPT" ]; then return 0; fi
+  printf '%s\n' "$(t "Run the official installer from a local file:" "请下载官方安装脚本后运行：")" \
+    "curl -fsSLO https://raw.githubusercontent.com/tsukii12/dsh-YuRemote/master/tools/deploy-relay.sh && sudo bash deploy-relay.sh $1" >&2
+  exit 1
 }
 health() { curl -fsS --max-time 3 "http://127.0.0.1:${HTTP_PORT:-8080}/__relay/health" 2>/dev/null; }
 token() { [ -r "$TOKEN_FILE" ] && head -n 1 "$TOKEN_FILE"; }
@@ -360,6 +383,10 @@ uptime_line() {
 
 case "${1:-status}" in
   status)
+    if [ ! -r "$CONF" ]; then
+      printf '%s\n' "Cannot read $CONF. If it exists, run sudo yuremote status." >&2
+      exit 1
+    fi
     load
     printf 'service     %s\n' "$(service_state)"
     up=$(uptime_line); [ -n "${up:-}" ] && printf 'uptime      %s\n' "$up"
@@ -421,7 +448,7 @@ case "${1:-status}" in
     else
       printf 'public      %s\n' "$(cyan "$(url_base)/__t/$(tunnel_id)/")"
     fi
-    if [ "${AGENT_TLS:-1}" = 1 ]; then
+    if [ "$AGENT_TLS" = 1 ] && { [ "$CERT_SOURCE" = self ] || [ "$CERT_SOURCE" = none ]; }; then
       printf 'note        self-signed certificate: tick "trust" in the dsh panel\n'
     fi
     if [ "${SCHEME:-http}" = http ]; then
@@ -496,33 +523,20 @@ case "${1:-status}" in
 
   config)
     shift
+    load
     if [ $# -eq 0 ]; then
-      load
       [ -r "$CONF" ] && cat "$CONF" || echo "$(t "no saved configuration" "没有已保存的配置")"
       exit 0
     fi
-    load
-    if [ -n "${SCRIPT:-}" ] && [ -r "$SCRIPT" ]; then
-      exec bash "$SCRIPT" --apply-config "$@"
-    else
-      echo "$(t "Re-run the installer before changing these settings." "请重新运行安装脚本后再更改这些设置。")" >&2
-      exit 1
-    fi
+    require_saved_installer --reconfigure
+    exec bash "$SCRIPT" --apply-config "$@"
     ;;
 
   uninstall)
     load
-    if [ -n "${SCRIPT:-}" ] && [ -r "$SCRIPT" ]; then
-      printf 'removing the relay via %s\n' "$SCRIPT"
-      exec bash "$SCRIPT" --uninstall
-    fi
-    # No installer on disk (older release): do the same steps by hand.
-    systemctl disable --now "$SERVICE" >/dev/null 2>&1 || true
-    rm -f /etc/systemd/system/yuremote-relay.service
-    systemctl daemon-reload >/dev/null 2>&1 || true
-    rm -rf /opt/yuremote-relay /usr/local/bin/yuremote
-    printf 'removed the service, /opt/yuremote-relay and yuremote\n'
-    printf 'kept /var/lib/yuremote-relay (token and certificates), remove it yourself if you want a clean slate\n'
+    require_saved_installer --uninstall
+    printf 'removing the relay via %s\n' "$SCRIPT"
+    exec bash "$SCRIPT" --uninstall
     ;;
 
   help|--help|-h) sed -n '2,12p' "$0" | sed 's/^# \{0,1\}//' ;;
@@ -560,7 +574,7 @@ has_migrated_alias() {
 
 apply_relay_config() {
   local pair key port flag tmp result live
-  local rerun="sudo bash $STATE_DIR/deploy-relay.sh --reconfigure --lang $LANG_MODE"
+  local rerun="sudo bash $SAVED_INSTALLER --reconfigure --lang $LANG_MODE"
   [ "$#" = 1 ] && [[ "$1" = *=* ]] ||
     die "$(t "Provide exactly one setting as KEY=VALUE." "请按 KEY=VALUE 格式提供一项设置。")"
   pair=$1; key=${pair%%=*}; port=${pair#*=}
@@ -814,33 +828,23 @@ fetch_relay() { # fetch_relay <dest>: prints the matching base; fails when none 
 cleanup_download() { [ -z "${TMP_RELAY_DIR:-}" ] || rm -rf -- "$TMP_RELAY_DIR"; }
 trap cleanup_download EXIT
 
-prepare_installer() {
-  INSTALLER_SOURCE=${BASH_SOURCE[0]:-}
-  if [ -n "$INSTALLER_SOURCE" ] && [ -f "$INSTALLER_SOURCE" ]; then return 0; fi
-  local base
-  TMP_RELAY_DIR=${TMP_RELAY_DIR:-$(mktemp -d)}
-  INSTALLER_SOURCE="$TMP_RELAY_DIR/deploy-relay.sh"
-  for base in $RAW_BASES; do
-    if command -v curl >/dev/null 2>&1; then
-      curl -fsSL --max-time 25 "$base/tools/deploy-relay.sh" -o "$INSTALLER_SOURCE" 2>/dev/null || continue
-    else
-      wget -qT 25 -O "$INSTALLER_SOURCE" "$base/tools/deploy-relay.sh" || continue
-    fi
-    grep -Fxq "SELF_VERSION=\"$SELF_VERSION\"" "$INSTALLER_SOURCE" &&
-      grep -Fxq 'SERVICE=yuremote-relay' "$INSTALLER_SOURCE" &&
-      grep -Fxq "INSTALLER_REVISION=$INSTALLER_REVISION" "$INSTALLER_SOURCE" &&
-      bash -n "$INSTALLER_SOURCE" && return 0
-  done
-  die "$(t "Could not save the matching installer; download deploy-relay.sh and run it as a file." "无法保存配套安装脚本；请下载 deploy-relay.sh 后以文件方式运行。")"
+save_relay_installer() {
+  if [ ! -f "$0" ] || [ ! "${BASH_SOURCE[0]:-}" -ef "$0" ]; then
+    SAVED_INSTALLER=
+    return 0
+  fi
+  if [ ! "$0" -ef "$SAVED_INSTALLER" ]; then
+    mkdir -p -- "${SAVED_INSTALLER%/*}"
+    install -m 0755 -- "$0" "$SAVED_INSTALLER"
+  fi
 }
 
 save_migrated_installer() {
-  local saved="$STATE_DIR/deploy-relay.sh"
-  if [ ! "$INSTALLER_SOURCE" -ef "$saved" ]; then install -m 0755 "$INSTALLER_SOURCE" "$saved"; fi
+  save_relay_installer
   if [ -f "$CONF_FILE" ]; then
     sed -i '/^SCRIPT=/d; /^LANG_MODE=/d' "$CONF_FILE"
   fi
-  printf 'SCRIPT=%s\nLANG_MODE=%s\n' "$saved" "$LANG_MODE" >> "$CONF_FILE"
+  printf 'LANG_MODE=%s\n' "$LANG_MODE" >> "$CONF_FILE"
 }
 
 install_brand() {
@@ -943,7 +947,6 @@ migrate_relay() {
   health_addr="127.0.0.1:${health_addr##*:}"
   command -v curl >/dev/null 2>&1 || die "$(t "curl is required to check the migrated relay." "检查迁移后的中转需要 curl。")"
   node --check "$PORTAL_DIR/relay.mjs"
-  prepare_installer
   cp -a -- "$LEGACY_STATE_DIR" "$STATE_DIR"
   rm -f -- "$STATE_DIR/relay.mjs" "$STATE_DIR/deploy-relay.sh"
   install -d -m 0755 "$RELAY_DIR"
@@ -991,7 +994,6 @@ is_migrated_relay() {
   [ "$HAVE_SYSTEMD" = 1 ] && has_migrated_alias
 }
 if is_migrated_relay && [ "$RECONFIGURE" = 0 ]; then
-  prepare_installer
   install -d -m 0755 "$RELAY_DIR"
   install_brand
   if ! cmp -s "$PORTAL_DIR/relay.mjs" "$RELAY_DIR/relay.mjs"; then
@@ -1293,9 +1295,7 @@ fi
 ok "$RELAY_DIR/relay.mjs"
 install_brand
 
-if [ -f "$0" ] && [ -r "$0" ]; then
-  install -m 0755 "$0" "$STATE_DIR/deploy-relay.sh" 2>/dev/null || true
-fi
+save_relay_installer
 if [ -f "$PORTAL_DIR/relay.mjs" ]; then
   install -m 0644 "$PORTAL_DIR/relay.mjs" "$STATE_DIR/relay.mjs" 2>/dev/null || true
   PORTAL_DIR=$STATE_DIR
@@ -1743,7 +1743,6 @@ ACME_MODE=${ACME_MODE:-http}
 ADVERTISED_URL=${ADVERTISED_URL:-}
 CERT_FILE=$TLS_CERT
 KEY_FILE=$TLS_KEY
-SCRIPT=$STATE_DIR/deploy-relay.sh
 LANG_MODE=$LANG_MODE
 CONF_EOF
 chmod 644 "$CONF_FILE" 2>/dev/null || true
