@@ -22,7 +22,9 @@ On Windows, run `dsh --profile web --dump-config` and then `.\install.ps1 -Profi
 2. Open **Remote access → General** in the sidebar, leave remote access enabled, and save an access password of at least eight characters.
 3. On another device on the same network, open the URL shown under **Local network** and enter the portal password. The default gateway port is **3081**; the example DSH Web port **3080** is not the portal.
 
-<img src="screenshots/mobile-login.png" alt="Mobile password login" width="280">
+<p align="center">
+  <img src="screenshots/mobile-login.png" alt="Mobile password login" width="280">
+</p>
 
 For passwordless enrollment, on the host open **Local network** and scan its pairing QR with the phone camera. Opening the link signs the browser in directly. The pairing link is single-use and expires after three minutes by default. Refresh the code to get a new link; do not share it publicly. For the in-app scanner, see [mobile app setup](APP.md).
 

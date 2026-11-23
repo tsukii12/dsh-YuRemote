@@ -16,8 +16,6 @@
   </table>
 </div>
 
-<img src="screenshots/app-settings-about.png" alt="iOS 应用中的关于页面，显示许可与上游致谢" width="220">
-
 ## 安装
 
 打开 [v0.7.0 发布页](https://github.com/tsukii12/dsh-YuRemote/releases/tag/v0.7.0)，选择 Android APK 或未签名的 iOS IPA。发布页当前的安装包文件名中标有 `0.7.1`。
@@ -54,3 +52,7 @@ flutter build ipa --release --no-codesign
 服务端、插件、中继、安装脚本和网页远程端继续采用 [MIT](../LICENSE) 许可。应用及随附的 Dart 软件包采用 [AGPL-3.0](../app/LICENSE) 许可，声明中另有条款的内容除外。应用基于 [ccch1mneyyy/dsh-Go v1.2.0（提交 `c1a84e3f`）](https://github.com/ccch1mneyyy/dsh-Go/commit/c1a84e3f833ad59ff07a5027994dae3935907a2d)。应用和软件包源码保持公开，再分发时请保留[应用声明](../app/NOTICE)、[软件包声明](../packages/NOTICE)及[第三方声明](../app/THIRD_PARTY_NOTICES.md)。
 
 应用使用鱼鱼远程品牌和 Tsuki 的插画，不使用 dsh-Go 未授权的名称、标志或吉祥物。详见[品牌与素材](../app/ASSETS.md)。
+
+<p align="center">
+  <img src="screenshots/app-settings-about.png" alt="iOS 应用中的关于页面，显示许可与上游致谢" width="220">
+</p>

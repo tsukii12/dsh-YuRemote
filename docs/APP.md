@@ -16,8 +16,6 @@ YuRemote is a remote-only Flutter port of dsh-Go v1.2.0. The app works with the 
   </table>
 </div>
 
-<img src="screenshots/app-settings-about.png" alt="The iOS app's About page with license and upstream credits" width="220">
-
 ## Install
 
 From the [v0.7.0 release](https://github.com/tsukii12/dsh-YuRemote/releases/tag/v0.7.0), choose the Android APK or unsigned iOS IPA. That release currently lists the assets with `0.7.1` in their filenames.
@@ -54,3 +52,7 @@ For a development install on a connected device, use `flutter run` after selecti
 The server, plugin, relay, installers and web remote remain [MIT](../LICENSE). The app and its accompanying Dart packages are [AGPL-3.0](../app/LICENSE), except where the notices indicate separate terms. The app is based on [ccch1mneyyy/dsh-Go v1.2.0, commit `c1a84e3f`](https://github.com/ccch1mneyyy/dsh-Go/commit/c1a84e3f833ad59ff07a5027994dae3935907a2d). The app and package source stays public. Keep the [app notice](../app/NOTICE), [package notices](../packages/NOTICE) and [third-party notices](../app/THIRD_PARTY_NOTICES.md) when redistributing.
 
 The app uses YuRemote branding and Tsuki’s illustration, not dsh-Go’s excluded name, logo or mascots. See [branding and artwork](../app/ASSETS.md).
+
+<p align="center">
+  <img src="screenshots/app-settings-about.png" alt="The iOS app's About page with license and upstream credits" width="220">
+</p>
