@@ -5,6 +5,10 @@ versions are the plugin's own, not dsh's.
 
 ## Unreleased
 
+- YuRemote's Add Workspace sheet shows the remote host's drives or other roots
+  under Home. The folder browser's back arrow returns to the sheet from any
+  depth; Parent folder still moves up one level.
+
 - Relay home, offline and error pages now share the Web sign-in page's rounded
   mist-blue design, with a retry action and DSH naming. Web sign-in recommends
   the YuRemote app without blocking browser access. Both follow the system theme
