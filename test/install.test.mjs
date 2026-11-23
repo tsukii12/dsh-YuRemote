@@ -14,7 +14,7 @@ function shellFunction(name) {
   const end = name === "install_yuremote" ? "^YUREMOTE_EOF\\n[\\s\\S]*?^\\}" : "^\\}";
   const body = new RegExp(`^${name}\\(\\) \\{[\\s\\S]*?${end}`, "m").exec(deploy)?.[0];
   assert.ok(body, `missing installer function ${name}`);
-  return body;
+  return name === "install_yuremote" ? `${shellFunction("read_relay_config")}\n${body}` : body;
 }
 
 function home(profiles) {
@@ -118,7 +118,7 @@ test("legacy drp revokes a token from the active migrated relay, and works after
   writeFileSync(unit, `ExecStart=relay.mjs --token-file ${tokenFile}\n`);
   symlinkSync(unit, legacyUnit);
   const setup = [
-    'set -euo pipefail', 'BIN=$1/yuremote LEGACY_BIN=$1/drp LEGACY_UNIT=$1/dsh-relay.service UNIT=$1/yuremote-relay.service',
+    'set -euo pipefail', 'BIN=$1/yuremote LEGACY_BIN=$1/drp LEGACY_UNIT=$1/dsh-relay.service UNIT=$1/yuremote-relay.service SAVED_INSTALLER=$1/deploy-relay.sh',
     'ok() { :; }', 't() { printf "%s" "$1"; }',
     shellFunction("install_yuremote").replaceAll("/var/lib/yuremote-relay", sandbox),
     shellFunction("install_legacy_command"), 'install_yuremote; install_legacy_command',
@@ -145,7 +145,8 @@ test("migrated manager only edits an independent listener and refuses transport 
   const legacyUnit = join(sandbox, "dsh-relay.service");
   const state = join(sandbox, "state");
   const relay = join(sandbox, "relay");
-  const installer = join(state, "deploy-relay.sh");
+  const installer = join(sandbox, "deploy-relay.sh");
+  const untrustedInstaller = join(state, "deploy-relay.sh");
   const manager = join(sandbox, "yuremote");
   const log = join(sandbox, "systemctl.log");
   const conf = join(state, "deploy.conf");
@@ -153,11 +154,12 @@ test("migrated manager only edits an independent listener and refuses transport 
   const key = join(sandbox, "key.pem");
   const line = `[Service]\nUser=dsh-relay\nEnvironment="DSH_RELAY_CACHE_MB=64 --http-port 4231"\nExecStart=/usr/bin/env node relay.mjs --prefix /custom --max-streams 32 \\
     --http-port "127.0.0.1:8080" --agent-port 9443 --tls-port 0.0.0.0:8443 --tls-cert ${cert} --tls-key ${key}\n`;
-  const initial = `HOST=relay.test\nSCHEME=https\nVISIT_MODE=https\nVISITOR_TLS=1\nAGENT_TLS=1\nHTTP_PORT=8080\nAGENT_PORT=9443\nPUBLIC_PORT=8443\nPROXY_MODE=none\nCERT_SOURCE=user\nLANG_MODE=zh\nSCRIPT=${installer}\n`;
+  const initial = `HOST=relay.test\nSCHEME=https\nVISIT_MODE=https\nVISITOR_TLS=1\nAGENT_TLS=1\nHTTP_PORT=8080\nAGENT_PORT=9443\nPUBLIC_PORT=8443\nPROXY_MODE=none\nCERT_SOURCE=user\nLANG_MODE=zh\nSCRIPT=${untrustedInstaller}\nSERVICE=not-the-relay\n`;
   mkdirSync(state);
   writeFileSync(cert, "certificate fixture");
   writeFileSync(key, "key fixture");
   writeFileSync(join(state, "relay.mjs"), 'export const RELAY_VERSION = "0.6.2";\n');
+  writeFileSync(untrustedInstaller, "#!/bin/bash\nexit 91\n");
   writeFileSync(join(state, "token"), "fixture-token\n");
   writeFileSync(unit, line);
   symlinkSync(unit, legacyUnit);
@@ -167,6 +169,7 @@ test("migrated manager only edits an independent listener and refuses transport 
     .replaceAll("/etc/systemd/system", sandbox).replaceAll("/run/systemd/system", sandbox)
     .replaceAll("/opt/yuremote-relay", relay).replaceAll("/var/lib/yuremote-relay", state)
     .replaceAll("/usr/local/bin/yuremote", manager)
+    .replaceAll("/usr/local/libexec/yuremote-deploy-relay.sh", installer)
     .replaceAll("/etc/nginx", `${sandbox}/nginx`).replaceAll("/etc/caddy", `${sandbox}/caddy`)
     .replace("command -v caddy >/dev/null 2>&1", "false")
     .replace('as_root() { [ "$(id -u)" = "0" ]; }', "as_root() { :; }")
@@ -184,7 +187,7 @@ ss() { printf 'header\\na b c 0.0.0.0:8090 d\\n'; }
 sleep() { :; }`);
   writeFileSync(installer, fixture);
   const prepared = spawnSync("bash", ["-s"], {
-    input: `BIN=${manager}\nok() { :; }\nt() { :; }\n${shellFunction("install_yuremote").replaceAll("/var/lib/yuremote-relay", state)}\ninstall_yuremote\n`,
+    input: `BIN=${manager} SAVED_INSTALLER=${installer}\nok() { :; }\nt() { :; }\n${shellFunction("install_yuremote").replaceAll("/var/lib/yuremote-relay", state)}\ninstall_yuremote\n`,
     encoding: "utf8",
   });
   assert.equal(prepared.status, 0, prepared.stderr);
@@ -246,7 +249,8 @@ test("migrated TLS status does not report defaults when the copied config is unr
     rmSync(sandbox, { recursive: true, force: true });
   });
   const manager = join(sandbox, "yuremote");
-  writeFileSync(join(state, "deploy.conf"), `HOST=relay.test
+  const conf = join(state, "deploy.conf");
+  const acme = `HOST=relay.test
 SCHEME=https
 VISIT_MODE=https
 VISITOR_TLS=1
@@ -258,7 +262,8 @@ CERT_FILE=${sandbox}/legacy/cert.pem
 KEY_FILE=${sandbox}/legacy/key.pem
 SCRIPT=${state}/deploy-relay.sh
 LANG_MODE=en
-`);
+`;
+  writeFileSync(conf, acme);
   writeFileSync(join(state, "token"), "fixture-token\n", { mode: 0o600 });
   writeFileSync(join(sandbox, "systemctl"), '#!/bin/sh\ncase "$1" in is-active) exit 0 ;; is-enabled) echo enabled ;; esac\n', { mode: 0o755 });
   writeFileSync(join(sandbox, "curl"), `#!/bin/sh
@@ -266,7 +271,7 @@ LANG_MODE=en
 printf '%s\\n' '{"tunnels":[]}'
 `, { mode: 0o755 });
   const installed = spawnSync("bash", ["-s"], {
-    input: `BIN=${manager}\nok() { :; }\n${shellFunction("install_yuremote").replaceAll("/var/lib/yuremote-relay", state)}\ninstall_yuremote\n`,
+    input: `BIN=${manager} SAVED_INSTALLER=${sandbox}/deploy-relay.sh\nok() { :; }\n${shellFunction("install_yuremote").replaceAll("/var/lib/yuremote-relay", state)}\ninstall_yuremote\n`,
     encoding: "utf8",
   });
   assert.equal(installed.status, 0, installed.stderr);
@@ -278,6 +283,19 @@ printf '%s\\n' '{"tunnels":[]}'
   assert.match(readable.stdout, /^endpoint    tls:\/\/relay\.test:9443$/m);
   assert.match(readable.stdout, /^relay       reachable$/m);
   assert.doesNotMatch(readable.stdout, /self-signed certificate/);
+
+  for (const [scheme, proxy] of [["http", "none"], ["https", "caddy"]]) {
+    writeFileSync(conf, acme.replace("CERT_SOURCE=acme", "CERT_SOURCE=none")
+      .replace("VISITOR_TLS=1", "VISITOR_TLS=0").replace("SCHEME=https", `SCHEME=${scheme}`) +
+      `PROXY_MODE=${proxy}\nAGENT_TLS=1\n`);
+    const selfSigned = spawnSync(manager, ["status"], { env, encoding: "utf8" });
+    assert.equal(selfSigned.status, 0, selfSigned.stderr);
+    assert.match(selfSigned.stdout, /self-signed certificate: tick "trust"/);
+  }
+  writeFileSync(conf, acme + 'SERVICE=not-the-relay\nADVERTISED_URL=https://relay.test:8443/?a=b&c=d=');
+  const literal = spawnSync(manager, ["status"], { env, encoding: "utf8" });
+  assert.equal(literal.status, 0, literal.stderr);
+  assert.match(literal.stdout, /^public +https:\/\/relay\.test:8443\/\?a=b&c=d=\/__t\//m);
 
   const identity = process.getuid() === 0 ? { uid: 65534, gid: 65534 } : {};
   if (process.getuid() !== 0) chmodSync(state, 0);
@@ -357,6 +375,7 @@ for (const [healthy, language, plain = false] of [["yes", "en"], ["no", "en"], [
     const oldUnit = join(sandbox, "dsh-relay.service");
     const newUnit = join(sandbox, "yuremote-relay.service");
     const backup = oldUnit + ".bak-yuremote";
+    const savedInstaller = join(sandbox, "libexec", "deploy-relay.sh");
     const token = "first-fixture-token\nsecond-fixture-token\n";
     const listeners = plain ? "--http-port 0.0.0.0:8080 --agent-port 9443 --public-url http://relay.test:8080"
       : "--http-port 127.0.0.1:8080 --tls-port 0.0.0.0:8443 --agent-port 9443 --public-url https://relay.test:8443";
@@ -382,6 +401,7 @@ RAW_BASES="https://stale.invalid https://fixture.invalid"
 TMP_RELAY_DIR=$3.download
 mkdir "$TMP_RELAY_DIR"
 CONF_FILE=$STATE_DIR/deploy.conf
+SAVED_INSTALLER=${savedInstaller}
 LEGACY_SERVICE=dsh-relay SERVICE=yuremote-relay
 RUN_USER=$SERVICE RUN_GROUP=$SERVICE
 install_brand() { :; }
@@ -412,15 +432,14 @@ die() { printf '%s\\n' "$*" >&2; exit 1; }
     const translate = /^t\(\) \{.*\}$/m.exec(deploy)?.[0];
     assert.ok(translate);
     const result = spawnSync("bash", ["-s", "--", oldDir, oldState, newDir, newState, oldUnit, newUnit, join(ROOT, "tools"), healthy, language, plain ? "yes" : "no"], {
-      input: [setup, translate, ...["prepare_installer", "save_migrated_installer", "write_migrated_unit", "legacy_plain_unit", "transfer_migrated_state"].map(shellFunction), migrate, "migrate_relay\n"].join("\n"),
+      input: [setup, translate, ...["prepare_installer", "save_relay_installer", "save_migrated_installer", "write_migrated_unit", "legacy_plain_unit", "transfer_migrated_state"].map(shellFunction), migrate, "migrate_relay\n"].join("\n"),
       encoding: "utf8",
     });
     assert.equal(readFileSync(join(oldDir, "relay.mjs"), "utf8"), "legacy code");
     assert.equal(readFileSync(join(oldState, "token"), "utf8"), token);
     assert.equal(readFileSync(join(newState, "token"), "utf8"), token);
-    const savedInstaller = join(newState, "deploy-relay.sh");
     assert.equal(readFileSync(savedInstaller, "utf8"), '#!/bin/bash\nSELF_VERSION="fixture-version"\nINSTALLER_REVISION=1\nSERVICE=yuremote-relay\nexit 0\n');
-    assert.equal(readFileSync(join(newState, "deploy.conf"), "utf8"), `HTTP_PORT=8080\nSCRIPT=${savedInstaller}\nLANG_MODE=${language}\n`);
+    assert.equal(readFileSync(join(newState, "deploy.conf"), "utf8"), `HTTP_PORT=8080\nLANG_MODE=${language}\n`);
     assert.equal(spawnSync(savedInstaller).status, 0);
     if (healthy === "yes") {
       assert.equal(result.status, 0, result.stdout + result.stderr);
