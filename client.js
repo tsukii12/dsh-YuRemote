@@ -779,6 +779,7 @@ window.__ModuleLoader__.load({
       "@container (max-width:760px){.yuremote-page .yuremote-stack,.yuremote-page .yuremote-lan{grid-template-columns:minmax(0,1fr)}}",
       "@media (max-width:1080px){.yuremote-page .yuremote-stack,.yuremote-page .yuremote-lan{grid-template-columns:minmax(0,1fr)}}",
       "@media (max-width:560px){.yuremote-page .yuremote-root{gap:20px}.yuremote-page .yuremote-card{padding:20px}.yuremote-page .yuremote-tab{padding:12px 6px;font-size:12.5px;gap:6px}.yuremote-page .yuremote-tab .yuremote-ico{display:none}.yuremote-page-title{font-size:23px}.yuremote-page-brand{width:48px;height:48px;border-radius:16px}.yuremote-page .yuremote-input{font-size:16px}}",
+      "@media (max-width:380px){.yuremote-page .yuremote-tabbar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));border-radius:24px}.yuremote-page .yuremote-tab{min-width:0;white-space:normal;padding:12px 8px}}",
       /* Connection row: address left, pairing right, equal height. A flex column
          per card lets the buttons sit on the baseline instead of leaving a gap. */
       /* Two strips, not two columns: the address on its own line, then the pairing
@@ -2676,7 +2677,6 @@ window.__ModuleLoader__.load({
     return { inject: ["slots"], apply: apply };
   }
 });
-
 
 
 
