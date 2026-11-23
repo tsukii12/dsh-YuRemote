@@ -4396,7 +4396,7 @@
   "updateInstallRetry": "重新安装",
   "updateWhatsNew": "更新内容",
   "updateWhatsNewOk": "知道了",
-  "updateWhatsNewNotes": "- 修复图片无法保存到相册的问题\n- 修复图片和文件无法在其他应用中打开的问题\n- 新增检查更新：启动时自动检查新版本，也可以在「关于」里手动检查\n- 移除对话、回复和文件的分享入口\n- 更新后首次打开会显示本次更新内容",
+  "updateWhatsNewNotes": "- 扫码添加服务器后，名称留空，由你填写。可在远程主机列表中重命名或删除主机，也可长按侧边栏中的主机进行操作。\n- 「添加工作区」在「主目录」下列出远程驱动器和其他根目录，点击返回箭头可从任意目录回到选择面板。\n- 已打开的对话在断连时可「重新连接」，登录失效后会返回登录页面。",
   "viewArtifactSaved": "已存到 {value}",
   "@viewArtifactSaved": {
     "placeholders": {

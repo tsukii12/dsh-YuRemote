@@ -7083,7 +7083,7 @@ class L10nEn extends L10n {
 
   @override
   String get updateWhatsNewNotes =>
-      '- Fixed saving images to Photos\n- Fixed opening images and files in other apps\n- Added update checks: YuRemote checks for a new version at launch, and you can check manually in About\n- Removed the Share entries for chats, replies and files\n- The first launch after an update shows what changed';
+      '- After scanning a server QR code, enter your own server name. Rename or delete saved hosts from the host list or by long-pressing them in the sidebar.\n- Add Workspace lists remote drives and other roots below Home. The back arrow returns to the picker from any folder.\n- Open chats offer Reconnect when the connection drops. If your sign-in has expired, the app returns to the sign-in screen.';
 
   @override
   String viewArtifactSaved(String value) {

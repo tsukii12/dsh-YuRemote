@@ -38,6 +38,12 @@ void main() {
     expect(await firstLaunchAfterUpdate(), isFalse);
   });
 
+  test('what\'s new shows once when upgrading from the original 0.8.1 build', () async {
+    SharedPreferences.setMockInitialValues({whatsNewSeenKey: '0.8.1+29925484'});
+    expect(await firstLaunchAfterUpdate(), isTrue);
+    expect(await firstLaunchAfterUpdate(), isFalse);
+  });
+
   test('semantic release, prerelease, numeric components and build metadata', () {
     final ordered = [
       '0.7.1-alpha',
