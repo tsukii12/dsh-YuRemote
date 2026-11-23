@@ -5,6 +5,8 @@ versions are the plugin's own, not dsh's.
 
 ## Unreleased
 
+## 0.8.1 — 2026-11-23
+
 - YuRemote now asks for a server name after scanning a QR code. Rename or
   delete saved hosts from the remote host list or by long-pressing a host in
   the sidebar switcher.

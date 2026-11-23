@@ -6,7 +6,7 @@ import '../l10n/l10n.dart';
 /// constant kept in sync with `pubspec.yaml` (checked by tooling tests). Release builds can
 /// override it with `--dart-define=DSH_APP_VERSION=1.2.0+7`.
 abstract final class AppInfo {
-  static const version = String.fromEnvironment('DSH_APP_VERSION', defaultValue: '0.8.0+29923483');
+  static const version = String.fromEnvironment('DSH_APP_VERSION', defaultValue: '0.8.1+29925484');
 
   /// "1.0.0 (1)" for display.
   static String get displayVersion {
