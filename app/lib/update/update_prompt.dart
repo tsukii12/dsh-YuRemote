@@ -1,10 +1,12 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../l10n/l10n.dart';
 import '../state/app_info.dart';
+import '../state/hosts_state.dart';
 import '../ui/chat/render/markdown_body.dart';
 import '../ui/settings/settings_widgets.dart';
 import 'release_check.dart';
@@ -107,6 +109,36 @@ class _UpdateCheckTileState extends State<UpdateCheckTile> {
   );
 }
 
+/// The version whose notes were last shown. A launch with no record counts as
+/// an update when the app was already set up (a saved host), so a fresh
+/// install stays quiet.
+const whatsNewSeenKey = 'whats_new_seen_version';
+
+Future<bool> firstLaunchAfterUpdate() async {
+  final prefs = await SharedPreferences.getInstance();
+  final seen = prefs.getString(whatsNewSeenKey);
+  if (seen == AppInfo.version) return false;
+  await prefs.setString(whatsNewSeenKey, AppInfo.version);
+  return seen != null || prefs.containsKey(HostsController.prefsKey);
+}
+
+class WhatsNewDialog extends StatelessWidget {
+  const WhatsNewDialog({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return AlertDialog(
+      title: Text('${l10n.updateWhatsNew} · ${AppInfo.version.split('+').first}'),
+      content: SizedBox(
+        width: 440,
+        child: SingleChildScrollView(child: MarkdownBody(text: l10n.updateWhatsNewNotes)),
+      ),
+      actions: [FilledButton(onPressed: () => Navigator.pop(context), child: Text(l10n.updateWhatsNewOk))],
+    );
+  }
+}
+
 class StartupUpdateCheck extends StatefulWidget {
   const StartupUpdateCheck({super.key, required this.child});
 
@@ -124,6 +156,14 @@ class _StartupUpdateCheckState extends State<StartupUpdateCheck> {
   }
 
   Future<void> _check() async {
+    try {
+      if (await firstLaunchAfterUpdate() && mounted) {
+        await showDialog<void>(context: context, builder: (_) => const WhatsNewDialog());
+      }
+    } on Object {
+      // A preference failure only skips the notes.
+    }
+    if (!mounted) return;
     try {
       final checker = ReleaseChecker.instance;
       final release = await checker.check(automatic: true);

@@ -24,7 +24,6 @@ import '../common/capsule_chip.dart';
 import '../files/file_glyph.dart';
 import '../files/table_view.dart';
 import '../session/workspace_files.dart' show formatBytes;
-import '../share/share_entry.dart' show shareArtifact;
 import '../shell/page_frame.dart';
 import '../theme/app_icons.dart';
 import '../theme/theme.dart';
@@ -171,8 +170,6 @@ Future<void> runArtifactAction(
         await files.open(sessionId, target);
       case ArtifactAction.openWith:
         await files.open(sessionId, target, chooser: true);
-      case ArtifactAction.share:
-        if (context.mounted) await shareArtifact(context, sessionId: sessionId, artifact: target);
       case ArtifactAction.save:
         final where = await files.saveToDownloads(sessionId, target);
         messenger?.showBriefNotice(
@@ -393,11 +390,6 @@ class _ArtifactPreviewPageState extends ConsumerState<ArtifactPreviewPage> {
   }
 
   List<Widget> get _actions => [
-    GlassIconButton(
-      icon: ArtifactAction.share.icon,
-      tooltip: context.l10n.commonShare,
-      onPressed: _busy ? null : () => _act(ArtifactAction.share),
-    ),
     GlassIconButton(icon: AppIcons.more, tooltip: context.l10n.viewArtifactMore, onPressed: _busy ? null : _menu),
   ];
 

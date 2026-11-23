@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:dsh_app/state/hosts_state.dart';
 import 'package:dsh_app/update/release_check.dart';
 import 'package:dsh_app/update/update_prompt.dart';
 import 'package:dsh_app/ui/theme/theme.dart';
@@ -23,6 +24,19 @@ Map<String, dynamic> releaseJson({
 
 void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
+
+  test('what\'s new stays quiet on a fresh install and shows once after an update', () async {
+    expect(await firstLaunchAfterUpdate(), isFalse);
+    expect(await firstLaunchAfterUpdate(), isFalse);
+
+    SharedPreferences.setMockInitialValues({whatsNewSeenKey: '0.7.0+1'});
+    expect(await firstLaunchAfterUpdate(), isTrue);
+    expect(await firstLaunchAfterUpdate(), isFalse);
+
+    SharedPreferences.setMockInitialValues({HostsController.prefsKey: '[]'});
+    expect(await firstLaunchAfterUpdate(), isTrue);
+    expect(await firstLaunchAfterUpdate(), isFalse);
+  });
 
   test('semantic release, prerelease, numeric components and build metadata', () {
     final ordered = [

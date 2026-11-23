@@ -9071,7 +9071,7 @@ abstract class L10n {
   /// No description provided for @portalArtworkCredit.
   ///
   /// In zh, this message translates to:
-  /// **'鱼鱼远程插画由 Tsuki 提供。未包含上游受保护的品牌与吉祥物。'**
+  /// **'未包含上游受保护的品牌与形象。'**
   String get portalArtworkCredit;
 
   /// No description provided for @portalDirectoryParent.
@@ -12019,6 +12019,24 @@ abstract class L10n {
   /// In zh, this message translates to:
   /// **'重新安装'**
   String get updateInstallRetry;
+
+  /// No description provided for @updateWhatsNew.
+  ///
+  /// In zh, this message translates to:
+  /// **'更新内容'**
+  String get updateWhatsNew;
+
+  /// No description provided for @updateWhatsNewOk.
+  ///
+  /// In zh, this message translates to:
+  /// **'知道了'**
+  String get updateWhatsNewOk;
+
+  /// No description provided for @updateWhatsNewNotes.
+  ///
+  /// In zh, this message translates to:
+  /// **'- 修复图片无法保存到相册的问题\n- 修复图片和文件无法在其他应用中打开的问题\n- 新增检查更新：启动时自动检查新版本，也可以在「关于」里手动检查\n- 移除对话、回复和文件的分享入口\n- 更新后首次打开会显示本次更新内容'**
+  String get updateWhatsNewNotes;
 
   /// No description provided for @viewArtifactSaved.
   ///

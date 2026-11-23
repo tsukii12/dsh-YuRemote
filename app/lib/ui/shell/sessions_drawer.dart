@@ -30,7 +30,6 @@ import '../common/status_dot.dart';
 import '../remote/host_status.dart';
 import '../remote/host_switcher.dart' show showHostSheet;
 import '../remote/network_details_sheet.dart' show showRemoteNetworkDetails;
-import '../share/share_entry.dart';
 import '../theme/app_icons.dart';
 import '../theme/theme.dart';
 import '../workspace/text_prompt.dart';
@@ -548,11 +547,6 @@ class _SessionList extends ConsumerWidget {
                       onTap: () => Navigator.pop(sheet, 'folder'),
                     ),
                     ListTile(
-                      leading: const Icon(AppIcons.share),
-                      title: Text(context.l10n.commonShare),
-                      onTap: () => Navigator.pop(sheet, 'share'),
-                    ),
-                    ListTile(
                       leading: const Icon(AppIcons.multiSelect),
                       title: Text(context.l10n.shellMultiSelect),
                       onTap: () => Navigator.pop(sheet, 'select'),
@@ -591,8 +585,6 @@ class _SessionList extends ConsumerWidget {
             SnackBar(content: Text(action == 'pin' ? appL10n.shellPinFailed : appL10n.shellUnpinFailed)),
           );
         }
-      case 'share':
-        await shareConversation(context, s.sessionId);
       case 'folder':
         await moveToFolderFlow(context, ref, [s.sessionId]);
       case 'select':
