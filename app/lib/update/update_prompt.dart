@@ -8,6 +8,7 @@ import '../state/app_info.dart';
 import '../ui/chat/render/markdown_body.dart';
 import '../ui/settings/settings_widgets.dart';
 import 'release_check.dart';
+import 'apk_download_dialog.dart';
 
 enum UpdateAction { download, later, skip }
 
@@ -45,6 +46,15 @@ Future<void> showUpdatePrompt(BuildContext context, AppRelease release, ReleaseC
   if (action != UpdateAction.download || !context.mounted) return;
   try {
     final url = release.downloadUrl(Platform.operatingSystem);
+    if (Platform.isAndroid && url.path.toLowerCase().endsWith('.apk')) {
+      final fallback = await showDialog<bool>(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => ApkDownloadDialog(url: url),
+      );
+      if (fallback != true || !context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.updateDownloadFallback)));
+    }
     if (url.scheme == 'https' && await launchUrl(url, mode: LaunchMode.externalApplication)) return;
   } on Object {
     // The platform can refuse an otherwise valid URL.

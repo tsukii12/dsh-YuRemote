@@ -6,5 +6,13 @@
   "updateNoNotes": "No release notes provided.",
   "updateSkip": "Skip this version",
   "updateLater": "Later",
-  "updateDownload": "Download"
+  "updateDownload": "Download",
+  "updateDownloading": "Downloading update",
+  "updateCancel": "Cancel",
+  "updateBrowser": "Download in browser",
+  "updateDownloadFallback": "Couldn't download or open the installer. Opening the download in your browser.",
+  "updateInstallPermissionTitle": "Allow app installation",
+  "updateInstallPermissionBody": "Android hasn't allowed YuRemote to install apps. Open settings and enable Allow from this source, then return and tap Install again. Or download in your browser instead.",
+  "updateOpenSettings": "Open settings",
+  "updateInstallRetry": "Install again"
 }

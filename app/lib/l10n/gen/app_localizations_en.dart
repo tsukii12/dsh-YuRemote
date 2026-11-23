@@ -7037,6 +7037,32 @@ class L10nEn extends L10n {
   String get updateDownload => 'Download';
 
   @override
+  String get updateDownloading => 'Downloading update';
+
+  @override
+  String get updateCancel => 'Cancel';
+
+  @override
+  String get updateBrowser => 'Download in browser';
+
+  @override
+  String get updateDownloadFallback =>
+      'Couldn\'t download or open the installer. Opening the download in your browser.';
+
+  @override
+  String get updateInstallPermissionTitle => 'Allow app installation';
+
+  @override
+  String get updateInstallPermissionBody =>
+      'Android hasn\'t allowed YuRemote to install apps. Open settings and enable Allow from this source, then return and tap Install again. Or download in your browser instead.';
+
+  @override
+  String get updateOpenSettings => 'Open settings';
+
+  @override
+  String get updateInstallRetry => 'Install again';
+
+  @override
   String viewArtifactSaved(String value) {
     return 'Saved to $value';
   }

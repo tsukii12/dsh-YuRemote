@@ -11972,6 +11972,54 @@ abstract class L10n {
   /// **'下载'**
   String get updateDownload;
 
+  /// No description provided for @updateDownloading.
+  ///
+  /// In zh, this message translates to:
+  /// **'正在下载更新'**
+  String get updateDownloading;
+
+  /// No description provided for @updateCancel.
+  ///
+  /// In zh, this message translates to:
+  /// **'取消'**
+  String get updateCancel;
+
+  /// No description provided for @updateBrowser.
+  ///
+  /// In zh, this message translates to:
+  /// **'在浏览器中下载'**
+  String get updateBrowser;
+
+  /// No description provided for @updateDownloadFallback.
+  ///
+  /// In zh, this message translates to:
+  /// **'无法下载或打开安装程序，正在浏览器中打开下载链接。'**
+  String get updateDownloadFallback;
+
+  /// No description provided for @updateInstallPermissionTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'允许安装应用'**
+  String get updateInstallPermissionTitle;
+
+  /// No description provided for @updateInstallPermissionBody.
+  ///
+  /// In zh, this message translates to:
+  /// **'Android 尚未允许鱼鱼远程安装应用。请打开设置，启用“允许来自此来源的应用”，返回后点击“重新安装”。也可以改用浏览器下载。'**
+  String get updateInstallPermissionBody;
+
+  /// No description provided for @updateOpenSettings.
+  ///
+  /// In zh, this message translates to:
+  /// **'打开设置'**
+  String get updateOpenSettings;
+
+  /// No description provided for @updateInstallRetry.
+  ///
+  /// In zh, this message translates to:
+  /// **'重新安装'**
+  String get updateInstallRetry;
+
   /// No description provided for @viewArtifactSaved.
   ///
   /// In zh, this message translates to:
