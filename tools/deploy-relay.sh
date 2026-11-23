@@ -20,7 +20,6 @@ set -euo pipefail
 if [ ! -x "$0" ] && [ -f "$0" ]; then chmod +x "$0" 2>/dev/null || true; fi
 
 SELF_VERSION="0.6.2"
-INSTALLER_REVISION=7
 
 RELAY_DIR=/opt/yuremote-relay
 STATE_DIR=/var/lib/yuremote-relay
@@ -321,6 +320,12 @@ load() {
   SCHEME=${SCHEME:-http}; VISITOR_TLS=${VISITOR_TLS:-0}; AGENT_TLS=${AGENT_TLS:-1}
   CERT_SOURCE=${CERT_SOURCE:-self}
 }
+require_saved_installer() {
+  if [ -n "$SCRIPT" ] && [ -f "$SCRIPT" ] && [ -r "$SCRIPT" ]; then return 0; fi
+  printf '%s\n' "$(t "Run the official installer from a local file:" "请下载官方安装脚本后运行：")" \
+    "curl -fsSLO https://raw.githubusercontent.com/tsukii12/dsh-YuRemote/master/tools/deploy-relay.sh && sudo bash deploy-relay.sh $1" >&2
+  exit 1
+}
 health() { curl -fsS --max-time 3 "http://127.0.0.1:${HTTP_PORT:-8080}/__relay/health" 2>/dev/null; }
 token() { [ -r "$TOKEN_FILE" ] && head -n 1 "$TOKEN_FILE"; }
 tunnel_id() { tid=$(token); [ -n "$tid" ] && node -e 'const c=require("node:crypto");process.stdout.write(c.createHash("sha256").update(process.argv[1]).digest("base64url").slice(0,12))' "$tid"; }
@@ -518,33 +523,20 @@ case "${1:-status}" in
 
   config)
     shift
+    load
+    require_saved_installer --reconfigure
     if [ $# -eq 0 ]; then
-      load
       [ -r "$CONF" ] && cat "$CONF" || echo "$(t "no saved configuration" "没有已保存的配置")"
       exit 0
     fi
-    load
-    if [ -n "${SCRIPT:-}" ] && [ -r "$SCRIPT" ]; then
-      exec bash "$SCRIPT" --apply-config "$@"
-    else
-      echo "$(t "Re-run the installer before changing these settings." "请重新运行安装脚本后再更改这些设置。")" >&2
-      exit 1
-    fi
+    exec bash "$SCRIPT" --apply-config "$@"
     ;;
 
   uninstall)
     load
-    if [ -n "${SCRIPT:-}" ] && [ -r "$SCRIPT" ]; then
-      printf 'removing the relay via %s\n' "$SCRIPT"
-      exec bash "$SCRIPT" --uninstall
-    fi
-    # No installer on disk (older release): do the same steps by hand.
-    systemctl disable --now "$SERVICE" >/dev/null 2>&1 || true
-    rm -f /etc/systemd/system/yuremote-relay.service
-    systemctl daemon-reload >/dev/null 2>&1 || true
-    rm -rf /opt/yuremote-relay /usr/local/bin/yuremote
-    printf 'removed the service, /opt/yuremote-relay and yuremote\n'
-    printf 'kept /var/lib/yuremote-relay (token and certificates), remove it yourself if you want a clean slate\n'
+    require_saved_installer --uninstall
+    printf 'removing the relay via %s\n' "$SCRIPT"
+    exec bash "$SCRIPT" --uninstall
     ;;
 
   help|--help|-h) sed -n '2,12p' "$0" | sed 's/^# \{0,1\}//' ;;
@@ -836,30 +828,14 @@ fetch_relay() { # fetch_relay <dest>: prints the matching base; fails when none 
 cleanup_download() { [ -z "${TMP_RELAY_DIR:-}" ] || rm -rf -- "$TMP_RELAY_DIR"; }
 trap cleanup_download EXIT
 
-prepare_installer() {
-  INSTALLER_SOURCE=${BASH_SOURCE[0]:-}
-  if [ -n "$INSTALLER_SOURCE" ] && [ -f "$INSTALLER_SOURCE" ]; then return 0; fi
-  local base
-  TMP_RELAY_DIR=${TMP_RELAY_DIR:-$(mktemp -d)}
-  INSTALLER_SOURCE="$TMP_RELAY_DIR/deploy-relay.sh"
-  for base in $RAW_BASES; do
-    if command -v curl >/dev/null 2>&1; then
-      curl -fsSL --max-time 25 "$base/tools/deploy-relay.sh" -o "$INSTALLER_SOURCE" 2>/dev/null || continue
-    else
-      wget -qT 25 -O "$INSTALLER_SOURCE" "$base/tools/deploy-relay.sh" || continue
-    fi
-    grep -Fxq "SELF_VERSION=\"$SELF_VERSION\"" "$INSTALLER_SOURCE" &&
-      grep -Fxq 'SERVICE=yuremote-relay' "$INSTALLER_SOURCE" &&
-      grep -Fxq "INSTALLER_REVISION=$INSTALLER_REVISION" "$INSTALLER_SOURCE" &&
-      bash -n "$INSTALLER_SOURCE" && return 0
-  done
-  die "$(t "Could not save the matching installer; download deploy-relay.sh and run it as a file." "无法保存配套安装脚本；请下载 deploy-relay.sh 后以文件方式运行。")"
-}
-
 save_relay_installer() {
-  if [ ! "$INSTALLER_SOURCE" -ef "$SAVED_INSTALLER" ]; then
+  if [ ! -f "$0" ] || [ ! "${BASH_SOURCE[0]:-}" -ef "$0" ]; then
+    SAVED_INSTALLER=
+    return 0
+  fi
+  if [ ! "$0" -ef "$SAVED_INSTALLER" ]; then
     mkdir -p -- "${SAVED_INSTALLER%/*}"
-    install -m 0755 -- "$INSTALLER_SOURCE" "$SAVED_INSTALLER"
+    install -m 0755 -- "$0" "$SAVED_INSTALLER"
   fi
 }
 
@@ -971,7 +947,6 @@ migrate_relay() {
   health_addr="127.0.0.1:${health_addr##*:}"
   command -v curl >/dev/null 2>&1 || die "$(t "curl is required to check the migrated relay." "检查迁移后的中转需要 curl。")"
   node --check "$PORTAL_DIR/relay.mjs"
-  prepare_installer
   cp -a -- "$LEGACY_STATE_DIR" "$STATE_DIR"
   rm -f -- "$STATE_DIR/relay.mjs" "$STATE_DIR/deploy-relay.sh"
   install -d -m 0755 "$RELAY_DIR"
@@ -1019,7 +994,6 @@ is_migrated_relay() {
   [ "$HAVE_SYSTEMD" = 1 ] && has_migrated_alias
 }
 if is_migrated_relay && [ "$RECONFIGURE" = 0 ]; then
-  prepare_installer
   install -d -m 0755 "$RELAY_DIR"
   install_brand
   if ! cmp -s "$PORTAL_DIR/relay.mjs" "$RELAY_DIR/relay.mjs"; then
@@ -1299,7 +1273,6 @@ if can_ask; then ask_yn "$(t "Install with these settings" "确认安装")" y ||
 
 # ── 4. install ──────────────────────────────────────────────────────────────
 say "4/6 $(t "Installing the relay" "安装 relay")"
-prepare_installer
 if [ "$HAVE_SYSTEMD" = 1 ]; then
   if is_migrated_relay && [ -f "$UNIT" ]; then
     if legacy_plain_unit "$UNIT"; then

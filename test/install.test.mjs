@@ -305,29 +305,27 @@ printf '%s\\n' '{"tunnels":[]}'
   assert.match(denied.stderr, /sudo yuremote status/);
 });
 
-test("upgrading a non-migrated relay from stdin saves the installer for the manager", { skip }, (t) => {
+test("upgrading a non-migrated relay from stdin never fetches an installer or partially uninstalls", { skip }, (t) => {
   const sandbox = home([]);
   t.after(() => rmSync(sandbox, { recursive: true, force: true }));
   const relay = join(sandbox, "relay");
   const state = join(sandbox, "state");
   const bin = join(sandbox, "yuremote");
   const saved = join(sandbox, "libexec", "deploy-relay.sh");
+  const log = join(sandbox, "calls");
+  const unit = join(sandbox, "yuremote-relay.service");
   mkdirSync(state);
   writeFileSync(join(state, "token"), "fixture-token\n");
   writeFileSync(join(state, "deploy-relay.sh"), "#!/bin/bash\nexit 99\n");
   writeFileSync(join(state, "deploy.conf"), `SCRIPT=${state}/deploy-relay.sh\n`);
-  writeFileSync(join(sandbox, "yuremote-relay.service"), "[Service]\n");
-  const download = '#!/bin/bash\nSELF_VERSION="fixture-version"\nINSTALLER_REVISION=1\nSERVICE=yuremote-relay\nprintf "%s\\n" "$@"\n';
-  writeFileSync(join(sandbox, "download"), download);
+  writeFileSync(unit, "[Service]\n");
+  writeFileSync(join(sandbox, "systemctl"), `#!/bin/sh\necho systemctl >> "${log}"\n`, { mode: 0o755 });
   const setup = `
 set -euo pipefail
-SELF_VERSION=fixture-version INSTALLER_REVISION=1
-HAVE_SYSTEMD=1 UNIT=${sandbox}/yuremote-relay.service
+HAVE_SYSTEMD=1 UNIT=${unit}
 RUN_USER=$(id -un) RUN_GROUP=$(id -gn)
 STATE_DIR=${state} RELAY_DIR=${relay} PORTAL_DIR=${join(ROOT, "tools")}
-SAVED_INSTALLER=${saved} BIN=${bin} RAW_BASES=https://fixture.invalid
-TMP_RELAY_DIR=${sandbox}/download-dir
-mkdir "$TMP_RELAY_DIR"
+SAVED_INSTALLER=${saved} BIN=${bin}
 t() { printf '%s' "$1"; }
 say() { :; }
 ok() { :; }
@@ -335,21 +333,40 @@ die() { printf '%s\\n' "$*" >&2; exit 1; }
 useradd() { :; }
 is_migrated_relay() { return 1; }
 install_brand() { :; }
-curl() { while [ "$#" -gt 1 ]; do shift; done; cp -- "${sandbox}/download" "$1"; }
+curl() { echo curl >> "${log}"; return 1; }
 `;
   const install = deploy.slice(deploy.indexOf("# ── 4. install"), deploy.indexOf('TLS_CERT=""; TLS_KEY=""'));
   const upgraded = spawnSync("bash", ["-s"], {
-    input: [setup, shellFunction("prepare_installer"), shellFunction("save_relay_installer"), install,
-      shellFunction("install_yuremote").replaceAll("/var/lib/yuremote-relay", state), "install_yuremote\n"].join("\n"),
+    input: [setup, shellFunction("save_relay_installer"), install,
+      shellFunction("install_yuremote").replaceAll("/var/lib/yuremote-relay", state)
+        .replaceAll("/opt/yuremote-relay", relay).replaceAll("/usr/local/bin/yuremote", bin)
+        .replaceAll("/etc/systemd/system/yuremote-relay.service", unit),
+      "install_yuremote\n"].join("\n"),
     encoding: "utf8",
   });
   assert.equal(upgraded.status, 0, upgraded.stderr);
-  assert.equal(readFileSync(saved, "utf8"), download);
-  assert.equal(lstatSync(saved).mode & 0o777, 0o755);
+  assert.equal(existsSync(saved), false);
+  const env = { ...process.env, PATH: `${sandbox}:${process.env.PATH}` };
+  for (const [args, flag, message] of [
+    [["config"], "--reconfigure", /Run the official installer/],
+    [["uninstall"], "--uninstall", /Run the official installer/],
+    [["config", "AGENT_PORT=9444"], "--reconfigure", /请下载官方安装脚本后运行/],
+  ]) {
+    if (args.length > 1) {
+      mkdirSync(dirname(saved));
+      writeFileSync(saved, "#!/bin/bash\nexit 99\n");
+      writeFileSync(join(state, "deploy.conf"), "LANG_MODE=zh\n");
+    }
+    const refused = spawnSync(bin, args, { env, encoding: "utf8" });
+    assert.equal(refused.status, 1, refused.stdout + refused.stderr);
+    assert.equal(refused.stdout, "");
+    assert.match(refused.stderr, message);
+    assert.ok(refused.stderr.includes(`https://raw.githubusercontent.com/tsukii12/dsh-YuRemote/master/tools/deploy-relay.sh && sudo bash deploy-relay.sh ${flag}`));
+  }
+  assert.equal(existsSync(log), false);
+  assert.equal(readFileSync(unit, "utf8"), "[Service]\n");
+  assert.ok(existsSync(join(relay, "relay.mjs")));
   assert.equal(readFileSync(join(state, "token"), "utf8"), "fixture-token\n");
-  const config = spawnSync(bin, ["config", "AGENT_PORT=9444"], { encoding: "utf8" });
-  assert.equal(config.status, 0, config.stderr);
-  assert.equal(config.stdout, "--apply-config\nAGENT_PORT=9444\n");
 });
 
 test("a migrated relay can be reinstalled after uninstall without reverting its unit", { skip }, (t) => {
@@ -383,7 +400,6 @@ say() { :; }
 ok() { :; }
 warn() { :; }
 install_brand() { :; }
-prepare_installer() { :; }
 save_migrated_installer() { :; }
 install_yuremote() { touch "$BIN"; }
 systemctl() { printf '%s\\n' "$*"; }
@@ -442,11 +458,6 @@ LEGACY_RELAY_DIR=$1 LEGACY_STATE_DIR=$2 RELAY_DIR=$3 STATE_DIR=$4 LEGACY_UNIT=$5
 PORTAL_DIR=$7 HEALTHY=$8 LEGACY_BACKUP=$5.bak-yuremote
 LANG_MODE=$9
 PLAIN=${10}
-SELF_VERSION=fixture-version
-INSTALLER_REVISION=1
-RAW_BASES="https://stale.invalid https://fixture.invalid"
-TMP_RELAY_DIR=$3.download
-mkdir "$TMP_RELAY_DIR"
 CONF_FILE=$STATE_DIR/deploy.conf
 SAVED_INSTALLER=${savedInstaller}
 LEGACY_SERVICE=dsh-relay SERVICE=yuremote-relay
@@ -464,13 +475,7 @@ systemctl() {
   fi
   printf '%s\\n' "$*" >&2
 }
-curl() {
-  case "$*" in
-    *https://stale.invalid/tools/deploy-relay.sh*) printf '#!/bin/bash\nSELF_VERSION="fixture-version"\nSERVICE=yuremote-relay\nexit 99\n' > "\${!#}" ;;
-    *https://fixture.invalid/tools/deploy-relay.sh*) printf '#!/bin/bash\nSELF_VERSION="fixture-version"\nINSTALLER_REVISION=1\nSERVICE=yuremote-relay\nexit 0\n' > "\${!#}" ;;
-    *) [ "$HEALTHY" = yes ] ;;
-  esac
-}
+curl() { [[ "$*" != *"/tools/deploy-relay.sh"* ]] || { echo fetched >> "$STATE_DIR.fetch"; return 1; }; [ "$HEALTHY" = yes ]; }
 sleep() { :; }
 ok() { printf '%s\\n' "$*"; }
 info() { printf '%s\\n' "$*"; }
@@ -478,16 +483,23 @@ die() { printf '%s\\n' "$*" >&2; exit 1; }
 `;
     const translate = /^t\(\) \{.*\}$/m.exec(deploy)?.[0];
     assert.ok(translate);
-    const result = spawnSync("bash", ["-s", "--", oldDir, oldState, newDir, newState, oldUnit, newUnit, join(ROOT, "tools"), healthy, language, plain ? "yes" : "no"], {
-      input: [setup, translate, ...["prepare_installer", "save_relay_installer", "save_migrated_installer", "write_migrated_unit", "legacy_plain_unit", "transfer_migrated_state"].map(shellFunction), migrate, "migrate_relay\n"].join("\n"),
+    const input = [setup, translate, ...["save_relay_installer", "save_migrated_installer", "write_migrated_unit", "legacy_plain_unit", "transfer_migrated_state"].map(shellFunction), migrate, "migrate_relay\n"].join("\n");
+    const localInstaller = healthy === "yes" && language === "en" && !plain ? join(sandbox, "deploy-relay.sh") : null;
+    if (localInstaller) writeFileSync(localInstaller, input);
+    const result = spawnSync("bash", [...(localInstaller ? [localInstaller] : ["-s", "--"]), oldDir, oldState, newDir, newState, oldUnit, newUnit, join(ROOT, "tools"), healthy, language, plain ? "yes" : "no"], {
+      input: localInstaller ? undefined : input,
       encoding: "utf8",
     });
     assert.equal(readFileSync(join(oldDir, "relay.mjs"), "utf8"), "legacy code");
     assert.equal(readFileSync(join(oldState, "token"), "utf8"), token);
     assert.equal(readFileSync(join(newState, "token"), "utf8"), token);
-    assert.equal(readFileSync(savedInstaller, "utf8"), '#!/bin/bash\nSELF_VERSION="fixture-version"\nINSTALLER_REVISION=1\nSERVICE=yuremote-relay\nexit 0\n');
+    assert.equal(existsSync(`${newState}.fetch`), false);
+    assert.equal(existsSync(savedInstaller), Boolean(localInstaller));
+    if (localInstaller) {
+      assert.equal(readFileSync(savedInstaller, "utf8"), input);
+      assert.equal(lstatSync(savedInstaller).mode & 0o777, 0o755);
+    }
     assert.equal(readFileSync(join(newState, "deploy.conf"), "utf8"), `HTTP_PORT=8080\nLANG_MODE=${language}\n`);
-    assert.equal(spawnSync(savedInstaller).status, 0);
     if (healthy === "yes") {
       assert.equal(result.status, 0, result.stdout + result.stderr);
       assert.equal(readFileSync(backup, "utf8"), legacy);
