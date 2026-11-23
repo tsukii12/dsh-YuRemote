@@ -1,0 +1,18 @@
+{
+  "updateCheck": "检查更新",
+  "updateCurrent": "已是最新版本",
+  "updateFailed": "检查更新失败，请稍后重试。",
+  "updateAvailable": "发现新版本",
+  "updateNoNotes": "此版本暂无更新说明。",
+  "updateSkip": "跳过此版本",
+  "updateLater": "以后",
+  "updateDownload": "下载",
+  "updateDownloading": "正在下载更新",
+  "updateCancel": "取消",
+  "updateBrowser": "在浏览器中下载",
+  "updateDownloadFallback": "无法下载或打开安装程序，正在浏览器中打开下载链接。",
+  "updateInstallPermissionTitle": "允许安装应用",
+  "updateInstallPermissionBody": "Android 尚未允许鱼鱼远程安装应用。请打开设置，启用“允许来自此来源的应用”，返回后点击“重新安装”。也可以改用浏览器下载。",
+  "updateOpenSettings": "打开设置",
+  "updateInstallRetry": "重新安装"
+}

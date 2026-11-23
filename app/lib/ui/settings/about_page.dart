@@ -3,6 +3,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../l10n/l10n.dart';
 import '../../state/app_info.dart';
+import '../../update/update_prompt.dart';
 import '../shell/brand_mark.dart';
 import '../shell/page_frame.dart';
 import 'settings_widgets.dart';
@@ -41,7 +42,7 @@ class AboutPage extends StatelessWidget {
         ),
         SettingsSection(
           children: [
-            SettingsTile(spot: Spots.version, value: Text(AppInfo.displayVersion)),
+            const UpdateCheckTile(),
             SettingsTile(
               title: l10n.portalProjectRepository,
               subtitle: AppInfo.repositoryUrl,

@@ -6531,6 +6531,54 @@ class L10nZh extends L10n {
   String get systemActionsResultNotRun => '没有执行。';
 
   @override
+  String get updateCheck => '检查更新';
+
+  @override
+  String get updateCurrent => '已是最新版本';
+
+  @override
+  String get updateFailed => '检查更新失败，请稍后重试。';
+
+  @override
+  String get updateAvailable => '发现新版本';
+
+  @override
+  String get updateNoNotes => '此版本暂无更新说明。';
+
+  @override
+  String get updateSkip => '跳过此版本';
+
+  @override
+  String get updateLater => '以后';
+
+  @override
+  String get updateDownload => '下载';
+
+  @override
+  String get updateDownloading => '正在下载更新';
+
+  @override
+  String get updateCancel => '取消';
+
+  @override
+  String get updateBrowser => '在浏览器中下载';
+
+  @override
+  String get updateDownloadFallback => '无法下载或打开安装程序，正在浏览器中打开下载链接。';
+
+  @override
+  String get updateInstallPermissionTitle => '允许安装应用';
+
+  @override
+  String get updateInstallPermissionBody => 'Android 尚未允许鱼鱼远程安装应用。请打开设置，启用“允许来自此来源的应用”，返回后点击“重新安装”。也可以改用浏览器下载。';
+
+  @override
+  String get updateOpenSettings => '打开设置';
+
+  @override
+  String get updateInstallRetry => '重新安装';
+
+  @override
   String viewArtifactSaved(String value) {
     return '已存到 $value';
   }
