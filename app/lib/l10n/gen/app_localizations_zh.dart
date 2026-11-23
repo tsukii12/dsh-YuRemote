@@ -4974,7 +4974,7 @@ class L10nZh extends L10n {
   String get portalLicenseSplit => '鱼鱼远程及导入的 Dart 包采用 AGPL-3.0 许可。独立的服务端网关采用 MIT 许可。';
 
   @override
-  String get portalArtworkCredit => '鱼鱼远程插画由 Tsuki 提供。未包含上游受保护的品牌与吉祥物。';
+  String get portalArtworkCredit => '未包含上游受保护的品牌与形象。';
 
   @override
   String get portalDirectoryParent => '上一级文件夹';
@@ -6577,6 +6577,16 @@ class L10nZh extends L10n {
 
   @override
   String get updateInstallRetry => '重新安装';
+
+  @override
+  String get updateWhatsNew => '更新内容';
+
+  @override
+  String get updateWhatsNewOk => '知道了';
+
+  @override
+  String get updateWhatsNewNotes =>
+      '- 修复图片无法保存到相册的问题\n- 修复图片和文件无法在其他应用中打开的问题\n- 新增检查更新：启动时自动检查新版本，也可以在「关于」里手动检查\n- 移除对话、回复和文件的分享入口\n- 更新后首次打开会显示本次更新内容';
 
   @override
   String viewArtifactSaved(String value) {
