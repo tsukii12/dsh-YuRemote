@@ -22,7 +22,6 @@ enum MessageAction {
   copy(AppIcons.copy),
   selectText(AppIcons.selectText),
   quote(AppIcons.quote),
-  share(AppIcons.share),
   regenerate(AppIcons.regenerate),
   branch(AppIcons.fork),
   edit(AppIcons.edit);
@@ -34,7 +33,6 @@ enum MessageAction {
     MessageAction.copy => appL10n.commonCopy,
     MessageAction.selectText => appL10n.chatSelectText,
     MessageAction.quote => appL10n.chatQuote,
-    MessageAction.share => appL10n.commonShare,
     MessageAction.regenerate => appL10n.chatRegenerate,
     MessageAction.branch => appL10n.chatBranchFromHere,
     MessageAction.edit => appL10n.chatEditAndResend,

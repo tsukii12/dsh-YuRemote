@@ -4,7 +4,7 @@
 
 ## Install on the host
 
-Use dsh 0.2.x (package range: `>=0.2.0-0 <0.3.0-0`) and Node.js 20+. The plugin has no npm runtime dependencies. Install in the dsh profile you actually use; the example targets Web.
+Use DeepSeek Harness (DSH) 0.2.x (package range: `>=0.2.0-0 <0.3.0-0`) and Node.js 20+. The plugin has no npm runtime dependencies. Install in the DSH profile you actually use; the example targets Web.
 
 ```sh
 git clone https://github.com/tsukii12/dsh-YuRemote.git
@@ -14,13 +14,13 @@ sh install.sh -p web
 dsh web --port 3080 --no-open
 ```
 
-On Windows, run `dsh --profile web --dump-config` and then `.\install.ps1 -Profile web` from the checkout before starting dsh Web. For desktop, initialize the `desktop` profile, replace `web` with `desktop` in the install command, and restart the desktop app. Without a profile argument, the scripts target the existing desktop and web profiles. For a checkout install, update with `git pull`, rerun the same installer and restart dsh. To remove the plugin, use `sh install.sh -p web --uninstall` or `.\install.ps1 -Profile web -Uninstall`, then restart.
+On Windows, run `dsh --profile web --dump-config` and then `.\install.ps1 -Profile web` from the checkout before starting DSH Web. For desktop, initialize the `desktop` profile, replace `web` with `desktop` in the install command, and restart the desktop app. Without a profile argument, the scripts target the existing desktop and web profiles. For a checkout install, update with `git pull`, rerun the same installer and restart DSH. To remove the plugin, use `sh install.sh -p web --uninstall` or `.\install.ps1 -Profile web -Uninstall`, then restart.
 
 ## Connect over your LAN
 
-1. On the host, open the dsh Web launch URL locally, or open the desktop app. Do not share the dsh launch token.
+1. On the host, open the DSH Web launch URL locally, or open the desktop app. Do not share the DSH launch token.
 2. Open **Remote access → General** in the sidebar, leave remote access enabled, and save an access password of at least eight characters.
-3. On another device on the same network, open the URL shown under **Local network** and enter the portal password. The default gateway port is **3081**; the example dsh Web port **3080** is not the portal.
+3. On another device on the same network, open the URL shown under **Local network** and enter the portal password. The default gateway port is **3081**; the example DSH Web port **3080** is not the portal.
 
 ![Mobile password login](screenshots/mobile-login.png)
 
@@ -30,7 +30,7 @@ For passwordless enrollment, on the host open **Local network** and scan its pai
 
 ### General
 
-**Enable remote access** starts or stops the gateway; turning it off from a remote device disconnects that device and recovery requires access to dsh on the host. **Bind address** defaults to `0.0.0.0` (all interfaces); use `auto` to select the primary LAN IPv4 address, or `127.0.0.1` to keep access local to the host and any locally attached tunnel. **Port** defaults to `3081`; the panel accepts 1–65535. **Access password** accepts 8–200 characters; changing it in the panel signs out devices and cancels pending pairing links.
+**Enable remote access** starts or stops the gateway; turning it off from a remote device disconnects that device and recovery requires access to DSH on the host. **Bind address** defaults to `0.0.0.0` (all interfaces); use `auto` to select the primary LAN IPv4 address, or `127.0.0.1` to keep access local to the host and any locally attached tunnel. **Port** defaults to `3081`; the panel accepts 1–65535. **Access password** accepts 8–200 characters; changing it in the panel signs out devices and cancels pending pairing links.
 
 ![General tab](screenshots/desktop-general.png)
 

@@ -5302,8 +5302,7 @@ class L10nEn extends L10n {
       'YuRemote and its imported Dart packages are licensed under AGPL-3.0. The separate server gateway is MIT licensed.';
 
   @override
-  String get portalArtworkCredit =>
-      'YuRemote artwork supplied by Tsuki. Upstream protected branding and mascots are not included.';
+  String get portalArtworkCredit => 'Upstream protected branding and imagery are not included.';
 
   @override
   String get portalDirectoryParent => 'Parent folder';
@@ -7061,6 +7060,16 @@ class L10nEn extends L10n {
 
   @override
   String get updateInstallRetry => 'Install again';
+
+  @override
+  String get updateWhatsNew => 'What\'s new';
+
+  @override
+  String get updateWhatsNewOk => 'Got it';
+
+  @override
+  String get updateWhatsNewNotes =>
+      '- Fixed saving images to Photos\n- Fixed opening images and files in other apps\n- Added update checks: YuRemote checks for a new version at launch, and you can check manually in About\n- Removed the Share entries for chats, replies and files\n- The first launch after an update shows what changed';
 
   @override
   String viewArtifactSaved(String value) {

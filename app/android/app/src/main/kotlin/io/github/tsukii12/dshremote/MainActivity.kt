@@ -1,16 +1,20 @@
 package io.github.tsukii12.dshremote
 
-import io.flutter.embedding.android.FlutterActivity
-import io.flutter.embedding.engine.FlutterEngine
-import io.flutter.plugin.common.MethodChannel
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import io.flutter.embedding.android.FlutterActivity
+import io.flutter.embedding.engine.FlutterEngine
+import io.flutter.plugin.common.MethodChannel
+import io.github.tsukii12.dshremote.files.FilesPlugin
+import io.github.tsukii12.dshremote.media.MediaPlugin
 
 class MainActivity : FlutterActivity() {
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+        flutterEngine.plugins.add(FilesPlugin())
+        flutterEngine.plugins.add(MediaPlugin())
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "io.github.tsukii12.dshremote/updates")
             .setMethodCallHandler { call, result ->
                 when (call.method) {

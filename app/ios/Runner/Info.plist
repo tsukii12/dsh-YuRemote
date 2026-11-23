@@ -30,6 +30,10 @@
     <string>Connect to your DeepSeek Harness portal on the local network. / 连接局域网中的 DeepSeek Harness 门户。</string>
     <key>NSCameraUsageDescription</key>
     <string>Scan server and pairing QR codes. / 扫描服务器和配对二维码。</string>
+    <key>LSSupportsOpeningDocumentsInPlace</key>
+    <true/>
+    <key>UIFileSharingEnabled</key>
+    <true/>
     <key>NSPhotoLibraryUsageDescription</key>
     <string>Choose an attachment. / 选择附件。</string>
     <key>NSPhotoLibraryAddUsageDescription</key>

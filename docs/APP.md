@@ -2,7 +2,7 @@
 
 [简体中文](APP.zh-CN.md) · [Documentation](README.md#english)
 
-YuRemote is a remote-only Flutter port of dsh-Go v1.2.0. The app works with the YuRemote gateway, not with SSH or a plain DeepSeek Harness Web URL. It does not run DeepSeek Harness locally or embed its website. Open and continue chats, stream responses, handle approvals and questions, and browse workspaces or attach files when the host supports those operations.
+YuRemote is a remote-only Flutter port of dsh-Go v1.2.0. The app works with the YuRemote gateway, not with SSH or a plain DeepSeek Harness (DSH) Web URL. It does not run DSH locally or embed its website. Open and continue chats, stream responses, handle approvals and questions, and browse workspaces or attach files when the host supports those operations.
 
 <img src="screenshots/app-home-chat.png" alt="iOS chat on the Studio Mac demo host" width="220"> <img src="screenshots/app-sidebar.png" alt="iOS sidebar with demo conversations, search and filters" width="220"> <img src="screenshots/app-folder-picker.png" alt="iOS remote folder picker in the demo workspace" width="220">
 
@@ -23,7 +23,7 @@ From the [v0.7.0 release](https://github.com/tsukii12/dsh-YuRemote/releases/tag/
 
 Denying camera permission does not prevent password login. If the app connects but an action is unavailable, check the host version and whether that host provides the RPC or file capability in question.
 
-When agent-team mode is enabled for the conversation on the host, open **Agent team** to see members, tasks and messages. Tap an available member to open its conversation. On DeepSeek Harness 0.2.2, the app can show the team lead’s available subagents even when the host does not send a separate member list.
+When agent-team mode is enabled for the conversation on the host, open **Agent team** to see members, tasks and messages. Tap an available member to open its conversation. On DSH 0.2.2, the app can show the team lead’s available subagents even when the host does not send a separate member list.
 
 ## Build from source
 

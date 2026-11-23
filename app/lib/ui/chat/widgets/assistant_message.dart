@@ -15,7 +15,6 @@ import '../../common/typing_indicator.dart';
 import '../../theme/app_icons.dart';
 import '../../theme/theme.dart';
 import '../dsh_ui/dsh_ui.dart';
-import '../../share/share_entry.dart' show shareReply;
 import '../render/markdown_body.dart';
 import 'message_actions.dart';
 import 'stream_row.dart';
@@ -239,7 +238,6 @@ class _AssistantMessageState extends State<AssistantMessage> {
         MessageAction.copy,
         MessageAction.selectText,
         if (onQuote != null) MessageAction.quote,
-        MessageAction.share,
         if (onRegenerate != null && !widget.regenerating) MessageAction.regenerate,
         if (onBranch != null && !widget.branching) MessageAction.branch,
       ],
@@ -252,8 +250,6 @@ class _AssistantMessageState extends State<AssistantMessage> {
         await showSelectTextSheet(context, text, markdown: true, onQuote: onQuote);
       case MessageAction.quote:
         onQuote?.call(text);
-      case MessageAction.share:
-        await shareReply(context, widget.item);
       case MessageAction.regenerate:
         onRegenerate?.call();
       case MessageAction.branch:
