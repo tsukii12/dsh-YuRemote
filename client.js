@@ -69,10 +69,10 @@ window.__ModuleLoader__.load({
     var DICT = {
       zh: {
         section: "远程访问",
-        subtitle: "从其他设备访问此 dsh。需要访问密码或一次性配对码。",
+        subtitle: "从其他设备访问此 DeepSeek Harness。需要访问密码或一次性配对码。",
         navLabel: "远程访问",
         navTitle: "打开远程访问设置",
-        pageSubtitle: "让 dsh 随你而行，安全连接你的每一台设备。",
+        pageSubtitle: "让 DSH 随你而行，安全连接你的每一台设备。",
         basicIntro: "连接准备",
         basicNote: "开启服务、设置密码，让其他设备安全访问这台电脑。",
         lanIntro: "同一网络，轻松连接",
@@ -107,7 +107,7 @@ window.__ModuleLoader__.load({
         qrNoteStopped: "门户没有在监听，二维码暂时不可用。设置密码并启用后会自动生成。",
         copyPairLink: "复制配对链接",
         pairLinkCopied: "配对链接已复制，剩余 {t} 内有效",
-        qrNotePair: "用手机相机扫描二维码，即可直接在这台手机上打开 dsh。",
+        qrNotePair: "用手机相机扫描二维码，即可直接在这台手机上打开 DSH。",
         qrNotePlain: "用手机相机扫描二维码，打开后输入访问密码。",
         qrRefresh: "刷新二维码",
         qrRefreshing: "刷新中…",
@@ -121,7 +121,7 @@ window.__ModuleLoader__.load({
         enabledOn: "已启用远程访问",
         enabledOff: "已关闭远程访问",
         offConfirm: "这台设备正通过远程访问连接。关闭后它会立刻断开，之后只能在电脑上重新打开。确定关闭？",
-        offHere: "远程访问已关闭，这台设备已断开。请在电脑上的 dsh 里重新打开远程访问。",
+        offHere: "远程访问已关闭，这台设备已断开。请在电脑上的 DSH 里重新打开远程访问。",
         host: "监听地址",
         port: "端口",
         save: "保存",
@@ -154,7 +154,7 @@ window.__ModuleLoader__.load({
         pickLoading: "正在读取目录…",
         pickEmpty: "这里没有子目录",
         pickUse: "使用此目录",
-        pickHostOld: "宿主未加载该接口：请重启 dsh 后重试。",
+        pickHostOld: "宿主未加载该接口：请重启 DSH 后重试。",
         pickNew: "新建文件夹",
         pickNewHint: "文件夹名称",
         pickCreate: "创建",
@@ -197,8 +197,13 @@ window.__ModuleLoader__.load({
         diagFirewall: "防火墙放行（管理员 PowerShell，仅 Windows 需要）",
         copyCmd: "复制命令",
         logEmpty: "还没有访问记录。手机上打开一次就会出现在这里。",
-        devEmpty: "还没有授权的设备，扫码后会出现在这里。",
+        devEmpty: "还没有授权的设备，登录或扫码配对后会出现在这里。",
         devUnnamed: "未命名设备",
+        devApp: "YuRemote App",
+        devPassword: "密码登录",
+        devPair: "扫码配对",
+        devSeen: "最近活动：{t}",
+        devSessions: "{n} 个会话",
         revoke: "移除",
         revoking: "移除中…",
         revokeOk: "已移除该设备",
@@ -221,10 +226,10 @@ window.__ModuleLoader__.load({
       },
       en: {
         section: "Remote Portal",
-        subtitle: "Open this same dsh Web GUI from a phone or another computer. The portal listens on the LAN and requires a password or a scanned pairing code.",
+        subtitle: "Open this same DeepSeek Harness Web UI from a phone or another computer. The portal listens on the LAN and requires a password or a scanned pairing code.",
         navLabel: "Remote access",
         navTitle: "Open remote access settings",
-        pageSubtitle: "Take dsh with you. Connect your devices securely.",
+        pageSubtitle: "Take DSH with you. Connect your devices securely.",
         basicIntro: "Ready to connect",
         basicNote: "Enable the service and set a password for secure access to this computer.",
         lanIntro: "Same network. Simple connection.",
@@ -259,7 +264,7 @@ window.__ModuleLoader__.load({
         qrNoteStopped: "Nothing is listening yet, so there is no code to scan. Set a password and enable the portal; the code appears automatically.",
         copyPairLink: "Copy pairing link",
         pairLinkCopied: "Pairing link copied — valid for {t} more",
-        qrNotePair: "Scan with the phone camera to open dsh on that phone right away.",
+        qrNotePair: "Scan with the phone camera to open DSH on that phone right away.",
         qrNotePlain: "Scan with the phone camera, then enter the access password.",
         qrRefresh: "Refresh code",
         qrRefreshing: "Refreshing…",
@@ -273,7 +278,7 @@ window.__ModuleLoader__.load({
         enabledOn: "Remote access enabled",
         enabledOff: "Remote access disabled",
         offConfirm: "This device is connected through remote access. Turning it off disconnects it right away, and only the PC can turn it back on. Turn it off?",
-        offHere: "Remote access is off and this device is disconnected. Turn it back on in dsh on the PC.",
+        offHere: "Remote access is off and this device is disconnected. Turn it back on in DSH on the PC.",
         host: "Bind address",
         port: "Port",
         save: "Save",
@@ -306,7 +311,7 @@ window.__ModuleLoader__.load({
         pickLoading: "Reading directory…",
         pickEmpty: "No subdirectories here",
         pickUse: "Use this folder",
-        pickHostOld: "The host has not loaded this endpoint yet — restart dsh and retry.",
+        pickHostOld: "The host has not loaded this endpoint yet — restart DSH and retry.",
         pickNew: "New folder",
         pickNewHint: "Folder name",
         pickCreate: "Create",
@@ -349,8 +354,13 @@ window.__ModuleLoader__.load({
         diagFirewall: "Firewall rule (admin PowerShell, Windows only)",
         copyCmd: "Copy command",
         logEmpty: "No requests yet. It fills in the first time a phone opens the portal.",
-        devEmpty: "No devices yet — they show up here after a scan.",
+        devEmpty: "No devices yet — sign in or scan to pair a device.",
         devUnnamed: "Unnamed device",
+        devApp: "YuRemote App",
+        devPassword: "Password sign-in",
+        devPair: "QR pairing",
+        devSeen: "Last active: {t}",
+        devSessions: "Sessions: {n}",
         revoke: "Revoke",
         revoking: "Revoking…",
         revokeOk: "Device revoked",
@@ -621,7 +631,7 @@ window.__ModuleLoader__.load({
       ".yuremote-dev-name{font-size:13px;font-weight:500;color:var(--yuremote-fg);overflow:hidden;",
       "text-overflow:ellipsis;white-space:nowrap}",
       ".yuremote-dev-meta{margin-top:1px;font-size:12px;color:var(--yuremote-fg3);overflow:hidden;",
-      "text-overflow:ellipsis;white-space:nowrap}",
+      "overflow-wrap:anywhere;line-height:1.7}",
       ".yuremote-empty{padding:2px 0;font-size:12.5px;line-height:1.55;color:var(--yuremote-fg3)}",
 
       /* diagnostics: a compact key/value table that degrades to two lines on a
@@ -1024,11 +1034,13 @@ window.__ModuleLoader__.load({
 
     function deviceId(d) { return d && (d.id || d.deviceId || d.key || d.fingerprint) || ""; }
     function deviceLabel(d) {
+      if (d && d.deviceName) return d.deviceName;
       var v = d && (d.label || d.name || d.deviceLabel || d.title);
-      if (typeof v === "string" && v && v !== "device") return v;
+      if (typeof v === "string" && v && !/^(?:device|unknown device)$/i.test(v)) return v;
       // Older records (or a UA the host could not classify) have no useful label;
       // derive one from the stored UA rather than showing a bare "device".
       var ua = String((d && (d.ua || d.userAgent)) || "");
+      if (/DSHRemotePortal\/|YuRemote\//i.test(ua)) return t("devApp");
       var os = /iPhone/.test(ua) ? "iPhone" : /iPad/.test(ua) ? "iPad" : /Android/.test(ua) ? "Android"
         : /Windows/.test(ua) ? "Windows" : /Macintosh|Mac OS X/.test(ua) ? "macOS"
           : /Linux/.test(ua) ? "Linux" : "";
@@ -1037,7 +1049,16 @@ window.__ModuleLoader__.load({
           : /curl|Wget|PowerShell|python-requests/i.test(ua) ? "CLI" : "";
       if (os && br) return os + " · " + br;
       if (os || br) return os || br;
-      return typeof v === "string" && v ? v : t("devUnnamed");
+      return t("devUnnamed");
+    }
+    function deviceDetails(d) {
+      var parts = [];
+      var system = [d.platform, d.osVersion].filter(Boolean).join(" ");
+      if (system) parts.push(system);
+      if (d.clientKind === "app" || /DSHRemotePortal\/|YuRemote\//i.test(d.ua || "")) {
+        if (system || d.deviceName || d.appVersion) parts.push(t("devApp") + (d.appVersion ? " " + d.appVersion : ""));
+      }
+      return parts.join(" · ");
     }
     function deviceIp(d) {
       var v = d && (d.ip || d.address || d.remoteAddress || d.lastIp);
@@ -1164,8 +1185,8 @@ window.__ModuleLoader__.load({
       const upstream = /^upstream (\S+) did not answer$/i.exec(text);
       if (upstream) {
         return lang() === "zh"
-          ? `连不上本机 dsh（${upstream[1]}）。它可能没在运行，或端口变了。`
-          : `Cannot reach dsh at ${upstream[1]} — it may not be running, or the port changed.`;
+          ? `连不上本机 DSH（${upstream[1]}）。它可能没在运行，或端口变了。`
+          : `Cannot reach DSH at ${upstream[1]} — it may not be running, or the port changed.`;
       }
       if (text === "relay-not-tls") return t("tunnelNotTls");
       if (/^the local listener is not running$/i.test(text)) {
@@ -1868,7 +1889,12 @@ window.__ModuleLoader__.load({
         return h("div", { className: "yuremote-dev", key: id },
           h("div", { className: "yuremote-dev-main" },
             h("div", { className: "yuremote-dev-name", title: deviceLabel(d) }, deviceLabel(d)),
-            h("div", { className: "yuremote-dev-meta" }, deviceIp(d) + " · " + deviceSeen(d))),
+            deviceDetails(d) ? h("div", { className: "yuremote-dev-meta" }, deviceDetails(d)) : null,
+            h("div", { className: "yuremote-dev-meta" },
+              [d.lastLoginVia === "password" ? t("devPassword") : d.lastLoginVia === "pair" ? t("devPair") : "",
+                t("devSeen", { t: deviceSeen(d) })].filter(Boolean).join(" · ")),
+            h("div", { className: "yuremote-dev-meta" },
+              deviceIp(d) + (typeof d.sessions === "number" ? " · " + t("devSessions", { n: d.sessions }) : ""))),
           h("button", {
             type: "button",
             className: "yuremote-btn yuremote-btn-ghost yuremote-btn-sm",
@@ -2650,8 +2676,6 @@ window.__ModuleLoader__.load({
     return { inject: ["slots"], apply: apply };
   }
 });
-
-
 
 
 

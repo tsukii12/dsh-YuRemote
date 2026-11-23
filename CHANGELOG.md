@@ -5,6 +5,12 @@ versions are the plugin's own, not dsh's.
 
 ## Unreleased
 
+- Web sign-in now matches the settings page's mist-blue canvas, rounded cards
+  and capsule buttons on desktop and phones. Plugin copy uses DSH / DeepSeek
+  Harness. Device entries show app-reported phone names, system and app versions,
+  latest sign-in method, activity and session counts; older app sessions are
+  recognized as YuRemote App without invalidating their cookies.
+
 - App agent team: teammates created on the host now show in the team page and
   the chat header. dsh 0.2.2 no longer sends the roster in `agentTeam` (the
   members are the Lead's subagents), so the app read an empty team and hid the
@@ -1211,7 +1217,6 @@ real sockets.
 Initial version: authenticated gateway (HTTP + WebSocket reverse proxy), password
 / one-time QR pairing / device registry / lockout, dsh browser-cookie minting,
 login wall, Settings panel, mobile presentation layer, install script, 51 tests.
-
 
 
 
