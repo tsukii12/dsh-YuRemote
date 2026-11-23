@@ -4397,7 +4397,7 @@ class L10nZh extends L10n {
   String get iosSaveToFiles => '存到「文件」';
 
   @override
-  String get iosFilesFolderHint => '文件 App 中的 DSH 文件';
+  String get iosFilesFolderHint => '文件 App 的 YuRemote 文件夹';
 
   @override
   String get iosSavingToFiles => '正在存到「文件」…';
@@ -5069,7 +5069,7 @@ class L10nZh extends L10n {
   String get remoteHost => '主机';
 
   @override
-  String get remoteHostedUpdateRequired => '需要更新 App 才能打开';
+  String get remoteHostedUpdateRequired => '需要更新鱼鱼远程才能打开';
 
   @override
   String get remoteHostedCannotOpen => '这个链接无法打开';
@@ -6516,7 +6516,7 @@ class L10nZh extends L10n {
   String get systemActionsResultUnsupported => '鸿蒙版不支持这个动作，没有执行。';
 
   @override
-  String get systemActionsResultOffScreen => 'DSH 不在屏幕上，没有执行。';
+  String get systemActionsResultOffScreen => '鱼鱼远程不在屏幕上，没有执行。';
 
   @override
   String get systemActionsResultUnavailable => '系统操作没开或暂时连不上，没有执行。到「设置 → 系统操作」看看。';
@@ -7215,7 +7215,7 @@ class L10nZh extends L10n {
 
   @override
   String viewContinueHeader(String value) {
-    return '> 分享的 DeepSeek Harness 对话 · $value\n';
+    return '> 分享的鱼鱼远程对话 · $value\n';
   }
 
   @override
@@ -7269,7 +7269,7 @@ class L10nZh extends L10n {
 
   @override
   String viewShareLinkText(String first, String second) {
-    return '「$first」· DeepSeek Harness 对话\n$second';
+    return '「$first」· 鱼鱼远程对话\n$second';
   }
 
   @override
@@ -7286,7 +7286,7 @@ class L10nZh extends L10n {
   }
 
   @override
-  String get viewShareFileHint => '在 DeepSeek Harness 里回放、接着聊';
+  String get viewShareFileHint => '在鱼鱼远程里回放、接着聊';
 
   @override
   String get viewShareWebHint => '任何浏览器都能打开，不用联网';
@@ -7412,10 +7412,10 @@ class L10nZh extends L10n {
   String get viewShareProjectQr => '项目主页二维码';
 
   @override
-  String get viewShareBrandLine => '手机上的 DSH · 扫码获取';
+  String get viewShareBrandLine => '手机上的鱼鱼远程 · 扫码获取';
 
   @override
-  String get viewShareBrandLineNoQr => '手机上的 DSH';
+  String get viewShareBrandLineNoQr => '手机上的鱼鱼远程';
 
   @override
   String viewShareSteps(int count) {

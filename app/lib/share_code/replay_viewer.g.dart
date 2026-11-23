@@ -11,7 +11,7 @@ const replayViewerPage = r'''<!doctype html>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-+VeDTyiIUYlpZpRGajL7E9NbrmfPq13iACZPD7zpPEY='; style-src 'unsafe-inline'; img-src data: blob:; connect-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-UHxYaaXmPL6SqIyaXXyPJkV34Zr8PkfXkk8YgfeL6VI='; style-src 'unsafe-inline'; img-src data: blob:; connect-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="color-scheme" content="light dark">
 <title>__DSHGO_TITLE__</title>
 <style>/* dsh-go conversation viewer (viewer.js). Shared by the landing page and the
@@ -274,8 +274,8 @@ const replayViewerPage = r'''<!doctype html>
       "allText": "全文",
       "progress": "回放进度",
       "speed": "倍速",
-      "openApp": "用 DSH 打开",
-      "download": "下载 DSH",
+      "openApp": "用鱼鱼远程打开",
+      "download": "下载鱼鱼远程",
       "saveChat": "存为对话文件",
       "pause": "暂停",
       "replay": "重新播放",
@@ -308,7 +308,7 @@ const replayViewerPage = r'''<!doctype html>
       "fileTooLarge": "文件太大",
       "drop": "松手打开",
       "opening": "正在打开…",
-      "errorNewer": "需要更新 DeepSeek Harness 才能打开",
+      "errorNewer": "需要更新鱼鱼远程才能打开",
       "errorBrowser": "这个浏览器打不开，换个新版浏览器试试",
       "errorKind": "这不是对话文件",
       "errorGone": "链接已过期或被删除",
@@ -326,7 +326,7 @@ const replayViewerPage = r'''<!doctype html>
       "messages": "{n} 条消息",
       "thoughts": "{n} 段思考",
       "tokenCount": "{count} tokens",
-      "viewerTitle": "查看对话 · DSH"
+      "viewerTitle": "查看对话 · 鱼鱼远程"
     },
     "en": {
       "chat": "Chat",
@@ -335,8 +335,8 @@ const replayViewerPage = r'''<!doctype html>
       "allText": "Full text",
       "progress": "Replay progress",
       "speed": "Speed",
-      "openApp": "Open in DSH",
-      "download": "Download DSH",
+      "openApp": "Open in YuRemote",
+      "download": "Download YuRemote",
       "saveChat": "Save chat file",
       "pause": "Pause",
       "replay": "Replay",
@@ -369,7 +369,7 @@ const replayViewerPage = r'''<!doctype html>
       "fileTooLarge": "File is too large",
       "drop": "Drop to open",
       "opening": "Opening…",
-      "errorNewer": "Update DeepSeek Harness to open this",
+      "errorNewer": "Update YuRemote to open this",
       "errorBrowser": "Can’t open this in your browser. Try a newer one.",
       "errorKind": "This isn’t a chat file",
       "errorGone": "This link has expired or was deleted",
@@ -402,7 +402,7 @@ const replayViewerPage = r'''<!doctype html>
         "one": "{count} token",
         "other": "{count} tokens"
       },
-      "viewerTitle": "View chat · DSH"
+      "viewerTitle": "View chat · YuRemote"
     }
   };
 
@@ -1217,7 +1217,7 @@ const replayViewerPage = r'''<!doctype html>
     }
     if (opts.download !== false) {
       var dl = el('a', 'dv-btn ' + (opts.appLink ? 'dv-secondary' : 'dv-primary'), tr('download'));
-      dl.href = opts.download || 'https://github.com/ccch1mneyyy/dsh-go/releases/latest';
+      dl.href = opts.download || 'https://github.com/tsukii12/dsh-YuRemote/releases/latest';
       dl.rel = 'noopener';
       dl.target = '_blank';
       actions.appendChild(dl);
@@ -1784,7 +1784,7 @@ const replayViewerPage = r'''<!doctype html>
         var text = await file.text();
         var opened = await openFile(text);
         mount(host, opened.conversation, { assets: opened.assets, fileText: text, download: opts.download });
-        document.title = opened.conversation.title + ' · DSH';
+        document.title = opened.conversation.title + ' · YuRemote';
         detachDrop();
       } catch (e) {
         error.textContent = errorText(e);
@@ -1836,7 +1836,7 @@ const replayViewerPage = r'''<!doctype html>
         if (!key) throw new Error('key');
         card(host, tr('opening'), null, null);
         var hosted = await openHosted(path[1], key);
-        document.title = hosted.conversation.title + ' · DSH';
+        document.title = hosted.conversation.title + ' · YuRemote';
         mount(host, hosted.conversation, {
           assets: hosted.assets,
           fileText: hosted.fileText,
@@ -1849,7 +1849,7 @@ const replayViewerPage = r'''<!doctype html>
       opener(host);
     } catch (e) {
       var dl = el('a', 'dv-btn dv-secondary', tr('download'));
-      dl.href = 'https://github.com/ccch1mneyyy/dsh-go/releases/latest';
+      dl.href = 'https://github.com/tsukii12/dsh-YuRemote/releases/latest';
       dl.rel = 'noopener';
       card(host, errorText(e), null, dl);
     }

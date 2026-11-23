@@ -4715,7 +4715,7 @@ class L10nEn extends L10n {
   String get iosSaveToFiles => 'Save to Files';
 
   @override
-  String get iosFilesFolderHint => 'DSH files in the Files app';
+  String get iosFilesFolderHint => 'YuRemote folder in the Files app';
 
   @override
   String get iosSavingToFiles => 'Saving to Files…';
@@ -5398,7 +5398,7 @@ class L10nEn extends L10n {
   String get remoteHost => 'Host';
 
   @override
-  String get remoteHostedUpdateRequired => 'Update DeepSeek Harness to open this link';
+  String get remoteHostedUpdateRequired => 'Update YuRemote to open this link';
 
   @override
   String get remoteHostedCannotOpen => 'Can’t open this link';
@@ -6997,7 +6997,7 @@ class L10nEn extends L10n {
   String get systemActionsResultUnsupported => 'HarmonyOS doesn\'t support this action. Nothing ran.';
 
   @override
-  String get systemActionsResultOffScreen => 'DSH wasn\'t on screen. Nothing ran.';
+  String get systemActionsResultOffScreen => 'YuRemote wasn\'t on screen. Nothing ran.';
 
   @override
   String get systemActionsResultUnavailable =>
@@ -7773,7 +7773,7 @@ class L10nEn extends L10n {
 
   @override
   String viewContinueHeader(String value) {
-    return '> Shared DeepSeek Harness chat · $value\n';
+    return '> Shared YuRemote chat · $value\n';
   }
 
   @override
@@ -7828,7 +7828,7 @@ class L10nEn extends L10n {
 
   @override
   String viewShareLinkText(String first, String second) {
-    return '“$first” · DeepSeek Harness chat\n$second';
+    return '“$first” · YuRemote chat\n$second';
   }
 
   @override
@@ -7847,7 +7847,7 @@ class L10nEn extends L10n {
   }
 
   @override
-  String get viewShareFileHint => 'Replay and continue in DeepSeek Harness';
+  String get viewShareFileHint => 'Replay and continue in YuRemote';
 
   @override
   String get viewShareWebHint => 'Opens in any browser, even offline';
@@ -7975,10 +7975,10 @@ class L10nEn extends L10n {
   String get viewShareProjectQr => 'Project QR code';
 
   @override
-  String get viewShareBrandLine => 'DSH on your phone · Scan to get it';
+  String get viewShareBrandLine => 'YuRemote on your phone · Scan to get it';
 
   @override
-  String get viewShareBrandLineNoQr => 'DSH on your phone';
+  String get viewShareBrandLineNoQr => 'YuRemote on your phone';
 
   @override
   String viewShareSteps(int count) {

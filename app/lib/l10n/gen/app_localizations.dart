@@ -8057,7 +8057,7 @@ abstract class L10n {
   /// No description provided for @iosFilesFolderHint.
   ///
   /// In zh, this message translates to:
-  /// **'文件 App 中的 DSH 文件'**
+  /// **'文件 App 的 YuRemote 文件夹'**
   String get iosFilesFolderHint;
 
   /// No description provided for @iosSavingToFiles.
@@ -9257,7 +9257,7 @@ abstract class L10n {
   /// No description provided for @remoteHostedUpdateRequired.
   ///
   /// In zh, this message translates to:
-  /// **'需要更新 App 才能打开'**
+  /// **'需要更新鱼鱼远程才能打开'**
   String get remoteHostedUpdateRequired;
 
   /// No description provided for @remoteHostedCannotOpen.
@@ -11897,7 +11897,7 @@ abstract class L10n {
   /// No description provided for @systemActionsResultOffScreen.
   ///
   /// In zh, this message translates to:
-  /// **'DSH 不在屏幕上，没有执行。'**
+  /// **'鱼鱼远程不在屏幕上，没有执行。'**
   String get systemActionsResultOffScreen;
 
   /// No description provided for @systemActionsResultUnavailable.
@@ -12989,7 +12989,7 @@ abstract class L10n {
   /// No description provided for @viewContinueHeader.
   ///
   /// In zh, this message translates to:
-  /// **'> 分享的 DeepSeek Harness 对话 · {value}\n'**
+  /// **'> 分享的鱼鱼远程对话 · {value}\n'**
   String viewContinueHeader(String value);
 
   /// No description provided for @viewContinueUser.
@@ -13085,7 +13085,7 @@ abstract class L10n {
   /// No description provided for @viewShareLinkText.
   ///
   /// In zh, this message translates to:
-  /// **'「{first}」· DeepSeek Harness 对话\n{second}'**
+  /// **'「{first}」· 鱼鱼远程对话\n{second}'**
   String viewShareLinkText(String first, String second);
 
   /// No description provided for @viewShareEmpty.
@@ -13109,7 +13109,7 @@ abstract class L10n {
   /// No description provided for @viewShareFileHint.
   ///
   /// In zh, this message translates to:
-  /// **'在 DeepSeek Harness 里回放、接着聊'**
+  /// **'在鱼鱼远程里回放、接着聊'**
   String get viewShareFileHint;
 
   /// No description provided for @viewShareWebHint.
@@ -13337,13 +13337,13 @@ abstract class L10n {
   /// No description provided for @viewShareBrandLine.
   ///
   /// In zh, this message translates to:
-  /// **'手机上的 DSH · 扫码获取'**
+  /// **'手机上的鱼鱼远程 · 扫码获取'**
   String get viewShareBrandLine;
 
   /// No description provided for @viewShareBrandLineNoQr.
   ///
   /// In zh, this message translates to:
-  /// **'手机上的 DSH'**
+  /// **'手机上的鱼鱼远程'**
   String get viewShareBrandLineNoQr;
 
   /// No description provided for @viewShareSteps.

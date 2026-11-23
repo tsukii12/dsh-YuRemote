@@ -2954,7 +2954,7 @@
   "hubAbout": "关于鱼鱼远程",
   "hubThemeLightDark": "明暗",
   "iosSaveToFiles": "存到「文件」",
-  "iosFilesFolderHint": "文件 App 中的 DSH 文件",
+  "iosFilesFolderHint": "文件 App 的 YuRemote 文件夹",
   "iosSavingToFiles": "正在存到「文件」…",
   "iosCommandExportDescription": "把这个对话的完整记录打包成 ZIP，分享或存到「文件」",
   "iosPhotosDenied": "没有相册权限，未能保存",
@@ -3439,7 +3439,7 @@
   "remotePathTurn": "TURN",
   "remotePathRelay": "Relay 中继",
   "remoteHost": "主机",
-  "remoteHostedUpdateRequired": "需要更新 App 才能打开",
+  "remoteHostedUpdateRequired": "需要更新鱼鱼远程才能打开",
   "remoteHostedCannotOpen": "这个链接无法打开",
   "remoteOpening": "正在打开…",
   "remoteHostedNeverExpires": "永久有效",
@@ -4362,7 +4362,7 @@
   "systemActionsResultClipboard": "文字已写入剪贴板。",
   "systemActionsResultUnknownDetail": "系统调用可能已经发出，结果未知。不会自动重试，请自己看一下实际状态。",
   "systemActionsResultUnsupported": "鸿蒙版不支持这个动作，没有执行。",
-  "systemActionsResultOffScreen": "DSH 不在屏幕上，没有执行。",
+  "systemActionsResultOffScreen": "鱼鱼远程不在屏幕上，没有执行。",
   "systemActionsResultUnavailable": "系统操作没开或暂时连不上，没有执行。到「设置 → 系统操作」看看。",
   "systemActionsResultStopped": "已停止。",
   "systemActionsResultTimeout": "等待超时，没有结果。",
@@ -5136,7 +5136,7 @@
       }
     }
   },
-  "viewContinueHeader": "> 分享的 DeepSeek Harness 对话 · {value}\n",
+  "viewContinueHeader": "> 分享的鱼鱼远程对话 · {value}\n",
   "@viewContinueHeader": {
     "placeholders": {
       "value": {
@@ -5173,7 +5173,7 @@
   "viewShareNoPermission": "没有存储权限，没能保存",
   "viewShareOpenFailed": "没能打开分享",
   "viewShareLinkFailed": "没能生成链接，稍后再试",
-  "viewShareLinkText": "「{first}」· DeepSeek Harness 对话\n{second}",
+  "viewShareLinkText": "「{first}」· 鱼鱼远程对话\n{second}",
   "@viewShareLinkText": {
     "placeholders": {
       "first": {
@@ -5201,7 +5201,7 @@
       }
     }
   },
-  "viewShareFileHint": "在 DeepSeek Harness 里回放、接着聊",
+  "viewShareFileHint": "在鱼鱼远程里回放、接着聊",
   "viewShareWebHint": "任何浏览器都能打开，不用联网",
   "viewShareMarkdownHint": "纯文本，随处可读",
   "viewShareLinkHint": "端到端加密，服务器看不到内容",
@@ -5284,8 +5284,8 @@
   "viewTemplateGlass": "玻璃",
   "viewTemplateCard": "卡片",
   "viewShareProjectQr": "项目主页二维码",
-  "viewShareBrandLine": "手机上的 DSH · 扫码获取",
-  "viewShareBrandLineNoQr": "手机上的 DSH",
+  "viewShareBrandLine": "手机上的鱼鱼远程 · 扫码获取",
+  "viewShareBrandLineNoQr": "手机上的鱼鱼远程",
   "viewShareSteps": "{count} 步",
   "@viewShareSteps": {
     "placeholders": {

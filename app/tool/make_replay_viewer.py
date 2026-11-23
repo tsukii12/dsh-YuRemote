@@ -49,13 +49,15 @@ def source_hash(src):
 def page(src, *, connect, title, data):
     script = src['viewer.js'].rstrip() + '\nDshgoViewer.boot();\n'
     for before, after in {
-        '用 dsh-go 打开': '用 DSH 打开',
-        '下载 dsh-go': '下载 DSH',
-        '需要更新 dsh-go 才能打开': '需要更新 DeepSeek Harness 才能打开',
-        'Open in dsh-go': 'Open in DSH',
-        'Download dsh-go': 'Download DSH',
-        'Update dsh-go to open this': 'Update DeepSeek Harness to open this',
-        ' · dsh-go': ' · DSH',
+        '用 dsh-go 打开': '用鱼鱼远程打开',
+        '下载 dsh-go': '下载鱼鱼远程',
+        '需要更新 dsh-go 才能打开': '需要更新鱼鱼远程才能打开',
+        'Open in dsh-go': 'Open in YuRemote',
+        'Download dsh-go': 'Download YuRemote',
+        'Update dsh-go to open this': 'Update YuRemote to open this',
+        '查看对话 · dsh-go': '查看对话 · 鱼鱼远程',
+        ' · dsh-go': ' · YuRemote',
+        'https://github.com/ccch1mneyyy/dsh-go/releases/latest': 'https://github.com/tsukii12/dsh-YuRemote/releases/latest',
     }.items():
         script = script.replace(before, after)
     for bad in ('</script', '<!--'):
@@ -109,7 +111,7 @@ def main():
     DART.write_text(generated, encoding='utf-8')
     out = args.out
     out.mkdir(parents=True, exist_ok=True)
-    (out / 'c.html').write_text(page(src, connect="'self'", title='dsh-go 对话', data=''), encoding='utf-8')
+    (out / 'c.html').write_text(page(src, connect="'self'", title='鱼鱼远程对话', data=''), encoding='utf-8')
     for name in LANDING:
         shutil.copyfile(SITE / name, out / name)
     print(f'wrote {DART.relative_to(ROOT)} and {out}')
