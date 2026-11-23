@@ -1527,6 +1527,17 @@ class _ChatScreenState extends ConsumerState<ChatScreen> with WidgetsBindingObse
                                               ),
                                       ),
                                     )
+                                  : sessionId != null && connAsync.hasError && !connAsync.isLoading
+                                  ? Padding(
+                                      padding: const EdgeInsets.only(bottom: 8),
+                                      child: ErrorBanner(
+                                        message: l10n.shellHostUnreachable(
+                                          ref.watch(hostNameProvider(ref.watch(activeHostProvider))) ??
+                                              l10n.commonRemoteHost,
+                                        ),
+                                        action: (label: l10n.viewEmptyReconnect, onPressed: _reconnect),
+                                      ),
+                                    )
                                   : error == null && notice == null
                                   ? const SizedBox(width: double.infinity)
                                   : notice != null

@@ -770,7 +770,7 @@ class _RemoteEmptyState extends ConsumerWidget {
         icon: AppIcons.disconnected,
         title: l10n.shellHostUnreachable(name),
         message: status.error?.message ?? l10n.commonConnectionFailed,
-        actionLabel: status.error?.retryable ?? true ? l10n.commonRetry : null,
+        actionLabel: l10n.viewEmptyReconnect,
         onAction: retry,
       ),
       HostLinkPhase.reconnecting => EmptyView(

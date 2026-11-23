@@ -98,7 +98,10 @@ class PortalHostLink extends HostLink {
           ),
         );
       }
-      rethrow;
+      // The gate and retry buttons read the link's reason (e.g. sign in again), not the raw cause.
+      final failure = _status.error;
+      if (_closed || failure == null) rethrow;
+      throw failure;
     }
   }
 

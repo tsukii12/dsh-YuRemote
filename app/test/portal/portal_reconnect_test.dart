@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -75,5 +76,31 @@ void main() {
     addTearDown(subscription.close);
     expect((await container.read(hostLinkStatusProvider(host).future)).phase, HostLinkPhase.connected);
     expect(await link.open(), same(client));
+  });
+
+  test('a relay that rejects saved cookies fails the link with sign-in-again', () async {
+    final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+    server.listen((request) {
+      request.response.statusCode = HttpStatus.unauthorized;
+      unawaited(request.response.close());
+    });
+    final base = Uri.parse('http://127.0.0.1:${server.port}/__t/test/');
+    final config = PortalHostConfig(id: 'relay', name: 'Relay', base: base);
+    final secrets = MemorySecretStore({
+      config.cookieKey: jsonEncode({
+        'base': base.toString(),
+        'cookies': ['fixture=stale; Path=/__t/test/'],
+      }),
+    });
+    final link = PortalHostLink(config, secrets);
+    addTearDown(() async {
+      await link.close();
+      await server.close(force: true);
+    });
+    await expectLater(
+      link.open().timeout(const Duration(seconds: 10)),
+      throwsA(isA<HostLinkError>().having((e) => e.kind, 'kind', HostLinkErrorKind.authFailed)),
+    );
+    expect(link.status.error?.kind, HostLinkErrorKind.authFailed);
   });
 }
