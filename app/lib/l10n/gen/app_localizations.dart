@@ -11924,6 +11924,102 @@ abstract class L10n {
   /// **'没有执行。'**
   String get systemActionsResultNotRun;
 
+  /// No description provided for @updateCheck.
+  ///
+  /// In zh, this message translates to:
+  /// **'检查更新'**
+  String get updateCheck;
+
+  /// No description provided for @updateCurrent.
+  ///
+  /// In zh, this message translates to:
+  /// **'已是最新版本'**
+  String get updateCurrent;
+
+  /// No description provided for @updateFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'检查更新失败，请稍后重试。'**
+  String get updateFailed;
+
+  /// No description provided for @updateAvailable.
+  ///
+  /// In zh, this message translates to:
+  /// **'发现新版本'**
+  String get updateAvailable;
+
+  /// No description provided for @updateNoNotes.
+  ///
+  /// In zh, this message translates to:
+  /// **'此版本暂无更新说明。'**
+  String get updateNoNotes;
+
+  /// No description provided for @updateSkip.
+  ///
+  /// In zh, this message translates to:
+  /// **'跳过此版本'**
+  String get updateSkip;
+
+  /// No description provided for @updateLater.
+  ///
+  /// In zh, this message translates to:
+  /// **'以后'**
+  String get updateLater;
+
+  /// No description provided for @updateDownload.
+  ///
+  /// In zh, this message translates to:
+  /// **'下载'**
+  String get updateDownload;
+
+  /// No description provided for @updateDownloading.
+  ///
+  /// In zh, this message translates to:
+  /// **'正在下载更新'**
+  String get updateDownloading;
+
+  /// No description provided for @updateCancel.
+  ///
+  /// In zh, this message translates to:
+  /// **'取消'**
+  String get updateCancel;
+
+  /// No description provided for @updateBrowser.
+  ///
+  /// In zh, this message translates to:
+  /// **'在浏览器中下载'**
+  String get updateBrowser;
+
+  /// No description provided for @updateDownloadFallback.
+  ///
+  /// In zh, this message translates to:
+  /// **'无法下载或打开安装程序，正在浏览器中打开下载链接。'**
+  String get updateDownloadFallback;
+
+  /// No description provided for @updateInstallPermissionTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'允许安装应用'**
+  String get updateInstallPermissionTitle;
+
+  /// No description provided for @updateInstallPermissionBody.
+  ///
+  /// In zh, this message translates to:
+  /// **'Android 尚未允许鱼鱼远程安装应用。请打开设置，启用“允许来自此来源的应用”，返回后点击“重新安装”。也可以改用浏览器下载。'**
+  String get updateInstallPermissionBody;
+
+  /// No description provided for @updateOpenSettings.
+  ///
+  /// In zh, this message translates to:
+  /// **'打开设置'**
+  String get updateOpenSettings;
+
+  /// No description provided for @updateInstallRetry.
+  ///
+  /// In zh, this message translates to:
+  /// **'重新安装'**
+  String get updateInstallRetry;
+
   /// No description provided for @viewArtifactSaved.
   ///
   /// In zh, this message translates to:

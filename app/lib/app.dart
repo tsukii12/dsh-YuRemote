@@ -16,6 +16,7 @@ import 'ui/common/side_insets.dart';
 import 'ui/shell/root_gate.dart';
 import 'ui/theme/theme.dart';
 import 'state/settings_state.dart';
+import 'update/update_prompt.dart';
 
 class DshApp extends ConsumerStatefulWidget {
   const DshApp({super.key, this.home});
@@ -200,7 +201,7 @@ class _DshAppState extends ConsumerState<DshApp> with WidgetsBindingObserver {
           ),
         );
       },
-      home: widget.home ?? const RootGate(),
+      home: widget.home ?? const StartupUpdateCheck(child: RootGate()),
     );
   }
 }
