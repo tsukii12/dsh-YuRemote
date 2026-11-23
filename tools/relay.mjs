@@ -312,7 +312,7 @@ const PAGE_COPY = {
   en: {
     home: ["YuRemote relay", "Open the private link provided by DeepSeek Harness: <code>{value}/&lt;tunnel&gt;/</code>"],
     notFound: ["Not found", "This relay only serves tunnel links."],
-    unknown: ["Unknown tunnel", "No tunnel named <code>{value}</code> is registered here."],
+    unknown: ["Unknown tunnel", "This tunnel is not registered on this relay.<code>{value}</code>"],
     offline: ["The host is offline", "The DSH machine is not connected to the relay right now. Start DeepSeek Harness (or turn remote access back on), then try again. Your link stays the same."],
     busy: ["The relay is busy", "There are too many simultaneous connections. Please try again in a moment."],
     timeout: ["The host took too long to respond", "The DSH host did not answer in time. Please try again in a moment."],
@@ -323,7 +323,7 @@ const PAGE_COPY = {
   zh: {
     home: ["鱼鱼远程中继", "请打开 DeepSeek Harness 提供的专属链接：<code>{value}/&lt;隧道 ID&gt;/</code>"],
     notFound: ["找不到页面", "此中继只提供隧道链接。"],
-    unknown: ["找不到隧道", "此中继未注册名为 <code>{value}</code> 的隧道。"],
+    unknown: ["找不到隧道", "此中继未注册该隧道。<code>{value}</code>"],
     offline: ["主机已离线", "主机上的 DSH 尚未连接到中继。请启动 DeepSeek Harness，或重新开启远程访问，再试一次。原链接无需更换。"],
     busy: ["中继繁忙", "同时连接的请求过多，请稍后重试。"],
     timeout: ["主机响应超时", "DSH 主机未能及时响应，请稍后重试。"],
