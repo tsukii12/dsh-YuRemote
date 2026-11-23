@@ -23,6 +23,8 @@ import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
+import { createHash } from "node:crypto";
+import { exercisePageTheme } from "./page-theme.mjs";
 
 import { apply } from "../index.js";
 import { createRelay, tunnelIdFor } from "../tools/relay.mjs";
@@ -538,6 +540,11 @@ test("the relay home and missing-route pages are localized", async () => {
       assert.equal(res.headers.vary, "Accept-Language");
       assert.ok(res.body.toString().includes(`<h1>${title}</h1>`));
       assert.match(res.body.toString(), /<img src="\/__relay\/brand\.png"/);
+      exercisePageTheme(res.body.toString());
+      const script = res.body.toString().match(/<script>([\s\S]*?)<\/script>/)[1];
+      const hash = createHash("sha256").update(script).digest("base64");
+      assert.ok(res.headers["content-security-policy"].includes(`script-src 'sha256-${hash}'`));
+      assert.doesNotMatch(res.headers["content-security-policy"], /script-src 'unsafe-inline'/);
     }
   }
   const logo = await request(httpPort, "/__relay/brand.png");

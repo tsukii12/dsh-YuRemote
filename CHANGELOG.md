@@ -5,6 +5,11 @@ versions are the plugin's own, not dsh's.
 
 ## Unreleased
 
+- Relay home, offline and error pages now share the Web sign-in page's rounded
+  mist-blue design, with a retry action and DSH naming. Web sign-in recommends
+  the YuRemote app without blocking browser access. Both follow the system theme
+  by default and remember an explicit theme choice locally on the same origin.
+
 - Web sign-in now matches the settings page's mist-blue canvas, rounded cards
   and capsule buttons on desktop and phones. Plugin copy uses DSH / DeepSeek
   Harness. Device entries show app-reported phone names, system and app versions,
@@ -1217,7 +1222,6 @@ real sockets.
 Initial version: authenticated gateway (HTTP + WebSocket reverse proxy), password
 / one-time QR pairing / device registry / lockout, dsh browser-cookie minting,
 login wall, Settings panel, mobile presentation layer, install script, 51 tests.
-
 
 
 
