@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:dsh_app/remote/portal_link.dart';
 import 'package:dsh_app/remote/secret_store.dart';
+import 'package:dsh_app/state/connection_state.dart';
 import 'package:dsh_app/state/hosts_state.dart';
 import 'package:dsh_app/state/read_list_epoch.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -74,6 +75,23 @@ void main() {
     expect(c.read(hostsProvider).portals.single.id, 'two');
     await c.read(hostsProvider.notifier).remove('unknown');
     expect(c.read(hostsProvider).portals.single.id, 'two');
+  });
+
+  test('renaming a host preserves order and its live link', () async {
+    final c = ProviderContainer();
+    addTearDown(c.dispose);
+    final hosts = c.read(hostsProvider.notifier);
+    await hosts.save(first);
+    await hosts.save(second);
+    const selected = HostRef.portal('one');
+    final link = c.listen(hostLinkProvider(selected), (_, _) {});
+    final original = link.read();
+    expect(original, isNotNull);
+
+    await hosts.rename(first.id, 'Renamed');
+    expect(c.read(hostsProvider).portals.map((host) => host.id), [first.id, second.id]);
+    expect(c.read(hostNameProvider(selected)), 'Renamed');
+    expect(link.read(), same(original));
   });
 
   test('corrupt profiles and a deleted selection stay disconnected', () async {

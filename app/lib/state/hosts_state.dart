@@ -96,10 +96,21 @@ class HostsController extends Notifier<HostsState> {
   Future<void> save(PortalHostConfig host) async {
     await ready;
     state = HostsState(portals: [...state.portals.where((h) => h.id != host.id), host], loaded: true);
-    await (await SharedPreferences.getInstance()).setString(
-      prefsKey,
-      jsonEncode(state.portals.map((h) => h.toJson()).toList()),
+    await _persist();
+  }
+
+  Future<void> rename(String id, String name) async {
+    await ready;
+    final host = state.portalById(id);
+    if (host == null || host.name == name) return;
+    state = HostsState(
+      portals: [
+        for (final entry in state.portals)
+          if (entry.id == id) PortalHostConfig(id: id, name: name, base: entry.base) else entry,
+      ],
+      loaded: true,
     );
+    await _persist();
   }
 
   Future<void> remove(String id) async {
@@ -108,11 +119,15 @@ class HostsController extends Notifier<HostsState> {
     if (host == null) return;
     await ref.read(secretStoreProvider).delete(host.cookieKey);
     state = HostsState(portals: state.portals.where((h) => h.id != id).toList(), loaded: true);
+    await _persist();
+    if (ref.read(activeHostProvider).id == id) ref.read(activeHostProvider.notifier).select(HostRef.none);
+  }
+
+  Future<void> _persist() async {
     await (await SharedPreferences.getInstance()).setString(
       prefsKey,
       jsonEncode(state.portals.map((h) => h.toJson()).toList()),
     );
-    if (ref.read(activeHostProvider).id == id) ref.read(activeHostProvider.notifier).select(HostRef.none);
   }
 }
 

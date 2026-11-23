@@ -5280,6 +5280,20 @@ class L10nEn extends L10n {
   String get portalName => 'Server name';
 
   @override
+  String get portalNameRequired => 'Enter a server name.';
+
+  @override
+  String get portalEditHost => 'Edit remote host';
+
+  @override
+  String get portalDeleteHost => 'Delete remote host?';
+
+  @override
+  String portalDeleteHostConfirmation(String name) {
+    return 'Remove $name from this device? You’ll need to sign in again to add it back.';
+  }
+
+  @override
   String get portalPassword => 'Password';
 
   @override

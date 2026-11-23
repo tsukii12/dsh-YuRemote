@@ -150,7 +150,6 @@ class ProvidersSnapshot {
     this.registered,
     this.diagnostics = const {},
     this.local = true,
-    this._hostLabel,
   });
 
   /// The engine mounts the pi-ai adapter.
@@ -172,8 +171,6 @@ class ProvidersSnapshot {
   /// Configuration diagnostics by route.
   final Map<String, String> diagnostics;
   final bool local;
-  final String? _hostLabel;
-  String get hostLabel => _hostLabel ?? appL10n.commonThisPhone;
 
   CustomProvider? byId(String id) {
     for (final p in providers) {
@@ -449,7 +446,7 @@ String describeProviderError(Object error) {
 final providerBackendProvider = Provider<ProviderBackend?>((ref) {
   final conn = ref.watch(readListLiveConnectionProvider);
   if (conn == null) return null;
-  return ClientProviderBackend(conn.client, isLocal: conn.isLocal, hostLabel: conn.label);
+  return ClientProviderBackend(conn.client, isLocal: conn.isLocal);
 });
 
 /// The active engine's custom providers, re-read whenever the engine says
@@ -473,7 +470,7 @@ final customProvidersProvider = FutureProvider.autoDispose<ProvidersSnapshot?>((
 
   final settings = await backend.read();
   if (settings == null) {
-    return finish(ProvidersSnapshot(supported: false, local: backend.isLocal, hostLabel: backend.hostLabel));
+    return finish(ProvidersSnapshot(supported: false, local: backend.isLocal));
   }
   final refs = {
     for (final p in settings.profiles)
@@ -500,7 +497,6 @@ final customProvidersProvider = FutureProvider.autoDispose<ProvidersSnapshot?>((
       registered: registered,
       diagnostics: diagnostics,
       local: backend.isLocal,
-      hostLabel: backend.hostLabel,
     ),
   );
 });

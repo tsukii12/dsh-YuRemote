@@ -3,6 +3,15 @@
   "portalRemoteOnly": "连接 DeepSeek Harness 的 YuRemote 门户，引擎仅在远程主机运行。",
   "portalAddress": "服务器地址",
   "portalName": "服务器名称",
+  "portalNameRequired": "请输入服务器名称。",
+  "portalEditHost": "编辑远程主机",
+  "portalDeleteHost": "删除远程主机？",
+  "portalDeleteHostConfirmation": "要从此设备移除{name}吗？重新添加时需要再次登录。",
+  "@portalDeleteHostConfirmation": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
   "portalPassword": "密码",
   "portalScan": "扫描服务器或配对链接",
   "portalPairingReady": "配对链接已就绪",

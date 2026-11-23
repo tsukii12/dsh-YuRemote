@@ -5,6 +5,10 @@ versions are the plugin's own, not dsh's.
 
 ## Unreleased
 
+- YuRemote now asks for a server name after scanning a QR code. Rename or
+  delete saved hosts from the remote host list or by long-pressing a host in
+  the sidebar switcher.
+
 - YuRemote's Add Workspace sheet shows the remote host's drives or other roots
   under Home. The folder browser's back arrow returns to the sheet from any
   depth; Parent folder still moves up one level.
@@ -1234,7 +1238,6 @@ real sockets.
 Initial version: authenticated gateway (HTTP + WebSocket reverse proxy), password
 / one-time QR pairing / device registry / lockout, dsh browser-cookie minting,
 login wall, Settings panel, mobile presentation layer, install script, 51 tests.
-
 
 
 

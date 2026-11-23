@@ -62,7 +62,7 @@ class ConversationOverview extends ConsumerWidget {
     final catalog = ref.watch(currentModelCatalogProvider);
     final effective = model ?? catalog?.defaultSelection;
     final effort = effective?.reasoningEffort;
-    final host = ref.watch(activeConnectionProvider.select((c) => c.value?.label));
+    final host = ref.watch(activeConnectionLabelProvider);
     final workspace = folderLabel(summary?.cwd);
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),

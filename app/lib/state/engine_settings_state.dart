@@ -171,7 +171,6 @@ class EngineSettings {
     this.staged = const {},
     this.secretBindings = const {},
     this.local = true,
-    this._hostLabel,
     this._origin,
   });
 
@@ -204,11 +203,9 @@ class EngineSettings {
   /// A bare secret: the plugin has to bind it to a credential first.
   bool secretUnbound(FieldRef secret) => secretBindings.containsKey(secret.key) && secretBindings[secret.key] == null;
   final bool local;
-  final String? _hostLabel;
 
   /// The connection generation that produced this snapshot (not serialized).
   final Object? _origin;
-  String get hostLabel => _hostLabel ?? appL10n.commonThisPhone;
 
   SettingsNamespaceView? operator [](String ns) => namespaces[ns];
 
@@ -338,7 +335,6 @@ class EngineSettings {
     staged: staged ?? this.staged,
     secretBindings: secretBindings ?? this.secretBindings,
     local: local,
-    hostLabel: _hostLabel,
     origin: _origin,
   );
 }
@@ -622,7 +618,6 @@ class EngineSettingsController extends AsyncNotifier<EngineSettings?> {
       writable: described.writable,
       credentials: _credentialsFor(described.namespaces),
       local: conn.isLocal,
-      hostLabel: conn.label,
       origin: origin,
     );
   }
