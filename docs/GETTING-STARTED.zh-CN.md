@@ -4,7 +4,7 @@
 
 ## 在主机上安装
 
-需要 dsh 0.2.x（软件包声明范围：`>=0.2.0-0 <0.3.0-0`）与 Node.js 20 或更高版本。插件无需额外的 npm 运行依赖。请安装到实际使用的 dsh 配置；下面以 Web 为例。
+需要 DeepSeek Harness（DSH）0.2.x（软件包声明范围：`>=0.2.0-0 <0.3.0-0`）与 Node.js 20 或更高版本。插件无需额外的 npm 运行依赖。请安装到实际使用的 DSH 配置；下面以 Web 为例。
 
 ```sh
 git clone https://github.com/tsukii12/dsh-YuRemote.git
@@ -14,13 +14,13 @@ sh install.sh -p web
 dsh web --port 3080 --no-open
 ```
 
-Windows 下先运行 `dsh --profile web --dump-config`，再在检出目录运行 `.\install.ps1 -Profile web`，然后启动 dsh Web。使用桌面版时，先初始化 `desktop` 配置，将安装命令中的 `web` 改为 `desktop`，然后重启桌面应用。不指定配置时，脚本会安装到已有的 desktop 和 web 配置。通过检出目录安装的用户可运行 `git pull`，重新执行同一安装命令，再重启 dsh。要卸载插件，可运行 `sh install.sh -p web --uninstall` 或 `.\install.ps1 -Profile web -Uninstall`，然后重启。
+Windows 下先运行 `dsh --profile web --dump-config`，再在检出目录运行 `.\install.ps1 -Profile web`，然后启动 DSH Web。使用桌面版时，先初始化 `desktop` 配置，将安装命令中的 `web` 改为 `desktop`，然后重启桌面应用。不指定配置时，脚本会安装到已有的 desktop 和 web 配置。通过检出目录安装的用户可运行 `git pull`，重新执行同一安装命令，再重启 DSH。要卸载插件，可运行 `sh install.sh -p web --uninstall` 或 `.\install.ps1 -Profile web -Uninstall`，然后重启。
 
 ## 通过局域网连接
 
-1. 在主机本机打开 dsh Web 打印的启动地址，或打开桌面应用。不要分享 dsh 的启动令牌。
+1. 在主机本机打开 DSH Web 打印的启动地址，或打开桌面应用。不要分享 DSH 的启动令牌。
 2. 从侧栏打开 **远程访问 → 基本设置**，保持远程访问开启，并保存至少 8 个字符的访问密码。
-3. 在同一网络的另一台设备上打开 **局域网访问** 显示的地址，输入门户密码。网关默认端口为 **3081**；示例中的 dsh Web 端口 **3080** 不是门户。
+3. 在同一网络的另一台设备上打开 **局域网访问** 显示的地址，输入门户密码。网关默认端口为 **3081**；示例中的 DSH Web 端口 **3080** 不是门户。
 
 ![手机密码登录页](screenshots/mobile-login.png)
 
@@ -30,7 +30,7 @@ Windows 下先运行 `dsh --profile web --dump-config`，再在检出目录运�
 
 ### 基本设置
 
-**启用远程访问** 用于启动或停止网关；从远程设备关闭时，连接会断开，需要回到主机上的 dsh 才能重新开启。**绑定地址** 默认 `0.0.0.0`（所有网卡）；`auto` 选择主局域网 IPv4 地址，`127.0.0.1` 则仅限本机和本机上的隧道访问。**端口** 默认 `3081`，面板接受 1–65535。**访问密码** 支持 8–200 个字符；从面板修改密码会让设备退出登录，并取消未使用的配对链接。
+**启用远程访问** 用于启动或停止网关；从远程设备关闭时，连接会断开，需要回到主机上的 DSH 才能重新开启。**绑定地址** 默认 `0.0.0.0`（所有网卡）；`auto` 选择主局域网 IPv4 地址，`127.0.0.1` 则仅限本机和本机上的隧道访问。**端口** 默认 `3081`，面板接受 1–65535。**访问密码** 支持 8–200 个字符；从面板修改密码会让设备退出登录，并取消未使用的配对链接。
 
 ![基本设置页签](screenshots/desktop-general.png)
 

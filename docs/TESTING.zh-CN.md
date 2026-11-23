@@ -10,7 +10,7 @@ node --test test/host.test.mjs     # 网关与主机集成
 node --test test/relay.test.mjs    # 中转与隧道集成
 ```
 
-移动端套件包含真实 Chrome 检查。在另一个终端运行 `dsh web --port 3080 --no-open`，确保已安装鱼鱼远程。使用不带查询字符串的回环地址，以及启动链接中的令牌。不要分享该令牌。
+移动端套件包含真实 Chrome 检查。在 DeepSeek Harness（DSH）中安装鱼鱼远程后，另开一个终端运行 `dsh web --port 3080 --no-open`。使用不带查询字符串的回环地址，以及启动链接中的令牌。不要分享该令牌。
 
 ```sh
 CHROME_PATH=/path/to/chrome \
@@ -19,7 +19,7 @@ DSH_WEB_TEST_TOKEN='<local launch token>' \
 npm test
 ```
 
-Windows 下如果能找到 `dsh.cmd`，测试套件可以自动启动 dsh。Chrome 或运行中的实例不可用时，真实浏览器测试会跳过；报告浏览器验证之前请确认跳过数。
+Windows 下如果能找到 `dsh.cmd`，测试套件可以自动启动 DSH。Chrome 或运行中的实例不可用时，真实浏览器测试会跳过；报告浏览器验证之前请确认跳过数。
 
 直接运行 `node --test` 还会找到仓库内的 Tavern 差分测试。其中的浏览器适配器测试需要 Node 的 `--experimental-vm-modules` 参数，不属于鱼鱼远程网关工作流。
 
