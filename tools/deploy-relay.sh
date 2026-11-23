@@ -524,11 +524,11 @@ case "${1:-status}" in
   config)
     shift
     load
-    require_saved_installer --reconfigure
     if [ $# -eq 0 ]; then
       [ -r "$CONF" ] && cat "$CONF" || echo "$(t "no saved configuration" "没有已保存的配置")"
       exit 0
     fi
+    require_saved_installer --reconfigure
     exec bash "$SCRIPT" --apply-config "$@"
     ;;
 

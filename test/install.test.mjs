@@ -317,7 +317,8 @@ test("upgrading a non-migrated relay from stdin never fetches an installer or pa
   mkdirSync(state);
   writeFileSync(join(state, "token"), "fixture-token\n");
   writeFileSync(join(state, "deploy-relay.sh"), "#!/bin/bash\nexit 99\n");
-  writeFileSync(join(state, "deploy.conf"), `SCRIPT=${state}/deploy-relay.sh\n`);
+  const config = `AGENT_PORT=9443\nSCRIPT=${state}/deploy-relay.sh\n`;
+  writeFileSync(join(state, "deploy.conf"), config);
   writeFileSync(unit, "[Service]\n");
   writeFileSync(join(sandbox, "systemctl"), `#!/bin/sh\necho systemctl >> "${log}"\n`, { mode: 0o755 });
   const setup = `
@@ -347,12 +348,16 @@ curl() { echo curl >> "${log}"; return 1; }
   assert.equal(upgraded.status, 0, upgraded.stderr);
   assert.equal(existsSync(saved), false);
   const env = { ...process.env, PATH: `${sandbox}:${process.env.PATH}` };
-  for (const [args, flag, message] of [
-    [["config"], "--reconfigure", /Run the official installer/],
+  const readOnly = spawnSync(bin, ["config"], { env, encoding: "utf8" });
+  assert.equal(readOnly.status, 0, readOnly.stderr);
+  assert.equal(readOnly.stdout, config);
+  assert.equal(readOnly.stderr, "");
+  for (const [args, flag, message, lang] of [
+    [["config", "AGENT_PORT=9444"], "--reconfigure", /Run the official installer/],
     [["uninstall"], "--uninstall", /Run the official installer/],
-    [["config", "AGENT_PORT=9444"], "--reconfigure", /请下载官方安装脚本后运行/],
+    [["config", "AGENT_PORT=9444"], "--reconfigure", /请下载官方安装脚本后运行/, "zh"],
   ]) {
-    if (args.length > 1) {
+    if (lang === "zh") {
       mkdirSync(dirname(saved));
       writeFileSync(saved, "#!/bin/bash\nexit 99\n");
       writeFileSync(join(state, "deploy.conf"), "LANG_MODE=zh\n");
