@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- FileProvider roots for files/FilesPlugin.kt: downloaded copies of remote files, and copies
+     made to open anything else. A URI is only ever granted for the one file the user opens. -->
+<paths>
+    <cache-path name="artifacts" path="artifacts/" />
+</paths>
