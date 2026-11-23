@@ -7013,6 +7013,56 @@ class L10nEn extends L10n {
   String get systemActionsResultNotRun => 'Nothing ran.';
 
   @override
+  String get updateCheck => 'Check for updates';
+
+  @override
+  String get updateCurrent => 'You\'re up to date';
+
+  @override
+  String get updateFailed => 'Couldn\'t check for updates. Please try again.';
+
+  @override
+  String get updateAvailable => 'Update available';
+
+  @override
+  String get updateNoNotes => 'No release notes provided.';
+
+  @override
+  String get updateSkip => 'Skip this version';
+
+  @override
+  String get updateLater => 'Later';
+
+  @override
+  String get updateDownload => 'Download';
+
+  @override
+  String get updateDownloading => 'Downloading update';
+
+  @override
+  String get updateCancel => 'Cancel';
+
+  @override
+  String get updateBrowser => 'Download in browser';
+
+  @override
+  String get updateDownloadFallback =>
+      'Couldn\'t download or open the installer. Opening the download in your browser.';
+
+  @override
+  String get updateInstallPermissionTitle => 'Allow app installation';
+
+  @override
+  String get updateInstallPermissionBody =>
+      'Android hasn\'t allowed YuRemote to install apps. Open settings and enable Allow from this source, then return and tap Install again. Or download in your browser instead.';
+
+  @override
+  String get updateOpenSettings => 'Open settings';
+
+  @override
+  String get updateInstallRetry => 'Install again';
+
+  @override
   String viewArtifactSaved(String value) {
     return 'Saved to $value';
   }
