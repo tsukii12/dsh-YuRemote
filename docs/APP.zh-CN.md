@@ -4,7 +4,17 @@
 
 鱼鱼远程基于 dsh-Go v1.2.0 的 Flutter 界面移植，仅用于远程连接。应用需要鱼鱼远程网关，不支持通过 SSH 或普通 DeepSeek Harness（DSH）Web 地址连接；手机上不运行 DSH，也不嵌入网页。可打开并继续会话、接收流式回复、处理授权和提问；主机支持时，也能浏览工作区和添加附件。
 
-<img src="screenshots/app-home-chat.png" alt="iOS 应用在 Studio Mac 演示主机上的对话" width="220"> <img src="screenshots/app-sidebar.png" alt="iOS 侧栏中的演示对话、搜索和筛选" width="220"> <img src="screenshots/app-folder-picker.png" alt="iOS 应用中演示工作区的远程目录选择器" width="220">
+<div align="center">
+  <table>
+    <tbody>
+      <tr>
+        <td align="center"><img src="screenshots/app-home-chat.png" alt="iOS 应用在 Studio Mac 演示主机上的对话" width="220"></td>
+        <td align="center"><img src="screenshots/app-sidebar.png" alt="iOS 侧栏中的演示对话、搜索和筛选" width="220"></td>
+        <td align="center"><img src="screenshots/app-folder-picker.png" alt="iOS 应用中演示工作区的远程目录选择器" width="220"></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
 <img src="screenshots/app-settings-about.png" alt="iOS 应用中的关于页面，显示许可与上游致谢" width="220">
 
