@@ -20,7 +20,7 @@ set -euo pipefail
 if [ ! -x "$0" ] && [ -f "$0" ]; then chmod +x "$0" 2>/dev/null || true; fi
 
 SELF_VERSION="0.6.2"
-INSTALLER_REVISION=6
+INSTALLER_REVISION=7
 
 RELAY_DIR=/opt/yuremote-relay
 STATE_DIR=/var/lib/yuremote-relay
@@ -1299,6 +1299,7 @@ if can_ask; then ask_yn "$(t "Install with these settings" "确认安装")" y ||
 
 # ── 4. install ──────────────────────────────────────────────────────────────
 say "4/6 $(t "Installing the relay" "安装 relay")"
+prepare_installer
 if [ "$HAVE_SYSTEMD" = 1 ]; then
   if is_migrated_relay && [ -f "$UNIT" ]; then
     if legacy_plain_unit "$UNIT"; then
@@ -1321,10 +1322,7 @@ fi
 ok "$RELAY_DIR/relay.mjs"
 install_brand
 
-if [ -f "$0" ] && [ -r "$0" ]; then
-  INSTALLER_SOURCE=$0
-  save_relay_installer
-fi
+save_relay_installer
 if [ -f "$PORTAL_DIR/relay.mjs" ]; then
   install -m 0644 "$PORTAL_DIR/relay.mjs" "$STATE_DIR/relay.mjs" 2>/dev/null || true
   PORTAL_DIR=$STATE_DIR

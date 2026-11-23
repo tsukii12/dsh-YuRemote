@@ -305,6 +305,53 @@ printf '%s\\n' '{"tunnels":[]}'
   assert.match(denied.stderr, /sudo yuremote status/);
 });
 
+test("upgrading a non-migrated relay from stdin saves the installer for the manager", { skip }, (t) => {
+  const sandbox = home([]);
+  t.after(() => rmSync(sandbox, { recursive: true, force: true }));
+  const relay = join(sandbox, "relay");
+  const state = join(sandbox, "state");
+  const bin = join(sandbox, "yuremote");
+  const saved = join(sandbox, "libexec", "deploy-relay.sh");
+  mkdirSync(state);
+  writeFileSync(join(state, "token"), "fixture-token\n");
+  writeFileSync(join(state, "deploy-relay.sh"), "#!/bin/bash\nexit 99\n");
+  writeFileSync(join(state, "deploy.conf"), `SCRIPT=${state}/deploy-relay.sh\n`);
+  writeFileSync(join(sandbox, "yuremote-relay.service"), "[Service]\n");
+  const download = '#!/bin/bash\nSELF_VERSION="fixture-version"\nINSTALLER_REVISION=1\nSERVICE=yuremote-relay\nprintf "%s\\n" "$@"\n';
+  writeFileSync(join(sandbox, "download"), download);
+  const setup = `
+set -euo pipefail
+SELF_VERSION=fixture-version INSTALLER_REVISION=1
+HAVE_SYSTEMD=1 UNIT=${sandbox}/yuremote-relay.service
+RUN_USER=$(id -un) RUN_GROUP=$(id -gn)
+STATE_DIR=${state} RELAY_DIR=${relay} PORTAL_DIR=${join(ROOT, "tools")}
+SAVED_INSTALLER=${saved} BIN=${bin} RAW_BASES=https://fixture.invalid
+TMP_RELAY_DIR=${sandbox}/download-dir
+mkdir "$TMP_RELAY_DIR"
+t() { printf '%s' "$1"; }
+say() { :; }
+ok() { :; }
+die() { printf '%s\\n' "$*" >&2; exit 1; }
+useradd() { :; }
+is_migrated_relay() { return 1; }
+install_brand() { :; }
+curl() { while [ "$#" -gt 1 ]; do shift; done; cp -- "${sandbox}/download" "$1"; }
+`;
+  const install = deploy.slice(deploy.indexOf("# ── 4. install"), deploy.indexOf('TLS_CERT=""; TLS_KEY=""'));
+  const upgraded = spawnSync("bash", ["-s"], {
+    input: [setup, shellFunction("prepare_installer"), shellFunction("save_relay_installer"), install,
+      shellFunction("install_yuremote").replaceAll("/var/lib/yuremote-relay", state), "install_yuremote\n"].join("\n"),
+    encoding: "utf8",
+  });
+  assert.equal(upgraded.status, 0, upgraded.stderr);
+  assert.equal(readFileSync(saved, "utf8"), download);
+  assert.equal(lstatSync(saved).mode & 0o777, 0o755);
+  assert.equal(readFileSync(join(state, "token"), "utf8"), "fixture-token\n");
+  const config = spawnSync(bin, ["config", "AGENT_PORT=9444"], { encoding: "utf8" });
+  assert.equal(config.status, 0, config.stderr);
+  assert.equal(config.stdout, "--apply-config\nAGENT_PORT=9444\n");
+});
+
 test("a migrated relay can be reinstalled after uninstall without reverting its unit", { skip }, (t) => {
   const sandbox = home([]);
   t.after(() => rmSync(sandbox, { recursive: true, force: true }));
