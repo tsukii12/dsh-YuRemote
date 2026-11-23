@@ -35,6 +35,20 @@ class _RemoteScreenState extends ConsumerState<RemoteScreen> {
   }
 
   @override
+  void didUpdateWidget(covariant RemoteScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final previous = oldWidget.host;
+    final current = widget.host;
+    if (previous != null &&
+        current != null &&
+        previous.id == current.id &&
+        previous.name != current.name &&
+        _name.text == previous.name) {
+      _name.text = current.name;
+    }
+  }
+
+  @override
   void dispose() {
     _url.dispose();
     _name.dispose();

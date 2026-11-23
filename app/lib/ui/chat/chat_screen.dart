@@ -1261,7 +1261,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> with WidgetsBindingObse
       idleLabel: null,
       streamLost: chat?.streamLost ?? false,
       syncing: chat?.syncing ?? false,
-      label: conn?.label ?? l10n.commonThisPhone,
+      label: ref.watch(activeConnectionLabelProvider) ?? l10n.commonThisPhone,
       connection: chat?.connection,
       running: chat?.running ?? false,
       stopping: chat?.stopping ?? false,

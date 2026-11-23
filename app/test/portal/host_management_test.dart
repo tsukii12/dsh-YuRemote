@@ -2,15 +2,62 @@ import 'dart:convert';
 
 import 'package:dsh_app/l10n/l10n.dart';
 import 'package:dsh_app/remote/secret_store.dart';
+import 'package:dsh_app/state/connection_state.dart';
 import 'package:dsh_app/state/hosts_state.dart';
+import 'package:dsh_app/ui/chat/chat_header.dart';
+import 'package:dsh_app/ui/chat/chat_screen.dart';
 import 'package:dsh_app/ui/remote/host_actions.dart';
 import 'package:dsh_app/ui/remote/host_switcher.dart';
 import 'package:dsh_app/ui/remote/remote_screen.dart';
+import 'package:dsh_app/ui/shell/root_gate.dart';
 import 'package:dsh_app/ui/theme/theme.dart';
+import 'package:dsh_client/dsh_client.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+class _HeaderCarrier extends DshCarrier {
+  @override
+  String get kind => 'fixture';
+  @override
+  DshTracer? get tracer => null;
+  @override
+  Future<RpcResult> call(String endpoint, Map<String, Object?> args, {Duration? timeout}) async =>
+      const RpcError(DshRemoteException('gateway/not-found', 'Not configured in this fixture'));
+  @override
+  Future<DshMuxLink> openLink(MuxOptions options) async => _HeaderLink();
+  @override
+  Future<void> close() async {}
+}
+
+class _HeaderLink implements DshMuxLink {
+  late DshMuxFrameHandler _frame;
+
+  @override
+  void start({required DshMuxFrameHandler onFrame, required DshMuxLossHandler onLost}) => _frame = onFrame;
+  @override
+  void open(String streamId, String endpoint, Map<String, Object?> payload) {
+    if (endpoint == r'$events') {
+      Future.microtask(
+        () => _frame({
+          'type': 'item',
+          'streamId': streamId,
+          'value': {'type': 'ready', 'clientId': 'demo'},
+        }),
+      );
+    }
+  }
+
+  @override
+  void cancel(String streamId) {}
+  @override
+  Future<void> close(int code, String reason) async {}
+  @override
+  void sendItem(String streamId, Object? value) {}
+  @override
+  void endUplink(String streamId) {}
+}
 
 void main() {
   final host = PortalHostConfig(id: 'demo', name: 'Demo host', base: Uri.parse('https://example.test/'));
@@ -22,6 +69,7 @@ void main() {
     List<PortalHostConfig> hosts = const [],
     MemorySecretStore? secrets,
     GlobalKey<NavigatorState>? navigator,
+    AsyncValue<HostConnection?>? connection,
   }) async {
     tester.view.physicalSize = const Size(700, 900);
     tester.view.devicePixelRatio = 1;
@@ -33,7 +81,10 @@ void main() {
     });
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [secretStoreProvider.overrideWithValue(secrets ?? MemorySecretStore())],
+        overrides: [
+          secretStoreProvider.overrideWithValue(secrets ?? MemorySecretStore()),
+          if (connection != null) activeConnectionProvider.overrideWithValue(connection),
+        ],
         child: MaterialApp(
           navigatorKey: navigator,
           theme: buildLightTheme(),
@@ -92,6 +143,47 @@ void main() {
     expect(jsonDecode(prefs.getString(HostsController.prefsKey)!), [
       {...host.toJson(), 'name': 'Renamed host'},
     ]);
+  });
+
+  testWidgets('the connected chat header updates immediately when its host is renamed', (tester) async {
+    final client = DshClient.withCarrier(_HeaderCarrier());
+    await client.mux.ready();
+    addTearDown(client.close);
+    final connection = HostConnection(client: client, hostId: host.id, name: host.name);
+    final container = await pumpApp(tester, home: const ChatScreen(), hosts: [host], connection: AsyncData(connection));
+    final badge = find.byType(ChatHeader);
+    Finder label(String name) => find.descendant(of: badge, matching: find.text(name));
+    expect(label(host.name), findsOneWidget);
+
+    await container.read(hostsProvider.notifier).rename(host.id, 'Demo Sidebar');
+    await tester.pumpAndSettle();
+
+    expect(label(host.name), findsNothing);
+    expect(label('Demo Sidebar'), findsOneWidget);
+    expect(container.read(activeConnectionProvider).value, same(connection));
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
+  testWidgets('renaming also updates the unchanged name prefilled on the sign-in screen', (tester) async {
+    final container = await pumpApp(
+      tester,
+      home: const RootGate(),
+      hosts: [host],
+      connection: AsyncError(const HostLinkError(HostLinkErrorKind.authFailed, 'Sign in again'), StackTrace.current),
+    );
+    final field = find.byKey(const ValueKey('portal-name'));
+    String? name() => tester.widget<TextField>(field).controller?.text;
+    expect(name(), host.name);
+
+    final hosts = container.read(hostsProvider.notifier);
+    await hosts.rename(host.id, 'Renamed host');
+    await tester.pumpAndSettle();
+    expect(name(), 'Renamed host');
+
+    await tester.enterText(field, 'Unsaved edit');
+    await hosts.rename(host.id, 'Another name');
+    await tester.pumpAndSettle();
+    expect(name(), 'Unsaved edit');
   });
 
   testWidgets('sidebar long-press offers edit and confirmed deletion of the active host', (tester) async {

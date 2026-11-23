@@ -62,7 +62,7 @@ class RemoteConnectionController extends AsyncNotifier<HostConnection?> {
     });
     ref.onDispose(() => unawaited(sub.cancel()));
     final client = await link.open();
-    return HostConnection(client: client, name: ref.read(hostNameProvider(host)), hostId: host.id);
+    return HostConnection(client: client, hostId: host.id);
   }
 
   void retry() => ref.invalidate(hostLinkProvider(host));
@@ -73,6 +73,14 @@ final remoteConnectionProvider = AsyncNotifierProvider.autoDispose
 final activeConnectionProvider = Provider<AsyncValue<HostConnection?>>(
   (ref) => ref.watch(remoteConnectionProvider(ref.watch(activeHostProvider))),
 );
+
+final activeConnectionLabelProvider = Provider<String?>((ref) {
+  final connection = ref.watch(activeConnectionProvider.select((value) => value.value));
+  if (connection == null) return null;
+  final id = connection.hostId;
+  final name = id == null ? null : ref.watch(hostNameProvider(HostRef.portal(id)));
+  return name ?? connection.label;
+});
 
 class ConnectionDiagnostics {
   Map<String, Object?> get snapshot => const {'transport': 'portal'};

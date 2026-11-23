@@ -8,9 +8,6 @@ abstract class ProviderBackend {
   /// The on-device engine (keys typed here are also kept on the phone).
   bool get isLocal;
 
-  /// "本机", "电脑 · SSH" …
-  String get hostLabel;
-
   /// Fires when the pi-ai section, a credential or the route set changes.
   Stream<void> get changes;
 
@@ -68,15 +65,12 @@ abstract class ProviderBackend {
 }
 
 class ClientProviderBackend implements ProviderBackend {
-  ClientProviderBackend(this.client, {required this.isLocal, required this.hostLabel});
+  ClientProviderBackend(this.client, {required this.isLocal});
 
   final DshClient client;
 
   @override
   final bool isLocal;
-
-  @override
-  final String hostLabel;
 
   @override
   Stream<void> get changes => client.hostEvents
