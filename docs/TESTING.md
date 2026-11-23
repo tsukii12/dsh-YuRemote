@@ -10,7 +10,7 @@ node --test test/host.test.mjs     # Gateway and host integration
 node --test test/relay.test.mjs    # Relay and tunnel integration
 ```
 
-The mobile suite includes live Chrome checks. Start `dsh web --port 3080 --no-open` with YuRemote installed in a separate terminal. Use the loopback base URL without a query string and the token from the launch URL. Do not share it.
+The mobile suite includes live Chrome checks. With YuRemote installed in DeepSeek Harness (DSH), run `dsh web --port 3080 --no-open` in a separate terminal. Use the loopback base URL without a query string and the token from the launch URL. Do not share it.
 
 ```sh
 CHROME_PATH=/path/to/chrome \
@@ -19,7 +19,7 @@ DSH_WEB_TEST_TOKEN='<local launch token>' \
 npm test
 ```
 
-On Windows, the suite can auto-start dsh if it finds `dsh.cmd`. If Chrome or a live instance is unavailable, the live cases skip. Check the skip count before reporting browser coverage.
+On Windows, the suite can auto-start DSH if it finds `dsh.cmd`. If Chrome or a live instance is unavailable, the live cases skip. Check the skip count before reporting browser coverage.
 
 A bare `node --test` also discovers the vendored Tavern differential tests. The Tavern browser adapter tests require Node's `--experimental-vm-modules` flag; they are not part of the YuRemote gateway workflow.
 

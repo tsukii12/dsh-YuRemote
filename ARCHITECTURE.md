@@ -4,21 +4,21 @@
 
 ## 1. Gateway and upstream
 
-A browser or app talks directly to the YuRemote gateway on the host, or sends HTTPS via a relay. In either case the gateway authenticates the visitor and proxies to dsh. Leave the dsh Web listener private. It has a launch token and checks incoming Host and Origin; it is not a substitute for the portal.
+A browser or app talks directly to the YuRemote gateway on the host, or sends HTTPS via a relay. In either case the gateway authenticates the visitor and proxies to DeepSeek Harness (DSH). Leave the DSH Web listener private. It has a launch token and checks incoming Host and Origin; it is not a substitute for the portal.
 
-The gateway rewrites upstream authority headers to match dsh, streams HTTP responses and forwards WebSocket upgrades. It uses the dsh launch credential locally to mint an upstream cookie; that credential is not sent to the client. The browser can receive the minted cookie alongside the gateway's own cookie. Device authorization is enforced by the gateway.
+The gateway rewrites upstream authority headers to match DSH, streams HTTP responses and forwards WebSocket upgrades. It uses the DSH launch credential locally to mint an upstream cookie; that credential is not sent to the client. The browser can receive the minted cookie alongside the gateway's own cookie. Device authorization is enforced by the gateway.
 
 ## 2. Relay and app
 
 The tunnel agent dials out from the host and multiplexes visitor traffic over its connection to the relay. The relay routes by tunnel ID; the gateway still handles sign-in. A relay operator terminating TLS can see visitor traffic, so run the service on infrastructure you trust.
 
-The web remote uses dsh's interface with YuRemote layout and navigation enhancements. The Flutter app connects through the gateway with a cookie session and uses dsh RPCs and the `remote.mux` WebSocket. The workspaces and engine stay on the host.
+The web remote uses DSH's interface with YuRemote layout and navigation enhancements. The Flutter app connects through the gateway with a cookie session and uses DSH RPCs and the `remote.mux` WebSocket. The workspaces and engine stay on the host.
 
 ## 3. Authentication
 
 - Passwords are hashed with scrypt. The default lockout begins after five failures, with a 60-second initial delay. Successful logins register a device session.
 - The signed `dsh_portal` cookie is HttpOnly, SameSite=Lax, bound to the User-Agent, and Secure when the gateway sees a secure connection. This does not protect plaintext HTTP from interception.
-- Pairing codes are single use, stored as hashes and expire after 180 seconds by default. The relay token is separate: it lets the agent attach to the relay, not sign in to dsh.
+- Pairing codes are single use, stored as hashes and expire after 180 seconds by default. The relay token is separate: it lets the agent attach to the relay, not sign in to DSH.
 - In password mode, a non-loopback listener requires a configured password. Pair-only mode requires a pairing code instead. Open mode is loopback-only; never expose an open-mode gateway with a tunnel.
 
 ## 4. Repository map
@@ -29,7 +29,7 @@ The web remote uses dsh's interface with YuRemote layout and navigation enhancem
 | `lib/` | Gateway, login page, proxy, authentication, state, QR and tunnel agent |
 | `client.js`, `assets/`, `locale/` | Browser settings, workspace picker, mobile layout and localization |
 | `tools/relay.mjs`, `tools/deploy-relay.sh` | Relay server and systemd deployment |
-| `app/`, `packages/` | Flutter app and shared Dart packages, including the portal and dsh clients |
+| `app/`, `packages/` | Flutter app and shared Dart packages, including the portal and DSH clients |
 | `test/`, `tools/cdp.mjs` | Node coverage and Chrome DevTools tools |
 
 ## 5. Host configuration
