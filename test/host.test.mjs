@@ -17,6 +17,7 @@ import { mkdtempSync, readFileSync, rmSync, writeFileSync, existsSync } from "no
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { runInNewContext } from "node:vm";
 
 import { createGateway, normalizeConfig } from "../lib/gateway.mjs";
 import { Lockout, hashPassword, verifyPassword, issueSession, verifySessionCookie } from "../lib/auth.mjs";
@@ -391,6 +392,35 @@ test("password login sets an HttpOnly session cookie; a wrong password is 401", 
   await gw.stop();
 });
 
+function lockCountdownDestination(html, from) {
+  assert.doesNotMatch(html, /location\.reload\s*\(/);
+  const seconds = html.match(/id="yuremote-countdown" data-seconds="(\d+)"/)[1];
+  const href = html.match(/<a id="yuremote-lock-login" href="([^"]+)"/)[1];
+  const timers = [];
+  const destinations = [];
+  const lock = { getAttribute: () => seconds, setAttribute() {}, querySelector: () => ({}) };
+  const link = { getAttribute: () => href };
+  const document = {
+    documentElement: { getAttribute: () => "auto", setAttribute() {}, classList: { add() {}, remove() {} } },
+    getElementById(id) {
+      if (id === "yuremote-countdown") return lock;
+      if (id === "yuremote-lock-login") return link;
+      return id.startsWith("yuremote-meta-") ? { setAttribute() {} } : null;
+    },
+  };
+  const window = {
+    setTimeout: callback => timers.push(callback),
+    location: { replace: target => destinations.push(new URL(target, from).pathname) },
+  };
+  for (const [, script] of html.matchAll(/<script>([\s\S]*?)<\/script>/g)) {
+    runInNewContext(script, { document, window });
+  }
+  for (let i = 0; i <= Number(seconds) && timers.length; i++) timers.shift()();
+  assert.equal(timers.length, 0);
+  assert.equal(destinations.length, 1, "expiry must navigate exactly once instead of replaying the POST");
+  return destinations[0];
+}
+
 test("wrong password locks the IP out after maxFailures, doubling the wait", async () => {
   const { gw } = await startPortal({ config: { auth: { mode: "password", maxFailures: 3, lockSeconds: 60 } } });
   await gw.setPassword("correct horse battery");
@@ -405,6 +435,11 @@ test("wrong password locks the IP out after maxFailures, doubling the wait", asy
   }
   const third = await login(port, "wrong-password");
   assert.equal(third.response.status, 429, "the maxFailures-th failure locks immediately");
+  assert.equal(lockCountdownDestination(third.response.body, "http://portal.invalid/__portal/login"), "/__portal/login");
+  assert.equal(
+    lockCountdownDestination(third.response.body, "https://portal.invalid/__t/abc123/__portal/login"),
+    "/__t/abc123/__portal/login",
+  );
   const locked = await login(port, "correct horse battery");
   assert.equal(locked.response.status, 429, "a correct password must not bypass the lock");
   assert.ok(Number(locked.response.headers["retry-after"]) >= 1);
@@ -458,6 +493,63 @@ test("wrong password locks the IP out after maxFailures, doubling the wait", asy
   assert.equal(unit.state("10.0.0.9", cursor).locked, false);
   assert.equal(unit.state("10.0.0.9", cursor).strikes, 0);
   await gw.stop();
+});
+
+test("daily password limit survives restarts and concurrent guesses, then resets at local midnight", async (t) => {
+  t.mock.timers.enable({ apis: ["Date"], now: +new Date(2026, 0, 15, 23, 59) });
+  const upstream = await startUpstream();
+  const setup = {
+    stateDir: tmpDir(), upstreamPort: upstream.port,
+    config: { auth: { maxFailures: 20 } },
+  };
+  let { gw } = await startPortal(setup);
+  await gw.setPassword("correct horse battery");
+  await gw.start();
+  const json = { headers: { accept: "application/json", "accept-language": "en" } };
+  for (let i = 0; i < 2; i++) {
+    assert.equal((await login(gw.status().port, "wrong", json)).response.status, 401);
+  }
+  const session = await login(gw.status().port, "correct horse battery", json);
+  assert.equal(session.response.status, 303);
+  await gw.stop();
+
+  ({ gw } = await startPortal(setup));
+  await gw.start();
+  const guesses = await Promise.all(Array.from({ length: 12 }, () => login(gw.status().port, "wrong", json)));
+  assert.equal(guesses.filter(({ response }) => response.status === 401).length, 7);
+  const locked = guesses.filter(({ response }) => response.status === 429);
+  assert.equal(locked.length, 5);
+  for (const { response } of locked) {
+    assert.equal(JSON.parse(response.body).code, "password-daily-limit");
+    assert.equal(response.headers["retry-after"], "60");
+  }
+  await gw.stop();
+
+  ({ gw } = await startPortal(setup));
+  await gw.start();
+  const port = gw.status().port;
+  assert.equal((await login(port, "correct horse battery", json)).response.status, 429);
+  assert.equal((await request(port, "/api/test", { headers: { cookie: session.portal } })).status, 200);
+  const pairing = await gw.mintPairing();
+  const body = new URLSearchParams({ token: pairing.token }).toString();
+  const paired = await request(port, "/__portal/login", {
+    method: "POST",
+    headers: { "content-type": "application/x-www-form-urlencoded", "content-length": Buffer.byteLength(body) },
+    body,
+  });
+  assert.equal(paired.status, 303);
+  assert.equal((await login(port, "correct horse battery", json)).response.status, 429);
+  t.mock.timers.tick(59_999);
+  assert.equal((await login(port, "correct horse battery", json)).response.headers["retry-after"], "1");
+  const dailyPage = (await login(port, "wrong")).response;
+  assert.equal(dailyPage.status, 429);
+  const loginPath = lockCountdownDestination(dailyPage.body, "http://portal.invalid/__portal/login");
+  t.mock.timers.tick(1);
+  assert.equal((await request(port, loginPath, { headers: { accept: "text/html" } })).status, 200);
+  assert.equal((await login(port, "correct horse battery", json)).response.status, 303);
+  const newDay = await login(port, "wrong", json);
+  assert.equal(newDay.response.status, 401);
+  assert.equal(JSON.parse(newDay.response.body).remaining, 9);
 });
 
 test("stop() resolves when the gateway never started", async () => {

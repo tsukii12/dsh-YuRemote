@@ -365,7 +365,7 @@ const forgedVisitorHeaders = {
 };
 const testPassword = "correct horse battery";
 
-async function portalWithRelay(agentPort, token) {
+async function portalWithRelay(agentPort, token, { maxFailures = 2 } = {}) {
   let upgradeHeaders;
   const upstream = http.createServer((req, res) => res.end(JSON.stringify(req.headers)));
   upstream.on("upgrade", (req, socket) => {
@@ -376,7 +376,7 @@ async function portalWithRelay(agentPort, token) {
   const gateway = createGateway({
     ctx: { webServer: { host: "127.0.0.1", port: upstreamPort, protocol: "http:" } },
     config: {
-      enabled: true, host: "127.0.0.1", port: 0, auth: { maxFailures: 2 },
+      enabled: true, host: "127.0.0.1", port: 0, auth: { maxFailures },
       tunnel: { url: `tcp://127.0.0.1:${agentPort}`, token },
     },
     stateDir: tmpDir(), log: quiet,
@@ -457,6 +457,40 @@ test("real relay separates same-UA visitor pairing, revocation and lockout by so
   assert.equal((await visitorLogin(httpPort, mount, "wrong", spoofed)).status, 429);
   assert.equal((await visitorLogin(httpPort, mount, testPassword, a)).status, 429);
   assert.equal((await visitorLogin(httpPort, mount, testPassword, b)).status, 303);
+});
+
+test("direct and relay visitors share the daily password limit across Web and App", async (t) => {
+  const token = "test-token-daily-password-limit";
+  const mount = `/__t/${tunnelIdFor(token)}`;
+  const { httpPort, agentPort } = await startRelay([token]);
+  const { gateway } = await portalWithRelay(agentPort, token, { maxFailures: 20 });
+  const port = gateway.status().port;
+  const web = { localAddress: "127.0.0.2", headers: { accept: "text/html", "accept-language": "en" } };
+  const app = { headers: { accept: "application/json", "accept-language": "zh", "user-agent": "DSHRemotePortal/2.0" } };
+  try {
+    await request(httpPort, "/__relay/health", web);
+  } catch (error) {
+    if (error.code === "EADDRNOTAVAIL") return t.skip("distinct loopback source addresses are unavailable");
+    throw error;
+  }
+  for (let i = 0; i < 4; i++) {
+    assert.equal((await visitorLogin(port, "", "wrong", app)).status, 401);
+  }
+  for (let i = 0; i < 5; i++) {
+    assert.equal((await visitorLogin(httpPort, mount, "wrong", web)).status, 401);
+  }
+  const tenth = await visitorLogin(httpPort, mount, "wrong", app);
+  assert.equal(tenth.status, 429);
+  const payload = JSON.parse(tenth.body);
+  assert.equal(payload.code, "password-daily-limit");
+  assert.equal(payload.error, "尝试次数过多，请明天再试。");
+  assert.equal(Number(tenth.headers["retry-after"]), payload.retryAfter);
+  const locked = await visitorLogin(httpPort, mount, testPassword, web);
+  assert.equal(locked.status, 429);
+  assert.match(locked.body.toString(), /Too many attempts\. Try again tomorrow\./);
+  const reload = await request(httpPort, `${mount}/`, web);
+  assert.equal(reload.status, 429);
+  assert.match(reload.body.toString(), /Password sign-in is paused until midnight on the host\./);
 });
 
 test("direct clients cannot spoof a different visitor or send the internal header upstream", async () => {
