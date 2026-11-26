@@ -37,6 +37,10 @@ void main() {
     expect(restored.cookieKey, first.cookieKey);
     expect(first.cookieKey, isNot(second.cookieKey));
     expect(first.cookieKey, isNot(contains(first.base.toString())));
+    expect(restored.passwordKey, first.passwordKey);
+    expect(first.passwordKey, isNot(second.passwordKey));
+    expect(first.passwordKey, isNot(contains(first.base.toString())));
+    expect(first.toJson(), isNot(contains('password')));
   });
 
   test('profiles persist, replace by id and restore the selected portal', () async {
@@ -61,8 +65,13 @@ void main() {
     expect(restored.read(hostsProvider).portalById('one')?.base, first.base);
   });
 
-  test('removing a selected portal deletes only its cookies and returns to login', () async {
-    final secrets = MemorySecretStore({first.cookieKey: 'fixture-one', second.cookieKey: 'fixture-two'});
+  test('removing a selected portal deletes only its credentials and returns to login', () async {
+    final secrets = MemorySecretStore({
+      first.cookieKey: 'fixture-one',
+      first.passwordKey: 'password-one',
+      second.cookieKey: 'fixture-two',
+      second.passwordKey: 'password-two',
+    });
     final c = ProviderContainer(overrides: [secretStoreProvider.overrideWithValue(secrets)]);
     addTearDown(c.dispose);
     await c.read(activeHostProvider.notifier).ready;
@@ -71,7 +80,7 @@ void main() {
     c.read(activeHostProvider.notifier).select(const HostRef.portal('one'));
     await c.read(hostsProvider.notifier).remove('one');
     expect(c.read(activeHostProvider), HostRef.none);
-    expect(secrets.values, {second.cookieKey: 'fixture-two'});
+    expect(secrets.values, {second.cookieKey: 'fixture-two', second.passwordKey: 'password-two'});
     expect(c.read(hostsProvider).portals.single.id, 'two');
     await c.read(hostsProvider.notifier).remove('unknown');
     expect(c.read(hostsProvider).portals.single.id, 'two');

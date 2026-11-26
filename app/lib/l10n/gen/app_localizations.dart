@@ -9056,6 +9056,12 @@ abstract class L10n {
   /// **'密码'**
   String get portalPassword;
 
+  /// No description provided for @portalInvalidPassword.
+  ///
+  /// In zh, this message translates to:
+  /// **'密码不正确。'**
+  String get portalInvalidPassword;
+
   /// No description provided for @portalScan.
   ///
   /// In zh, this message translates to:

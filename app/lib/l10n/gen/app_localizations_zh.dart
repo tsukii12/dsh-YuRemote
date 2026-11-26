@@ -4970,6 +4970,9 @@ class L10nZh extends L10n {
   String get portalPassword => '密码';
 
   @override
+  String get portalInvalidPassword => '密码不正确。';
+
+  @override
   String get portalScan => '扫描服务器或配对链接';
 
   @override

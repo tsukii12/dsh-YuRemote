@@ -20,6 +20,8 @@ class _ActiveHost extends ActiveHostController {
   _ActiveHost(this.initial);
   final HostRef initial;
   @override
+  Future<void> get ready async {}
+  @override
   HostRef build() => initial;
 }
 
