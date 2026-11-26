@@ -195,5 +195,26 @@ void main() {
         await expectLater(session.login(''), throwsA(isA<DshHttpException>()));
       }
     });
+
+    test('shows only the daily password limit message from a 429 response', () async {
+      const dailyMessage = '尝试次数过多，请明天再试。';
+      var payload = '{"code":"password-daily-limit","error":"$dailyMessage"}';
+      server.listen((request) async {
+        await request.drain<void>();
+        request.response
+          ..statusCode = 429
+          ..headers.contentType = ContentType.json
+          ..write(payload);
+        await request.response.close();
+      });
+      await expectLater(session.login('wrong'), throwsA(isA<DshHttpException>()
+        .having((error) => error.message, 'message', dailyMessage)));
+
+      for (final other in ['{"code":"locked","error":"short lock"}', '{']) {
+        payload = other;
+        await expectLater(session.login('wrong'), throwsA(isA<DshHttpException>()
+          .having((error) => error.message, 'message', contains('Try again later.'))));
+      }
+    });
   });
 }

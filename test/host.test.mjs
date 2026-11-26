@@ -460,6 +460,59 @@ test("wrong password locks the IP out after maxFailures, doubling the wait", asy
   await gw.stop();
 });
 
+test("daily password limit survives restarts and concurrent guesses, then resets at local midnight", async (t) => {
+  t.mock.timers.enable({ apis: ["Date"], now: +new Date(2026, 0, 15, 23, 59) });
+  const upstream = await startUpstream();
+  const setup = {
+    stateDir: tmpDir(), upstreamPort: upstream.port,
+    config: { auth: { maxFailures: 20 } },
+  };
+  let { gw } = await startPortal(setup);
+  await gw.setPassword("correct horse battery");
+  await gw.start();
+  const json = { headers: { accept: "application/json", "accept-language": "en" } };
+  for (let i = 0; i < 2; i++) {
+    assert.equal((await login(gw.status().port, "wrong", json)).response.status, 401);
+  }
+  const session = await login(gw.status().port, "correct horse battery", json);
+  assert.equal(session.response.status, 303);
+  await gw.stop();
+
+  ({ gw } = await startPortal(setup));
+  await gw.start();
+  const guesses = await Promise.all(Array.from({ length: 12 }, () => login(gw.status().port, "wrong", json)));
+  assert.equal(guesses.filter(({ response }) => response.status === 401).length, 7);
+  const locked = guesses.filter(({ response }) => response.status === 429);
+  assert.equal(locked.length, 5);
+  for (const { response } of locked) {
+    assert.equal(JSON.parse(response.body).code, "password-daily-limit");
+    assert.equal(response.headers["retry-after"], "60");
+  }
+  await gw.stop();
+
+  ({ gw } = await startPortal(setup));
+  await gw.start();
+  const port = gw.status().port;
+  assert.equal((await login(port, "correct horse battery", json)).response.status, 429);
+  assert.equal((await request(port, "/api/test", { headers: { cookie: session.portal } })).status, 200);
+  const pairing = await gw.mintPairing();
+  const body = new URLSearchParams({ token: pairing.token }).toString();
+  const paired = await request(port, "/__portal/login", {
+    method: "POST",
+    headers: { "content-type": "application/x-www-form-urlencoded", "content-length": Buffer.byteLength(body) },
+    body,
+  });
+  assert.equal(paired.status, 303);
+  assert.equal((await login(port, "correct horse battery", json)).response.status, 429);
+  t.mock.timers.tick(59_999);
+  assert.equal((await login(port, "correct horse battery", json)).response.headers["retry-after"], "1");
+  t.mock.timers.tick(1);
+  assert.equal((await login(port, "correct horse battery", json)).response.status, 303);
+  const newDay = await login(port, "wrong", json);
+  assert.equal(newDay.response.status, 401);
+  assert.equal(JSON.parse(newDay.response.body).remaining, 9);
+});
+
 test("stop() resolves when the gateway never started", async () => {
   const { gw } = await startPortal();
   const startedAt = Date.now();

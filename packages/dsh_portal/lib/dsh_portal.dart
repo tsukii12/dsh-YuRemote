@@ -162,6 +162,17 @@ class PortalSession implements DshHttpAuthPolicy {
       contentType: 'application/x-www-form-urlencoded', followRedirects: false,
       maxResponseBytes: 65536, timeout: const Duration(seconds: 15));
     if (response.statusCode == 429) {
+      if (response.contentType == 'application/json') {
+        try {
+          final payload = jsonDecode(response.text);
+          if (payload case {'code': 'password-daily-limit', 'error': final String message}
+              when message.trim().isNotEmpty) {
+            throw DshHttpException(429, message);
+          }
+        } on FormatException {
+          // A proxy may return an invalid JSON error; use the generic message.
+        }
+      }
       throw const DshHttpException(429, 'Too many attempts. Try again later. / 尝试次数过多，请稍后重试。');
     }
     if (response.statusCode != 303 || !hasCookies) {
