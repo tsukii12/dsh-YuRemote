@@ -59,6 +59,10 @@ class PortalScan {
 
 typedef PortalCookieWriter = Future<void> Function(String? value);
 
+class PortalInvalidPasswordException implements Exception {
+  const PortalInvalidPasswordException();
+}
+
 /// One cookie jar per normalized portal base, not per public relay authority.
 class PortalSession implements DshHttpAuthPolicy {
   PortalSession(Uri base, {this.saveCookies, DateTime Function()? now})
@@ -161,7 +165,25 @@ class PortalSession implements DshHttpAuthPolicy {
     final response = await connection.postBytes('/__portal/login', utf8.encode(body),
       contentType: 'application/x-www-form-urlencoded', followRedirects: false,
       maxResponseBytes: 65536, timeout: const Duration(seconds: 15));
+    if (!pairing && response.statusCode == 401 && response.contentType == 'application/json') {
+      Object? payload;
+      try { payload = jsonDecode(response.text); } on FormatException { /* Not a portal error. */ }
+      if (payload is Map && payload['code'] == 'invalid-password') {
+        throw const PortalInvalidPasswordException();
+      }
+    }
     if (response.statusCode == 429) {
+      if (response.contentType == 'application/json') {
+        try {
+          final payload = jsonDecode(response.text);
+          if (payload case {'code': 'password-daily-limit', 'error': final String message}
+              when message.trim().isNotEmpty) {
+            throw DshHttpException(429, message);
+          }
+        } on FormatException {
+          // A proxy may return an invalid JSON error; use the generic message.
+        }
+      }
       throw const DshHttpException(429, 'Too many attempts. Try again later. / 尝试次数过多，请稍后重试。');
     }
     if (response.statusCode != 303 || !hasCookies) {

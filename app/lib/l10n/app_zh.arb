@@ -3406,6 +3406,7 @@
     }
   },
   "portalPassword": "密码",
+  "portalInvalidPassword": "密码不正确。",
   "portalScan": "扫描服务器或配对链接",
   "portalPairingReady": "配对链接已就绪",
   "portalWebRemoved": "鱼鱼远程不提供内嵌网页功能。",

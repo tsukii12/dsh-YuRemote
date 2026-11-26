@@ -13,7 +13,9 @@ class RootGate extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final hosts = ref.watch(hostsProvider);
     final active = ref.watch(activeHostProvider);
-    if (!hosts.loaded) return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    if (!hosts.loaded || (active == HostRef.none && ref.watch(activeHostReadyProvider).isLoading)) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
     final config = hosts.portalById(active.id);
     if (config == null) return const RemoteScreen();
     final connection = ref.watch(activeConnectionProvider);

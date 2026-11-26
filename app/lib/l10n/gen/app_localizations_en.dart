@@ -5297,6 +5297,9 @@ class L10nEn extends L10n {
   String get portalPassword => 'Password';
 
   @override
+  String get portalInvalidPassword => 'Incorrect password.';
+
+  @override
   String get portalScan => 'Scan server or pairing link';
 
   @override

@@ -47,7 +47,9 @@ class PortalHostConfig {
   final String id;
   final String name;
   final Uri base;
-  String get cookieKey => 'portal.cookies.${sha256.convert(utf8.encode(base.toString()))}';
+  String get _credentialId => sha256.convert(utf8.encode(base.toString())).toString();
+  String get cookieKey => 'portal.cookies.$_credentialId';
+  String get passwordKey => 'portal.password.$_credentialId';
   Map<String, String> toJson() => {'id': id, 'name': name, 'base': base.toString()};
   factory PortalHostConfig.fromJson(Map<String, dynamic> json) => PortalHostConfig(
     id: json['id'] as String,
@@ -117,7 +119,9 @@ class HostsController extends Notifier<HostsState> {
     await ready;
     final host = state.portalById(id);
     if (host == null) return;
-    await ref.read(secretStoreProvider).delete(host.cookieKey);
+    final secrets = ref.read(secretStoreProvider);
+    await secrets.delete(host.passwordKey);
+    await secrets.delete(host.cookieKey);
     state = HostsState(portals: state.portals.where((h) => h.id != id).toList(), loaded: true);
     await _persist();
     if (ref.read(activeHostProvider).id == id) ref.read(activeHostProvider.notifier).select(HostRef.none);
@@ -168,3 +172,4 @@ class ActiveHostController extends Notifier<HostRef> {
 }
 
 final activeHostProvider = NotifierProvider<ActiveHostController, HostRef>(ActiveHostController.new);
+final activeHostReadyProvider = FutureProvider<void>((ref) => ref.watch(activeHostProvider.notifier).ready);
