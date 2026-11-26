@@ -104,7 +104,10 @@ class _RemoteScreenState extends ConsumerState<RemoteScreen> {
             value == null ? secrets.delete(config.cookieKey) : secrets.write(config.cookieKey, value),
       );
       final deviceInfo = await PortalDeviceIdentity.instance.deviceInfo();
-      await session.login(_token ?? _password.text, pairing: _token != null, deviceInfo: deviceInfo);
+      final token = _token;
+      final password = _password.text;
+      await session.login(token ?? password, pairing: token != null, deviceInfo: deviceInfo);
+      if (token == null) await secrets.write(config.passwordKey, password);
       if (!mounted) return;
       _password.clear();
       _token = null;
@@ -115,6 +118,8 @@ class _RemoteScreenState extends ConsumerState<RemoteScreen> {
       ref.invalidate(hostLinkProvider(host));
       ref.read(activeHostProvider.notifier).select(host);
       if (Navigator.of(context).canPop()) Navigator.of(context).pop();
+    } on PortalInvalidPasswordException {
+      if (mounted) setState(() => _error = context.l10n.portalInvalidPassword);
     } on Object catch (error) {
       if (mounted) setState(() => _error = error is FormatException ? error.message : error.toString());
     } finally {

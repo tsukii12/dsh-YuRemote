@@ -1494,6 +1494,7 @@
   "portalDeleteHost": "Delete remote host?",
   "portalDeleteHostConfirmation": "Remove {name} from this device? You’ll need to sign in again to add it back.",
   "portalPassword": "Password",
+  "portalInvalidPassword": "Incorrect password.",
   "portalScan": "Scan server or pairing link",
   "portalPairingReady": "Pairing link ready",
   "portalWebRemoved": "Embedded web features are not available in YuRemote.",

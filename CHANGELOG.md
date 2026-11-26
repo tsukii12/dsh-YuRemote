@@ -5,6 +5,9 @@ versions are the plugin's own, not dsh's.
 
 ## Unreleased
 
+- YuRemote remembers passwords in secure storage and reconnects silently when
+  a session expires. A rejected saved password isn't retried automatically.
+
 ## 0.8.1 — 2026-11-23
 
 - YuRemote now asks for a server name after scanning a QR code. Rename or

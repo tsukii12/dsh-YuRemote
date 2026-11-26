@@ -55,21 +55,29 @@ class RemoteConnectionController extends AsyncNotifier<HostConnection?> {
   Future<HostConnection?> build() async {
     final link = ref.watch(hostLinkProvider(host));
     if (link == null) return null;
+    HostConnection connection(DshClient client) => HostConnection(client: client, hostId: host.id);
     final sub = link.statuses.listen((value) {
       if (value.phase == HostLinkPhase.failed && value.error != null && ref.mounted) {
         state = AsyncError(value.error!, StackTrace.current);
       }
     });
+    final replacements = link.clients.listen((client) {
+      if (ref.mounted) state = AsyncData(connection(client));
+    });
     ref.onDispose(() => unawaited(sub.cancel()));
+    ref.onDispose(() => unawaited(replacements.cancel()));
     final client = await link.open();
-    return HostConnection(client: client, hostId: host.id);
+    return connection(client);
   }
 
   void retry() => ref.invalidate(hostLinkProvider(host));
 }
 
 final remoteConnectionProvider = AsyncNotifierProvider.autoDispose
-    .family<RemoteConnectionController, HostConnection?, HostRef>(RemoteConnectionController.new);
+    .family<RemoteConnectionController, HostConnection?, HostRef>(
+      RemoteConnectionController.new,
+      retry: (_, _) => null,
+    );
 final activeConnectionProvider = Provider<AsyncValue<HostConnection?>>(
   (ref) => ref.watch(remoteConnectionProvider(ref.watch(activeHostProvider))),
 );
