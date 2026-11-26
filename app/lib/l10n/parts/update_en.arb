@@ -17,5 +17,5 @@
   "updateInstallRetry": "Install again",
   "updateWhatsNew": "What's new",
   "updateWhatsNewOk": "Got it",
-  "updateWhatsNewNotes": "- After scanning a server QR code, enter your own server name. Rename or delete saved hosts from the host list or by long-pressing them in the sidebar.\n- Add Workspace lists remote drives and other roots below Home. The back arrow returns to the picker from any folder.\n- Open chats offer Reconnect when the connection drops. If your sign-in has expired, the app returns to the sign-in screen."
+  "updateWhatsNewNotes": "- YuRemote securely saves your password and signs you back in when your session expires. If the saved password is rejected, the app asks you to sign in again.\n- After 10 incorrect passwords in one day, remote password sign-in to that host is paused until the next day.\n- Image previews and file opens are faster over the relay because YuRemote reuses file details instead of requesting them again."
 }
