@@ -135,12 +135,13 @@ class ArtifactFiles {
     Artifact artifact, {
     void Function(double? progress)? onProgress,
     int maxBytes = maxRemoteArtifactBytes,
+    DshFileStat? knownStat,
   }) async {
     final conn = connection;
     if (conn == null) throw const ArtifactError('offline');
     final client = conn.client;
     if (!client.canReadFileBytes) throw const ArtifactError('unsupported');
-    final stat = await client.statFile(sessionId, artifact.path);
+    final stat = knownStat ?? await client.statFile(sessionId, artifact.path);
     if (stat.bytes != null && stat.bytes! > maxBytes) throw const ArtifactError('workspace-file/too-large');
     final root = await _cacheRoot();
     final key = _fnv('${conn.hostId ?? conn.label}\n$sessionId\n${artifact.path}');
@@ -164,6 +165,7 @@ class ArtifactFiles {
           sessionId,
           artifact.path,
           maxBytes: maxBytes,
+          knownStat: stat,
           onChunk: (chunk) async {
             received += chunk.length;
             if (received > maxBytes) throw const ArtifactError('workspace-file/too-large');
@@ -193,8 +195,9 @@ class ArtifactFiles {
     Artifact artifact, {
     bool chooser = false,
     void Function(double?)? onProgress,
+    DshFileStat? knownStat,
   }) async {
-    final file = await materialize(sessionId, artifact, onProgress: onProgress);
+    final file = await materialize(sessionId, artifact, onProgress: onProgress, knownStat: knownStat);
     await channel.open(file.path, name: artifact.name, mime: artifact.mimeType, chooser: chooser);
   }
 
@@ -210,8 +213,13 @@ class ArtifactFiles {
   }
 
   /// Copies the file into the phone's public Downloads; returns where.
-  Future<String> saveToDownloads(String sessionId, Artifact artifact, {void Function(double?)? onProgress}) async {
-    final file = await materialize(sessionId, artifact, onProgress: onProgress);
+  Future<String> saveToDownloads(
+    String sessionId,
+    Artifact artifact, {
+    void Function(double?)? onProgress,
+    DshFileStat? knownStat,
+  }) async {
+    final file = await materialize(sessionId, artifact, onProgress: onProgress, knownStat: knownStat);
     return channel.saveToDownloads(file.path, name: artifact.name, mime: artifact.mimeType);
   }
 
@@ -224,13 +232,11 @@ class ArtifactFiles {
     }
     final conn = connection;
     if (conn == null) return null;
-    if (!conn.isLocal) {
-      final stat = await conn.client.statFile(sessionId, artifact.path);
-      if ((stat.bytes ?? maxThumbnailBytes + 1) > maxThumbnailBytes) {
-        return null;
-      }
+    final stat = conn.isLocal ? null : await conn.client.statFile(sessionId, artifact.path);
+    if (!conn.isLocal && (stat?.bytes ?? maxThumbnailBytes + 1) > maxThumbnailBytes) {
+      return null;
     }
-    final file = await materialize(sessionId, artifact, maxBytes: maxThumbnailBytes);
+    final file = await materialize(sessionId, artifact, maxBytes: maxThumbnailBytes, knownStat: stat);
     if (await file.length() > maxThumbnailBytes) return null;
     return FileImage(file);
   }

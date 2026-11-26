@@ -216,11 +216,13 @@ class ArtifactImageReader implements WorkspaceImageReader {
     final connection = files.connection;
     if (connection == null) throw const ArtifactError('offline');
     if (!files.canFetch) throw const ArtifactError('unsupported');
-    if (!connection.isLocal) {
-      final stat = await connection.client.statFile(sessionId, path);
-      if ((stat.bytes ?? 0) > maxMarkdownImageBytes) throw const ImageTooLarge();
-    }
-    final file = await files.materialize(sessionId, Artifact(path: path, origin: ArtifactOrigin.linked, turn: 0));
+    final stat = connection.isLocal ? null : await connection.client.statFile(sessionId, path);
+    if ((stat?.bytes ?? 0) > maxMarkdownImageBytes) throw const ImageTooLarge();
+    final file = await files.materialize(
+      sessionId,
+      Artifact(path: path, origin: ArtifactOrigin.linked, turn: 0),
+      knownStat: stat,
+    );
     if (isSvgUrl(path)) return SvgImageBytes(await file.readAsBytes());
     return RasterImage(FileImage(file));
   }

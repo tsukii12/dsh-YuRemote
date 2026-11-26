@@ -5,6 +5,9 @@ versions are the plugin's own, not dsh's.
 
 ## Unreleased
 
+- YuRemote reuses file metadata when previewing, opening, or downloading
+  remote files, cutting relay round trips. 鱼鱼远程预览、打开或下载远程文件时复用文件信息，减少中继往返。
+
 ## 0.8.1 — 2026-11-23
 
 - YuRemote now asks for a server name after scanning a QR code. Rename or
