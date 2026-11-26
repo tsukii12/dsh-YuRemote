@@ -159,7 +159,7 @@ Future<void> runArtifactAction(
   }
   final messenger = ScaffoldMessenger.maybeOf(context);
   try {
-    final target = await _absolute(ref, sessionId, artifact);
+    final (target, stat) = await _resolveArtifact(ref, sessionId, artifact);
     if (action == ArtifactAction.copyPath) {
       if (context.mounted) await copyPath(context, target.path);
       return;
@@ -167,11 +167,11 @@ Future<void> runArtifactAction(
     final files = ref.read(artifactFilesProvider);
     switch (action) {
       case ArtifactAction.open:
-        await files.open(sessionId, target);
+        await files.open(sessionId, target, knownStat: stat);
       case ArtifactAction.openWith:
-        await files.open(sessionId, target, chooser: true);
+        await files.open(sessionId, target, chooser: true, knownStat: stat);
       case ArtifactAction.save:
-        final where = await files.saveToDownloads(sessionId, target);
+        final where = await files.saveToDownloads(sessionId, target, knownStat: stat);
         messenger?.showBriefNotice(
           savedInChosenPlace(where)
               ? l10n.harmonySaved
@@ -186,20 +186,32 @@ Future<void> runArtifactAction(
   }
 }
 
-/// [artifact] with an absolute path (the Host resolves a relative one).
-Future<Artifact> _absolute(WidgetRef ref, String sessionId, Artifact artifact) async {
-  if (artifact.path.startsWith('/')) return artifact;
+/// Resolve a relative path and keep the metadata for the operation that needs it.
+Future<(Artifact, DshFileStat?)> _resolveArtifact(
+  WidgetRef ref,
+  String sessionId,
+  Artifact artifact, {
+  bool fetchStat = false,
+}) async {
+  final absolute = artifact.path.startsWith('/');
+  if (absolute && !fetchStat) return (artifact, null);
   final source = ref.read(workspaceSourceProvider(sessionId));
-  if (source == null) throw const ArtifactError('offline');
+  if (source == null) {
+    if (absolute) return (artifact, null);
+    throw const ArtifactError('offline');
+  }
   final stat = await source.stat(artifact.path);
-  if (stat.absolutePath.isEmpty) return artifact;
-  return Artifact(
-    path: stat.absolutePath,
-    origin: artifact.origin,
-    turn: artifact.turn,
-    description: artifact.description,
-    seq: artifact.seq,
-    bytes: stat.bytes ?? artifact.bytes,
+  if (absolute || stat.absolutePath.isEmpty) return (artifact, stat);
+  return (
+    Artifact(
+      path: stat.absolutePath,
+      origin: artifact.origin,
+      turn: artifact.turn,
+      description: artifact.description,
+      seq: artifact.seq,
+      bytes: stat.bytes ?? artifact.bytes,
+    ),
+    stat,
   );
 }
 
@@ -444,9 +456,9 @@ class _ArtifactPreviewPageState extends ConsumerState<ArtifactPreviewPage> {
             key: ValueKey((_index, artifact.path)),
             name: artifact.name,
             load: () async {
-              final file = await ref
-                  .read(artifactFilesProvider)
-                  .materialize(widget.sessionId, await _absolute(ref, widget.sessionId, artifact));
+              final files = ref.read(artifactFilesProvider);
+              final (target, stat) = await _resolveArtifact(ref, widget.sessionId, artifact);
+              final file = await files.materialize(widget.sessionId, target, knownStat: stat);
               return file.readAsBytes();
             },
           ),
@@ -1153,15 +1165,14 @@ class _TablePreviewState extends ConsumerState<_TablePreview> {
 
   Future<List<SheetGrid>> _workbook() async {
     final files = ref.read(artifactFilesProvider);
+    final (target, stat) = await _resolveArtifact(ref, widget.sessionId, widget.artifact, fetchStat: !files.isLocal);
     if (!files.isLocal) {
-      final source = ref.read(workspaceSourceProvider(widget.sessionId));
-      final stat = await source?.stat(widget.artifact.path);
       _bytes = stat?.bytes;
       if ((stat?.bytes ?? 0) > _workbookBytes) {
         throw DshRemoteException('workspace-file/too-large', 'workbook', {});
       }
     }
-    final file = await files.materialize(widget.sessionId, await _absolute(ref, widget.sessionId, widget.artifact));
+    final file = await files.materialize(widget.sessionId, target, knownStat: stat);
     final size = await file.length();
     _bytes = size;
     if (size > _workbookBytes) {
@@ -1301,14 +1312,14 @@ class _PdfPreviewState extends ConsumerState<_PdfPreview> {
       if (widget.office) {
         file = await files.officePdf(widget.sessionId, widget.artifact);
       } else {
+        final (target, stat) = await _resolveArtifact(ref, widget.sessionId, widget.artifact, fetchStat: !files.isLocal);
         if (!files.isLocal) {
-          final stat = await ref.read(workspaceSourceProvider(widget.sessionId))?.stat(widget.artifact.path);
           _bytes = stat?.bytes;
           if ((stat?.bytes ?? 0) > _remotePdfBytes) {
             throw DshRemoteException('workspace-file/too-large', 'pdf', {});
           }
         }
-        file = await files.materialize(widget.sessionId, await _absolute(ref, widget.sessionId, widget.artifact));
+        file = await files.materialize(widget.sessionId, target, knownStat: stat);
       }
       if (!mounted || token != _token) return;
       if (_file != null) {
@@ -1406,14 +1417,14 @@ class _ImagePreviewState extends ConsumerState<_ImagePreview> {
     final token = ++_token;
     final files = ref.read(artifactFilesProvider);
     try {
+      final (target, stat) = await _resolveArtifact(ref, widget.sessionId, widget.artifact, fetchStat: !files.isLocal);
       if (!files.isLocal) {
-        final stat = await ref.read(workspaceSourceProvider(widget.sessionId))?.stat(widget.artifact.path);
         _bytes = stat?.bytes;
         if ((stat?.bytes ?? 0) > _remoteImageBytes) {
           throw DshRemoteException('workspace-file/too-large', 'image', {});
         }
       }
-      final file = await files.materialize(widget.sessionId, await _absolute(ref, widget.sessionId, widget.artifact));
+      final file = await files.materialize(widget.sessionId, target, knownStat: stat);
       if (!mounted || token != _token) return;
       // A gallery revisit may have missed changes while another file was watched.
       await FileImage(file).evict();

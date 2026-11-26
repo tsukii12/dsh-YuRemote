@@ -81,6 +81,7 @@ extension DshFilesApi on DshClient {
   ///
   /// [maxBytes] refuses larger files up front (`workspace-file/too-large`)
   /// when the size is known. [onProgress] gets (received, total?).
+  /// Pass [knownStat] to reuse metadata just read for the same session and file.
   /// Failures are [DshRemoteException]s with `workspace-file/*` codes
   /// (`not-found`, `not-allowed`, `too-large`, `unsupported`), or the
   /// carrier's transport errors. A changed non-empty window version fails locally
@@ -92,8 +93,9 @@ extension DshFilesApi on DshClient {
     required FutureOr<void> Function(Uint8List chunk) onChunk,
     void Function(int received, int? total)? onProgress,
     int? maxBytes,
+    DshFileStat? knownStat,
   }) async {
-    final stat = await statFile(sessionId, path);
+    final stat = knownStat ?? await statFile(sessionId, path);
     final total = stat.bytes;
     if (maxBytes != null && total != null && total > maxBytes) {
       throw DshRemoteException('workspace-file/too-large', '"$path" is $total bytes (limit $maxBytes)', {
